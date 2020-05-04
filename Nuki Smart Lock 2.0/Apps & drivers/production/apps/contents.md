@@ -2,4 +2,4 @@
 
 ## Contents
 
-This folder contains all appsstripped of debugging option & code.
+This folder contains all apps stripped of debugging option & code.
