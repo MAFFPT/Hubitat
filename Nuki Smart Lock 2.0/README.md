@@ -1,3 +1,3 @@
-<img src="https://https://raw.githubusercontent.com/MAFFPT/Hubitat/master/Nuki%20Smart%20Lock%202.0/icons/Hubitat-logo.jpg" alt="Hubitat"/>
+<img src="https://raw.githubusercontent.com/MAFFPT/Hubitat/master/Nuki%20Smart%20Lock%202.0/icons/Hubitat-logo.jpg" alt="Hubitat"/>
 
 Nuki Smart Lock 2.0/icons/Hubitat-logo.jpg
