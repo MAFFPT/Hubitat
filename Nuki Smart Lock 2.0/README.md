@@ -8,4 +8,6 @@
       <img src="https://raw.githubusercontent.com/MAFFPT/Hubitat/master/Nuki%20Smart%20Lock%202.0/icons/Nuki-logo.png" alt="Nuki" width="200"/>
     </td>
   </tr>
-  </table>
+</table>
+
+# Nuki Smart Lock 2.0 Integration package
