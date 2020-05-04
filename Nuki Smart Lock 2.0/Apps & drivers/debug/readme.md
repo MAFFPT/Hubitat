@@ -1,4 +1,4 @@
-# Debug subfolder
+# Debug folder
 
 This folder contains all apps and drivers with a lot - I mean, a lot, a **massive** lot - of debugging code to help **you** help **me** to gather information when a problem is found.
 
