@@ -1,4 +1,4 @@
-# Production folder - apps subfolder
+# Production folder / apps subfolder
 
 ## Contents
 
