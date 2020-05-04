@@ -58,7 +58,6 @@ First of all you'll need to install the following app and drivers to your HE hub
 
   * Nuki Smart Lock 2.0 Integration app
      * [see app's code raw content - DEBUG version](https://raw.githubusercontent.com/MAFFPT/Hubitat/master/Nuki%20Smart%20Lock%202.0/Apps%20%26%20drivers/debug/apps/Nuki%20Smart%20Lock%202.0%20Integration)
-     
      * Note: PRODUCTION version not available yet
   
   Follow these instructions to install the app:
