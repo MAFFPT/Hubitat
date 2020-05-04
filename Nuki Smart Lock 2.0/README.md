@@ -1,2 +1,2 @@
-<img src="https://github.com/markus-li/Hubitat/wiki/images/T4HE.jpg" alt="T4HE"/>
+<img src="https://github.com/maffpt/Hubitat/Nuki Smart Lock 2.0/icons/Hubitat-logo.jpg" alt="T4HE"/>
 
