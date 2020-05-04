@@ -8,7 +8,7 @@ Holds all the code for Nuki Smart Lock 2.0<sup>&copy;</sup> apps and drivers.
 
 This folder is divided into two subfolders, **production** and **debug**, with slightly between them.
 
-Let's see it ...
+Let's see them ...
 
 ### 'debug' folder
 
