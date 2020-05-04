@@ -26,6 +26,7 @@ First of all you'll need to install the following app and drivers to your HE hub
 * App
 
   * Nuki Smart Lock 2.0 Integration app
+     * raw content:
   
   Follow these instructions to install the app:
   
