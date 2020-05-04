@@ -15,7 +15,7 @@
 ## Introduction
 These app and drivers were developed to overcome the lack of native support for the Nuki Smart Lock 2.0<sup>&copy;</sup> lock (https://nuki.io/en/) in the Hubitat Elevation<sup>&copy;</sup> (HE) home automation (domotics) system.
 
-It uses an “Integration” app that shields the user from the cumbersome task of configuring all the devices – all the user has to do is to download the app and all drivers to his/hers Hubitat Elevation hub, install the app and voilá – the magic happens!
+It is used an “Integration” app that shields the user from the cumbersome task of configuring all the devices – all the user has to do is to download the app and all drivers to his/hers Hubitat Elevation hub, install the app and voilá – the magic happens!
 
 Well, that’s what at least I hope will happen …
 
@@ -39,11 +39,11 @@ This folder contains all apps and drivers striped off all the debugging code and
 
 As I said before, this version of apps and drivers is meant to decrease possible overhead of the debugging code over your HE hub, even when the "debug info" is not enabled. I know that the overhead is minimum, but, if you add a lot of minimuns, it would not be a "minimum" anymore ...
 
-But I tell you one more reason to have a production and debug version: the debug version code is ugly ... and I like my code to look nice from inside out. My therapist says that I should keep doing this as an occupational therapy so it helps me not to be sent back to the mental institution ... 🤪
+But I will tell you one more reason to have a production and debug versions: the debug version code is ugly ... and I like my code to look nice from inside out. My therapist says that I should keep doing this as an occupational therapy to help me not to be sent back to the mental institution ... 🤪
 
 ### Wich app & drivers versions should I use?
 
-I *strongly* suggest you to use the production versions and install the debugging versions only when a problem is found.
+I *strongly* suggest you to use the production versions and install the debugging versions only when a problem is detected.
 
 However, it is your choice wich one you want to use.
 
