@@ -19,6 +19,9 @@ It uses an “Integration” app that shields the user from the cumbersome task 
 
 Well, that’s what at least I hope will happen …
 
+## 'debug' and 'production' apps/drivers versions
+
+
 ## Installation
 
 First of all you'll need to install the following app and drivers to your HE hub.
