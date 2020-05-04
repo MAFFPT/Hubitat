@@ -30,7 +30,7 @@ First of all you'll need to install the following app and drivers to your HE hub
   
   Follow these instructions to install the app:
   
-   * [Hubitat: How to install custom apps](<a href="https://docs.hubitat.com/index.php?title=How_to_Install_Custom_Apps />)
+   * [Hubitat: How to install custom apps][adjustable](https://docs.hubitat.com/index.php?title=How_to_Install_Custom_Apps){:target="_blank"}
   
   
 * Drivers
