@@ -1,4 +1,4 @@
-<table>
+<table border="0">
   <tr style="display: block; margin-left: auto; margin-right: auto; width: 50%; vertical-align: middle; border: none;">
     <td>
       <img src="https://raw.githubusercontent.com/MAFFPT/Hubitat/master/Nuki%20Smart%20Lock%202.0/icons/Hubitat-logo.jpg" alt="Hubitat" width="200"/>
