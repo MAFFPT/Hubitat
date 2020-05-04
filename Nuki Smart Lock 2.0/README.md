@@ -23,7 +23,7 @@ Well, that’s what at least I hope will happen …
 
 First of all you'll need to install the following app and drivers to your HE hub.
 
-Suggestion: Open these links in a new browser tab so it will be easier for you to follow the instructions
+**Suggestion:** Open these links in a new browser tab so it will be easier for you to follow the instructions
 
 * App
 
