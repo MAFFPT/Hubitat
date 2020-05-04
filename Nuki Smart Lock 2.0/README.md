@@ -1,6 +1,6 @@
-<table style="align: center;">
+<table style="width:100%">
   <tr>
-    <td>
+    <td style="width: 45%;">
       <img src="https://raw.githubusercontent.com/MAFFPT/Hubitat/master/Nuki%20Smart%20Lock%202.0/icons/Hubitat-logo.jpg" alt="Hubitat" width="200"/>
     </td>
     <td><p style="font-size: 150px;">+</p></td>
