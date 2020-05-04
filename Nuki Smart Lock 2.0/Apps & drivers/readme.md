@@ -26,7 +26,7 @@ As I said before, this version of apps and drivers is meant to decrease possible
 
 But I tell you one more reason to have a production and debug version: the debug version code is ugly ... and I like my code to look nice from inside out. My therapist says that I should keep doing this as an occupational therapy so it helps me not to be sent back to the mental institution ... 🤪
 
-### Wich app & drivers version should I use?
+### Wich app & drivers versions should I use?
 
 I *strongly* suggest you to use the production versions and install the debugging versions only when a problem is found.
 
