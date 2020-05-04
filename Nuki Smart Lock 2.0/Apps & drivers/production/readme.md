@@ -1,4 +1,4 @@
-### production subfolder
+### 'production' folder
 
 This folder contains all apps and drivers striped off all the debugging code and even the "debug info logging" option - why keep it if it would be meaningless and produces nothing at all?
 
