@@ -31,8 +31,8 @@ First of all you'll need to install the following app and drivers to your HE hub
   
 * Drivers
 
- * Nuki Bridge driver
- * Nuki Smart Lock driver
+  * Nuki Bridge driver
+  * Nuki Smart Lock driver
     
   Follow these instructions to install the app:
 
