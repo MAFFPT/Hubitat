@@ -12,7 +12,7 @@ Let's see them ...
 
 ### 'debug' folder
 
-This folder contains all apps and drivers with a lot - I mean, a lot, a **massive** lot - of debugging code to help **you** help **me** to gather information when a problem is found.
+This folder contains all apps and drivers with a lot - I mean, a lot, a **massive** lot - of debugging code to help **you** help **me** to gather information when a problem is detected.
 
 The debugging information will be logged - in your Hubitat Elevatiion hub system log - only when you toogle the "debug info logging" option at the main page of the apps/drivers. If you do not activate the "debug info logging" option, no debugging information will be logged whatsoever.
 
