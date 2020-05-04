@@ -11,3 +11,11 @@
 </table>
 
 # Nuki Smart Lock 2.0 Integration package
+
+# Introduction
+These app and drivers were developed to overcome the lack of native support of the Nuki Smart Lock 2.0 (https://nuki.io/en/) in the Hubitat Elevation environment.
+
+It uses an “Integration” app that shields the user from the cumbersome task of configuring all the devices – all the user has to do is to download the app and all drivers to his/hers Hubitat Elevation hub, install the app and voilá – the magic happens!
+
+Well, that’s what at least I hope will happen …
+
