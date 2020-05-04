@@ -43,5 +43,5 @@ First of all you'll need to install the following app and drivers to your HE hub
     
   Follow these instructions to install the drivers:
   
-   * [Hubitat: How to install custom drivers](https://docs.hubitat.com/index.php?title=How_to_Install_Custom_Drivers)
+   * [Hubitat: How to install custom drivers](https://docs.hubitat.com/index.php?title=How_to_Install_Custom_Drivers)   Suggestion: Open this link in a new browser tab so it will be easier for you to follow the instructions
 
