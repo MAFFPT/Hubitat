@@ -28,4 +28,4 @@ As I said before, this version of apps and drivers is meant to decrease possible
 
 I *strongly* suggest you to use the production version and install de debugging versions when a problem is found.
 
-So, it is your choice wich one you want to use.
+However, it is your choice wich one you want to use.
