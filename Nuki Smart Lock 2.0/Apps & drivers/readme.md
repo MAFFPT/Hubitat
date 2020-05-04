@@ -28,6 +28,6 @@ But I tell you one more reason to have a production and debug version: the debug
 
 ### Wich app & drivers version should I use?
 
-I *strongly* suggest you to use the production version and install the debugging versions only when a problem is found.
+I *strongly* suggest you to use the production versions and install the debugging versions only when a problem is found.
 
 However, it is your choice wich one you want to use.
