@@ -21,7 +21,7 @@ Well, that’s what at least I hope will happen …
 
 ## Organization
 
-This folder is divided into two subfolders, '**production**' and '**debug**', with slightly but important differences between them.
+The material (app/drivers) is stored in two subfolders of this one, '**production**' and '**debug**', with slightly but important differences between them.
 
 Let's see them ...
 
