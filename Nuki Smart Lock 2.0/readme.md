@@ -55,6 +55,20 @@ However, it is your choice wich one you want to use.
 
 ## Installation
 
+### Supported devices
+
+So far, the following Nuki products are supported by the app/drivers:
+
+* Nuki bridge (firmware version ??? and above)
+* Nuki Smart Lock 2.0 (firmware version ??? and above)
+
+#### To be supported soon ... stay tuned!
+
+* Nuki Keypad
+* Nuki Openner
+
+### Install app & drivers
+
 First of all you'll need to install the following app and drivers to your HE hub.
 
 **Suggestion:** Open these links in a new browser tab so it will be easier for you to follow the instructions.
@@ -84,20 +98,6 @@ First of all you'll need to install the following app and drivers to your HE hub
   Follow these instructions to install the drivers:
   
    * [Hubitat: How to install custom drivers](https://docs.hubitat.com/index.php?title=How_to_Install_Custom_Drivers)   
-
-
-### Supported devices
-
-So far, the following Nuki products are supported by the app/drivers:
-
-* Nuki bridge (firmware version ??? and above)
-* Nuki Smart Lock 2.0 (firmware version ??? and above)
-
-### To be supported soon ... stay tuned!
-
-* Nuki Keypad
-* Nuki Openner
-
 
 ## Operation
 
