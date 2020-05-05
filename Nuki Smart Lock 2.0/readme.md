@@ -32,11 +32,11 @@ Let's talk about it ...
 
 ### 'debug' subfolder
 
-This folder contains all apps and drivers with a lot - I mean, a lot, a **massive** lot - of debugging code to help **you** help **me** to gather information when a problem is detected.
+This folder contains the app and drivers with a lot - I mean, a lot ... a **massive** lot! - of debugging code to help **you** help **me** to gather information when a problem is detected and needs my intervention.
 
 The debugging information will be logged - in your Hubitat Elevatiion hub system log - only when you toogle the "debug info logging" option at the main page of the apps/drivers. If you do not activate the "debug info logging" option, no debugging information will be logged whatsoever.
 
-You may use this code as your production code. However, since there is a lot - did I mention a **massive** lot before? - of debugging code imbebbed into the app/drivers code, it not only pontentially increases the execution time and may impact negatively the performance of your HE hub, but also increases the total code size.
+You may use this code as your production code. However, since there is a lot - did I mention a **massive** lot before? - of debugging code imbebbed into the app/drivers code, it not only increases the execution time and may pontentially impacts negatively the performance of your HE hub, but also increases the total code size.
 
 ### 'production' subfolder
 
@@ -51,7 +51,6 @@ But I will tell you one more reason to have a production and debug versions: the
 I *strongly* suggest you to use the production versions and install the debugging versions only when a problem is detected.
 
 However, it is your choice wich one you want to use.
-
 
 ## Installation
 
@@ -80,10 +79,9 @@ First of all you'll need to install the following app and drivers in your HE hub
      * [see app's code raw content - DEBUG version](https://raw.githubusercontent.com/MAFFPT/Hubitat/master/Nuki%20Smart%20Lock%202.0/Apps%20%26%20drivers/debug/apps/Nuki%20Smart%20Lock%202.0%20Integration)
      * Note: PRODUCTION version not available yet
   
-  Follow these Hubitat´s instructions to install the app:
+  Follow these Hubitat´s instructions to install the app
   
    * [Hubitat: How to install custom apps](https://docs.hubitat.com/index.php?title=How_to_Install_Custom_Apps)
-  
   
 * **Drivers**
 
@@ -95,19 +93,19 @@ First of all you'll need to install the following app and drivers in your HE hub
      * [see driver's code raw content - DEBUG version](https://raw.githubusercontent.com/MAFFPT/Hubitat/master/Nuki%20Smart%20Lock%202.0/Apps%20%26%20drivers/debug/drivers/Nuki%20Smart%20Lock%202.0)
      * Note: PRODUCTION version not available yet
     
-  Follow these instructions to install the drivers:
+  Follow these instructions to install the drivers
   
    * [Hubitat: How to install custom drivers](https://docs.hubitat.com/index.php?title=How_to_Install_Custom_Drivers)   
 
 ### Operation
 
-Once you have installed the app and pertinent drivers, the installation of your Nuki brige(s) and paired devices is straightforward: just open the app and follow the steps and, very important, _read carefully_ all the information contained on each page presented to you _before_ requesting any action to the app - meaning, do not be a "fast clicker"! However, the app is - at least I hope it is ... - carefully crafted to alert you of any potential damaging operation **before** you act. So, _please read the all the information on each and every page before acting_ !!!
+Once you have installed the app and pertinent drivers, the installation of your Nuki brige(s) and paired devices to it is straightforward: just open the app and follow the steps and, very important, _read carefully_ all the information contained on each page presented to you _before_ requesting any action to the app - meaning, do not be a "fast clicker"! However, the app is - at least I hope it is ... - carefully crafted to alert you of any potential damaging operation **before** you act. So, _please read the all the information on each and every page before acting_ !!!
 
-As much as I prioritized the "on app" documentation, it is valid to discuss about some app features an general 
+As much as I prioritized the "on app" documentation, I would like to discuss about some app/drivers features an general information about them.
 
 ### Nuki bridge(s) and paired device(s) discovery and installation
 
-The Integration app is able to install in a single run 'n' bridges and respective paired device(s). Not necessary to run it multiple times for each Nuki bridge that you eventually have.
+The Integration app is able to install in a single run 'n' bridges and respective paired device(s). It is not necessary to run it multiple times for each Nuki bridge that you eventually have.
 
 After the Integration app discovers all Nuki bridges installed on your network, it provides to you the possibility to select which one(s) you want to install/reinstall.
 
