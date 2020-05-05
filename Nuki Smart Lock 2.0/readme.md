@@ -117,11 +117,23 @@ After the Integration app discovers all Nuki bridges installed on your network, 
 - It is not possible to discover bridges intalled on different networks
 - If you have different neworks for you household and/or home automation equipments, you will need to reconfigure your setup accordingly
 - This is not an app limitation: it is Nuki´s behavior, since it is necessary contact first Nuki´s servers to discover the Nuki bridges installed on your network
-- Since it is necessary to contact Nuki´s servers to do the bridges discovery, an Internet connection must be active to properly run the Integration app - no surprise here, righty?
+- Since it is necessary to contact Nuki´s servers to do the bridges discovery, an Internet connection must be active to properly run the Integration app - no surprise here, right?
 - The app automatically installs all bridge´s paired devices for a given bridge
 - When requested to install an already installed bridge (reinstall), that bridge and all its paired devices will be automatically deleted
 - **IMPORTANT:** When a bridge is deleted (and by consequence its paired devices), all Rule Machines (RM) rules that reference for the deleted devices are affected, resting useless; this happens because HE uses an internal device id instead of their names and this is a good practice to do so
 
+
+## Future developments
+
+My signus is Aquarius - the guys that like horoscope use to say that people from Aquarius is always thinking about the future. I do not know it is true, but in my case it is ...
+
+So, here are some enhancements that I plan to implement in app & drivers future versions.
+
+### Version 2.0
+
+### Version 3.0
+
+Check if it is possible to detect 
 ## Licence
 
 Check this [license]() for License information.
