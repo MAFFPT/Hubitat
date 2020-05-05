@@ -103,7 +103,7 @@ First of all you'll need to install the following app and drivers in your HE hub
 
 Once you have installed the app and pertinent drivers, the installation of your Nuki brige(s) and paired devices is straightforward: just open the app and follow the steps and, very important, _read carefully_ all the information contained on each page presented to you _before_ requesting any action to the app - meaning, do not be a "fast clicker"! However, the app is - at least I hope it is ... - carefully crafted to alert you of any potential damaging operation **before** you act. So, _please read the all the information on each and every page before acting_ !!!
 
-As much as I priotized the "on app" documentation, it is valid to discuss about some app features an general 
+As much as I prioritized the "on app" documentation, it is valid to discuss about some app features an general 
 
 ### Nuki bridge(s) and paired device(s) discovery and installation
 
