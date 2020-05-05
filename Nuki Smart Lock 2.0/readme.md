@@ -80,6 +80,30 @@ First of all you'll need to install the following app and drivers to your HE hub
   
    * [Hubitat: How to install custom drivers](https://docs.hubitat.com/index.php?title=How_to_Install_Custom_Drivers)   
 
+## Supported devices
+
+So far, the following Nuki products are supported by the app/drivers:
+
+* Nuki bridge (firmware version ??? and above)
+* Nuki Smart Lock 2.0 (firmware version ??? and above)
+
+### To be supported soon ...
+
+* Nuki Keypad
+* Nuki Openner
+
+## Operation
+
+Once you have installed the app and the pertinent drivers, the installation of your Nuki brige(s) and paired devices is straightforward. Just open the app and follow the steps and, very important, read carefully all the information contained on each page presented before requesting any action to the app - meaning, do not be a "fast clicker"! However, the app is carefully crafted to alert you - at least I hope .. - ofy dangerous a potential damaging operation *before* you act
+
+To keep the maintenance of this documentation 
+
+
+
+
+
+
 ## Licence
 
 Check this [license]() for License information.
+
