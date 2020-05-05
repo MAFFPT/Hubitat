@@ -69,7 +69,7 @@ So far, the following Nuki products are supported by the app/drivers:
 
 ### Install app & drivers
 
-First of all you'll need to install the following app and drivers to your HE hub.
+First of all you'll need to install the following app and drivers in your HE hub.
 
 **Suggestion:** Open these links in a new browser tab so it will be easier for you to follow the instructions.
 
