@@ -86,7 +86,7 @@ First of all you'll need to install the following app and drivers to your HE hub
    * [Hubitat: How to install custom drivers](https://docs.hubitat.com/index.php?title=How_to_Install_Custom_Drivers)   
 
 
-## Supported devices
+### Supported devices
 
 So far, the following Nuki products are supported by the app/drivers:
 
