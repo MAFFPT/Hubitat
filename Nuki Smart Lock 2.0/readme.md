@@ -12,12 +12,16 @@
 
 # Nuki Smart Lock 2.0<sup>&copy;</sup> Integration for Hubitat Elevation<sup>&copy;</sup>
 
+
 ## Introduction
 These app and drivers were developed to overcome the lack of native support for the Nuki Smart Lock 2.0<sup>&copy;</sup> lock (https://nuki.io/en/) in the Hubitat Elevation<sup>&copy;</sup> (HE) home automation (domotics) system.
 
 It is used an “Integration” app that shields the user from the cumbersome task of configuring all the devices – all the user has to do is to download the app and all drivers to his/hers Hubitat Elevation hub, install the app and voilá – the magic happens!
 
 Well, that’s what at least I hope will happen …
+
+To keep this documentation short and its maintenance at a minimum level, the "on app" documentation is prioritized. Here you will not find **screenshots**. Not that I do not think they are important - I believe they are. However, as I said, I have prioritized providing the instructions on the app itself. This way I believe I can react to problems and/or user´s needs faster.
+
 
 ## Organization
 
@@ -80,6 +84,7 @@ First of all you'll need to install the following app and drivers to your HE hub
   
    * [Hubitat: How to install custom drivers](https://docs.hubitat.com/index.php?title=How_to_Install_Custom_Drivers)   
 
+
 ## Supported devices
 
 So far, the following Nuki products are supported by the app/drivers:
@@ -87,16 +92,15 @@ So far, the following Nuki products are supported by the app/drivers:
 * Nuki bridge (firmware version ??? and above)
 * Nuki Smart Lock 2.0 (firmware version ??? and above)
 
-### To be supported soon ...
+### To be supported soon ... stay tuned!
 
 * Nuki Keypad
 * Nuki Openner
 
+
 ## Operation
 
-Once you have installed the app and the pertinent drivers, the installation of your Nuki brige(s) and paired devices is straightforward. Just open the app and follow the steps and, very important, read carefully all the information contained on each page presented before requesting any action to the app - meaning, do not be a "fast clicker"! However, the app is carefully crafted to alert you - at least I hope .. - ofy dangerous a potential damaging operation *before* you act
-
-To keep the maintenance of this documentation 
+Once you have installed the app and pertinent drivers, the installation of your Nuki brige(s) and paired devices is straightforward: just open the app and follow the steps and, very important, _read carefully_ all the information contained on each page presented before requesting any action to the app - meaning, do not be a "fast clicker"! However, the app is - at least I hope it is ... - carefully crafted to alert you of any potential damaging operation *before* you act. So, _please read the all the information on each and every page before acting_ !!!
 
 
 
