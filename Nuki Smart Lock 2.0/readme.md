@@ -99,7 +99,7 @@ First of all you'll need to install the following app and drivers in your HE hub
   
    * [Hubitat: How to install custom drivers](https://docs.hubitat.com/index.php?title=How_to_Install_Custom_Drivers)   
 
-## Operation
+### Operation
 
 Once you have installed the app and pertinent drivers, the installation of your Nuki brige(s) and paired devices is straightforward: just open the app and follow the steps and, very important, _read carefully_ all the information contained on each page presented to you _before_ requesting any action to the app - meaning, do not be a "fast clicker"! However, the app is - at least I hope it is ... - carefully crafted to alert you of any potential damaging operation **before** you act. So, _please read the all the information on each and every page before acting_ !!!
 
@@ -111,16 +111,16 @@ The Integration app is able to install in a single run 'n' bridges and respectiv
 
 After the Integration app discovers all Nuki bridges installed on your network, it provides to you the possibility to select which one(s) you want to install/reinstall.
 
-### Notes
+### Installation notes
  
 - The Integration app is able to discover/detect **only** the Nuki bridges that are installed on the same network as you HE hub where you run the Integration app
 - It is not possible to discover bridges intalled on different networks
 - If you have different neworks for you household and/or home automation equipments, you will need to reconfigure your setup accordingly
 - This is not an app limitation: it is Nuki´s behavior, since it is necessary contact first Nuki´s servers to discover the Nuki bridges installed on your network
 - Since it is necessary to contact Nuki´s servers to do the bridges discovery, an Internet connection must be active to properly run the Integration app - no surprise here, righty?
-- The app automatically installs all paired devices for a given bridge
+- The app automatically installs all bridge´s paired devices for a given bridge
 - When requested to install an already installed bridge (reinstall), that bridge and all its paired devices will be automatically deleted
-- **IMPORTANT:** When a bridge is deleted (and by consequence its paired devices), all Rule Machines (RM) rules that reference for the deleted devices are affected, resting useless; this happens because HE uses an internal device id instead of their names
+- **IMPORTANT:** When a bridge is deleted (and by consequence its paired devices), all Rule Machines (RM) rules that reference for the deleted devices are affected, resting useless; this happens because HE uses an internal device id instead of their names and this is a good practice to do so
 
 ## Licence
 
