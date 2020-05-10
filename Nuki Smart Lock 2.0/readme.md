@@ -52,9 +52,7 @@ I *strongly* suggest you to use the production versions and install the debuggin
 
 However, it is your choice wich one you want to use.
 
-## Installation
-
-### Supported devices
+## Supported devices
 
 So far, the following Nuki products are supported by the app/drivers:
 
@@ -65,6 +63,8 @@ So far, the following Nuki products are supported by the app/drivers:
 
 * Nuki Keypad
 * Nuki Openner
+
+## Installation
 
 ### Install app & drivers
 
@@ -97,7 +97,7 @@ First of all you'll need to install the following app and drivers in your HE hub
   
    * [Hubitat: How to install custom drivers](https://docs.hubitat.com/index.php?title=How_to_Install_Custom_Drivers)   
 
-### Operation
+### Integration app operation
 
 Once you have installed the app and pertinent drivers, the installation of your Nuki brige(s) and paired devices to it is straightforward: just open the app and follow the steps and, very important, _read carefully_ all the information contained on each page presented to you _before_ requesting any action to the app - meaning, do not be a "fast clicker"! However, the app is - at least I hope it is ... - carefully crafted to alert you of any potential damaging operation **before** you act. So, _please read the all the information on each and every page before acting_ !!!
 
