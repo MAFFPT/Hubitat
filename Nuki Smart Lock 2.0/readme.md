@@ -10,7 +10,7 @@
   </tr>
 </table>
 
-# Nuki Smart Lock 2.0<small><sup>&copy;</sup></small> Integration for Hubitat Elevation<sup><&copy;</sup>
+# Nuki Smart Lock 2.0<small><sup>&copy;</sup></small> Integration for Hubitat Elevation<small><sup>&copy;</sup></small>
 
 
 ## Introduction
