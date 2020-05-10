@@ -131,7 +131,7 @@ So, here are some enhancements that I plan to implement in app & drivers future 
 
 - Integrate app/drivers to Alexa
 
-**NOTE**: No plan to support Google devices altogether: after a lot of frustating contacts with Google regarding various devices configuration, I simply gave up.
+**NOTE**: No plan to support Google devices altogether: after a lot of frustating contacts with Google regarding support for various device configurations, I simply gave up.
 
 ### Version 1.2
 
