@@ -127,12 +127,25 @@ My signus is Aquarius - the guys that like horoscope use to say that people from
 
 So, here are some enhancements that I plan to implement in app & drivers future versions.
 
+### Version 1.1
+
+- Integrate app/drivers to Alexa
+
+**NOTE**: No plan to support Google devices altogether: after a lot of frustating contacts with Google regarding various devices configuration, I simply gave up.
+
+### Version 1.2
+
+- Nuki Key Fob and Nuki Keypad support
+- If it is possible to detect wich Key Fob and/or Keypad has been used to unlock the dorr, generate an HE event accondingly
+
 ### Version 2.0
+
+- Implement the option of only install new devices connected to a Nuki bridge, not touching the bridge itself and others paired devices
 
 ### Version 3.0
 
-Check if it is possible to detect 
+- Detection of all Nuki bridges without contacting Nuki's web servers (Internet free version)
+
 ## Licence
 
 Check this [license]() for License information.
-
