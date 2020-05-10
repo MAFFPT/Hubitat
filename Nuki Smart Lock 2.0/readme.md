@@ -15,7 +15,7 @@
 
 ## Introduction
 
-These app and drivers were developed to overcome the lack of native support for the Nuki Smart Lock 2.0<sup>&copy;</sup> lock (https://nuki.io/en/) in the Hubitat Elevation<sup>&copy;</sup> (HE) home automation (domotics) system.
+These app and drivers were developed to overcome the lack of native support for the Nuki Smart Lock 2.0<sup>&copy;</sup> lock (https://nuki.io/en/) in the Hubitat Elevation<sup>&copy;</sup> (HE) (https://hubitat.com) home automation (domotics) system.
 
 It is used an “Integration” app that shields the user from the cumbersome task of configuring all the devices – all the user has to do is to download the app and all drivers to his/hers Hubitat Elevation hub, run the app and *voilá* – the magic happens!
 
