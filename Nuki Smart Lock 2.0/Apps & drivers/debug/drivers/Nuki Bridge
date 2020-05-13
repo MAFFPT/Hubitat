@@ -6,7 +6,7 @@
     
     You may obtain a copy of the License at
 
-        https://creativecommons.org/licenses/by/4.0/
+        https://creativecommons.org/licenses/by-nc-sa/4.0/
 
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
@@ -139,7 +139,7 @@ def ping ()
 {
     logDebug "ping: IN"
     
-    def bridgeInfo = getBridgeInfo (device.data)
+    def bridgeInfo = getBridgeInfo (device.data, true)
 
     def bridgeStatus = "${bridgeInfo?.wlanConnected ? "Ping successuful - Bridge reachable." : "Ping failed - bridge unreachable"}"
     
@@ -186,8 +186,6 @@ def updated ()
 {
     logDebug "updated: IN"
 
-    //runEvery1Minute(refresh)
-
     initialize ()
 
     logDebug "updated: OUT"
@@ -202,12 +200,8 @@ def uninstalled ()
 {
     logDebug "uninstalled: IN"
 
-    //def bridgeData = device.getData ()
-    def bridgeData = device.data
-    def bridgeLabel = device.label
     String deviceDNI
     def childDevice
-    def deviceLabel
     
     bridgeData.PairedDevices?.each
     {
@@ -219,13 +213,10 @@ def uninstalled ()
         
         if (childDevice)
         {
-            deviceLabel = childDevice.label
             deleteChildDevice (deviceDNI)
-            // TO BE MOVED TO DEVICE DRIVER
-            logInfo "${bridgeLabel}: Nuki device '${deviceLabel}' successfully uninstalled"
         }
     }
-    logInfo "${bridgeLabel}: Nuki bridge '${bridgeLabel}' successfully uninstalled"
+    logInfo "${device.label}: Nuki bridge '${device.label}' successfully uninstalled"
     
     logDebug "uninstalled: OUT"
 }
@@ -352,11 +343,12 @@ def buildEncodedCallbackURL ()
 
 
 //
-// Retrieve information about a bridge from itself
+// Retrieve information about a bridge
 //
 def getBridgeInfo (deviceData)
 {
     logDebug "getBridgeInfo: IN"
+    logDebug "getBridgeInfo: deviceData = ${deviceData}"
     
     def httpRequest = "${parent.buildBridgeURL (deviceData)}/info?token=${deviceData.Token}"
     logDebug "getBridgeInfo: httpRequest = ${httpRequest}"
@@ -374,7 +366,7 @@ def getBridgeInfo (deviceData)
     }
     catch (e)
     {
-        throw new Exception ("${device.data.Label}: method 'getBridgeInfo' - Fatal error = ${error}")
+        throw new Exception ("${deviceData.Label}: method 'getBridgeInfo' - Fatal error = ${error}")
     }     
 
     logDebug "getBridgeInfo: OUT"
@@ -476,7 +468,6 @@ def getNukiDeviceStatus (targetDeviceData)
     
     def deviceStatus
     
-    //def httpRequest = "${buildBridgeURL (device.data)}/list?nukiId=${targetDeviceData.DeviceId}&deviceType=${targetDeviceData.DeviceType}&token=${device.data.Token}"
     def httpRequest = "${buildBridgeURL (device.data)}/list?token=${device.data.Token}"
     logDebug "getNukiDeviceStatus: httpRequest = ${httpRequest}"
 
@@ -547,9 +538,6 @@ def logAndPropagateEvent (Map deviceData, Map jsonMap)
     
     // Now, let's pass this event to the Nuki Device to handle it
     childDevice.parse (jsonMap)
-    
-    // Finally, since we don't know for sure if this event is relevant to the device driver, let's log this event at the bridge level
-    //logInfo "${device.data.Label}: Status changed on device '${childDevice.label}' to ${jsonMap.stateName.toUpperCase ()}. Battery status is ${jsonMap.batteryCritical ? "CRITICAL" : "NORMAL"}."
     
     logDebug "logEvent: OUT"
 }
