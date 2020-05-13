@@ -113,17 +113,17 @@ After the Integration app discovers all Nuki bridges installed on your network, 
  
 - The Integration app is able to discover/detect **only** the Nuki bridges that are installed on the same network as you HE hub where you run the Integration app
 - It is not possible to discover bridges intalled on different networks
-- If you have different neworks for you household and/or home automation equipments, you will need to reconfigure your setup accordingly
+- If you have different neworks for your household and/or home automation equipments, you will need to reconfigure your setup accordingly
 - This is not an app limitation: it is Nuki´s behavior, since it is necessary contact first Nuki´s servers to discover the Nuki bridges installed on your network
 - Since it is necessary to contact Nuki´s servers to do the bridges discovery, an Internet connection must be active to properly run the Integration app - no surprise here, right?
 - The app automatically installs all bridge´s paired devices for a given bridge
-- When requested to install an already installed bridge (reinstall), that bridge and all its paired devices will be automatically deleted
-- **IMPORTANT:** When a bridge is deleted (and by consequence its paired devices), all Rule Machines (RM) rules that reference for the deleted devices are affected, resting useless; this happens because HE uses an internal device id instead of their names and this is a good practice to do so
+- When requested to install an already installed bridge (reinstall), that bridge and all it's paired devices will be automatically deleted
+- **IMPORTANT:** When a bridge is deleted (and by consequence it's paired devices), all Rule Machines (RM) rules that have reference for the deleted devices are affected, resting useless; this happens because HE uses an internal device id instead of their names and this is a good practice to do so
 
 
 ## Future developments
 
-My signus is Aquarius - the guys that like horoscope use to say that people from Aquarius is always thinking about the future. I do not know it is true, but in my case it is ...
+My signus is Aquarius - the guys that like horoscope use to say that people from Aquarius is always thinking about the future. I do not know it is true for other Aquarians, but in my case it is ...
 
 So, here are some enhancements that I plan to implement in app & drivers future versions.
 
@@ -131,12 +131,12 @@ So, here are some enhancements that I plan to implement in app & drivers future 
 
 - Integrate app/drivers to Alexa
 
-**NOTE**: No plan to support Google devices altogether: after a lot of frustating contacts with Google regarding support for various device configurations, I simply gave up.
+**NOTE**: No plan to support Google devices altogether: after a lot of frustating contacts with Google regarding support for various device configurations issues I simply gave up.
 
 ### Version 1.2
 
 - Nuki Key Fob and Nuki Keypad support
-- If it is possible to detect wich Key Fob and/or Keypad has been used to unlock the dorr, generate an HE event accondingly
+- If it is possible to detect wich Key Fob and/or Keypad has been used to unlock the door, generate an HE event accondingly
 
 ### Version 2.0
 
