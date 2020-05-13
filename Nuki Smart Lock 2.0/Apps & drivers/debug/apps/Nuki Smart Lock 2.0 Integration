@@ -6,7 +6,7 @@
     
     You may obtain a copy of the License at
 
-        https://creativecommons.org/licenses/by/4.0/
+        https://creativecommons.org/licenses/by-nc-sa/4.0/
 
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
@@ -689,10 +689,10 @@ def buildNukiDeviceLabel (nukiDevice)
     switch (nukiDevice.deviceType)
     {
         case "0":
-            deviceLabel = "Nuki Smart Lock ${nukiDevice.name}"
+            deviceLabel = "${nukiDevice.name}"
             break
         case "2":
-            deviceLabel = "Nuki Opener ${nukiDevice.name}"
+            deviceLabel = "${nukiDevice.name}"
             break
         default:
             throw new Exception ("Nuki Bride driver: Method 'buildNukiDeviceLabel' - Fatal error = unsupported device type (${nukiDevice.deviceType})")
