@@ -26,7 +26,7 @@ To keep this documentation short and its maintenance at a minimum level, the "on
 
 ## Organization
 
-The app/drivers are stored in two subfolders of the **Apps & drivers** folder: '**production**' and '**debug**', with slightly but important differences between them.
+The app/drivers are stored here in two subfolders of the **Apps & drivers** folder: '**production**' and '**debug**', with slightly but important differences between them.
 
 Let's talk about it ...
 
