@@ -6,7 +6,7 @@
     
     You may obtain a copy of the License at
 
-        https://creativecommons.org/licenses/by/4.0/
+        https://creativecommons.org/licenses/by-nc-sa/4.0/
 
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,11 +18,90 @@
 
 import groovy.transform.Field
 
-@Field static Map _lockActions = [1: "Unlock", 2: "Lock", 3: "Unlatch", 4: "lockNGo", 5: "lockNGoUnlatch"]
-@Field static Map _lockStates = [0: "Uncalibrated", 1: "Locked", 2: "Unlocking", 3: "Unlocked", 4: "Locking", 5: "Unlatched", 6: "Unlocked lockNGo", 7: "Unlatching", 253: "Booting", 254: "Motor Blocked", 255: "Undefined"]
-@Field static Map lockActions2 = [0: "NO_ACTION", 1: "UNLOCK", 2: "LOCK", 3: "UNLATCH", 4: "LOCK_N_GO", 5: "LOCK_N_GO_WITH_UNLATCH"]
-@Field static Map lockDoorStatus = [0: "UNAVAILABLE", 1: "DEACTIVATED", 2: "DOOR_CLOSED", 3: "DOOR_OPENED", 4: "DOOR_STATE_UNKNOWN", 5: "CALIBRATING"]
-@Field static Map lockButtonActions = [0: "NO_ACTION", 1: "INTELLIGENT", 2: "UNLOCK", 3: "LOCK", 4: "UNLATCH", 5: "LOCK_N_GO", 6: "SHOW_STATUS"]
+@Field static Map _lockActions = [1: [actionCode:       1,
+                                      actionName:       "unlock",
+                                      eventName:        "unlock", 
+                                      actionInProgress: "unlocking (waiting for Nuki bridge to finish operation)",
+                                      actionSuccess:    "unlock command successfully sent (waiting for Nuki bridge confirmation)",
+                                      actionFailure:    "unlocking failed"], 
+                                  
+                                  2: [actionCode:       2,
+                                      actionName:       "lock",
+                                      eventName:        "lock",
+                                      actionInProgress: "locking (waiting for Nuki bridge to finish operation)",
+                                      actionSuccess:    "lock command successfully sent (waiting for Nuki bridge confirmation)",
+                                      actionFailure:    "locking failed"],
+                                  
+                                  3: [actionCode:       3,
+                                      actionName:       "unlatch",
+                                      eventName:        "unlatch",
+                                      actionInProgress: "unlatching (waiting for Nuki bridge to finish operation)",
+                                      actionSuccess:    "unlatch command successfully sent (waiting for Nuki bridge confirmation)",
+                                      actionFailure:    "unlatching failed"],
+                                  
+                                  4: [actionCode:       4,
+                                      actionName:       "lock 'n' go",
+                                      eventName:        "lock",
+                                      actionInProgress: "pausing 20 seconds before locking (lock 'n' go)",
+                                      actionSuccess:    "'lock 'n' go' command successfully sent (waiting for Nuki bridge confirmation)",
+                                      actionFailure:    "lock 'n' go failed"],
+                                 
+                                  5: [actionCode:       5,
+                                      actionName:       "lock 'n' go with unlatch",
+                                      eventName:        "lock",
+                                      actionInProgress: "locking & unlatching (waiting for Nuki bridge to finish operation)",
+                                      actionSuccess:    "locking & unlatching command successfully sent (waiting for Nuki bridge confirmation)",
+                                      actionFailure:    "locking & unlatching failed"] \
+                                  ]
+@Field static List _lockStates = [[stateId: 0,
+                                   stateName: "uncalibrated",
+                                   progressText: "lock needs calibration"],
+                                  
+                                  [stateId: 1,
+                                   stateName: "locked",
+                                   progressText: "locking successful"],
+                                 
+                                  [stateId: 2,
+                                   stateName: "unlocking",
+                                   progressText: "unlocking in progress"],
+                                 
+                                  [stateId: 3,
+                                   stateName: "unlocked", 
+                                   progressText: "unlock successful"],
+                                 
+                                  [stateId: 4,
+                                   stateName: "locking", 
+                                   progressText: "locking in progress"],
+                                 
+                                  [stateId: 5,
+                                   stateName: "unlatched",
+                                   progressText: "unlatch successful"],
+                                 
+                                  [stateId: 6,
+                                   stateName: "unlocked lockngo",
+                                   progressText: "unlock 'n' go successful"],
+                                 
+                                  [stateId: 7,
+                                   stateName: "unlatching",
+                                   progressText: "unlatchin in progress"],
+                                 
+                                  [stateId: 253,
+                                   stateName: "booting",
+                                   progressText: "Nuki bridge booting - please wait"],
+                                 
+                                  [stateId: 254,
+                                   stateName: "motor blocked",
+                                   progressText: "motor blocked - please check your lock"],
+                                 
+                                  [stateId: 255,
+                                   stateName: "undefined",
+                                   progressText: "I don't know what to do ..."]
+                                 ]
+//@Field static Map lockActions2 = [0: "NO_ACTION", 1: "UNLOCK", 2: "LOCK", 3: "UNLATCH", 4: "LOCK_N_GO", 5: "LOCK_N_GO_WITH_UNLATCH"]
+//@Field static Map lockDoorStatus = [0: "UNAVAILABLE", 1: "DEACTIVATED", 2: "DOOR_CLOSED", 3: "DOOR_OPENED", 4: "DOOR_STATE_UNKNOWN", 5: "CALIBRATING"]
+//@Field static Map lockButtonActions = [0: "NO_ACTION", 1: "INTELLIGENT", 2: "UNLOCK", 3: "LOCK", 4: "UNLATCH", 5: "LOCK_N_GO", 6: "SHOW_STATUS"]
+
+@Field static Map _deviceModes = [2: "Door mode"]
 
 @Field static _nukiLockTypeName = "Nuki Smart Lock 2.0"    // Nuki Smart Lock 2.0's device driver name
 
@@ -33,21 +112,12 @@ metadata
     definition (name: "Nuki Smart Lock 2.0", namespace: "maffpt", author: "Marco Felicio") 
     {
         capability "Battery"
-        
-//        capability "DoorControl"
-//        command "close"
-//        command "open"
-        
-        capability "Health Check"
-        command "ping"
 
         capability "Lock"
         command "lock"
-        command "unlock"
         command "lockNGo"
-
-        capability "Refresh"
-        command "refresh"
+        command "unlock"
+        command "unlatch"
         
         command "getLog"
         command "status"
@@ -65,25 +135,6 @@ metadata
     
     tiles 
     {
-/*
-        multiAttributeTile (name:"lock", type: "generic", width: 6, height: 4)
-        {
-            tileAttribute ("lock", key: "PRIMARY_CONTROL")
-            {
-                attributeState "locked", label:'Locked', action:"lock.unlock", icon:"st.locks.lock.locked"
-                attributeState "unlocked", label:'Unlocked', action:"lock.lock", icon:"st.locks.lock.unlocked"
-                attributeState "locking", label:'Locking', icon:"st.locks.lock.locked"
-                attributeState "unlocking", label:'Unlocking', icon:"st.locks.lock.unlocked"
-                attributeState "waiting", label: "Waiting", icon:"st.locks.lock.locked"
-                attributeState "lockngo",label: "LockNgo - UNLOCKED", icon:"st.locks.lock.locked"
-
-            }
-            tileAttribute ("device.battery", key: "SECONDARY_CONTROL") 
-            {
-                attributeState "battery", label: 'battery ${currentValue}%', unit: "%"
-            }
-         }
-*/
         standardTile ("getLog", "getLog", inactiveLabel: false, decoration: "flat", width: 3, height: 2) 
         {
         	state "default", action:"getLog", icon: "st.locks.lock.locked"
@@ -93,11 +144,6 @@ metadata
         {
             state "default", label:'lock&Go', action:"lockNGo", icon: "st.locks.lock.locked"
         }
-        
-        standardTile ("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 3, height: 2) 
-        {
-        	state "default", action:"refresh", icon:"st.secondary.refresh"
-    	}
     }
 }
 
@@ -112,7 +158,7 @@ def initialize ()
 
 def installed ()
 {
-    // if the parend device was running with debugLogging, it will automatically passed to this device
+    // if the parend device was running with debugLogging, it will automatically be passed to this device
     if (device.data.DebugLoggingRequired)
     {
         debugLogging = true
@@ -132,8 +178,6 @@ def parse (Map jsonMap)
     logDebug "parse: IN"
     logDebug "parse: received jsonMap = ${jsonMap}"
     logDebug "parse: device.capabilities = ${device.capabilities}"
-
-    //[deviceType:0, mode:2, stateName:unlocked, nukiId:474312701, state:3, batteryCritical:false]
     
     // Let's first be sure that the NukiIds of this device and the parsed one are the same
     if (jsonMap.nukiId.toString () != device.data.data.DeviceId.toString ())
@@ -143,9 +187,13 @@ def parse (Map jsonMap)
     
     logInfo "${device.data.label}: Status changed on this device to ${jsonMap.stateName.toUpperCase ()}. Battery status is ${jsonMap.batteryCritical ? "CRITICAL" : "NORMAL"}."
 
-    sendEvent (name: "lock", value: jsonMap.stateName)
-    sendStatusEvent (jsonMap.stateName)
-    sendBatteryEvent (batteryCritical)
+    sendLockEvent (jsonMap.stateName)
+    sendBatteryEvent (jsonMap.batteryCritical)
+
+    def lockState = _lockStates.find { it.stateName.toUpperCase () == jsonMap.stateName.toUpperCase ()}
+    logDebug "parse: lockState = ${lockState}"
+    
+    sendProgressEvent (lockState?.progressText)
 
     logDebug "parse: OUT"
 }
@@ -162,71 +210,46 @@ def parse (String description)
 }
 
 
-def refresh () 
+def uninstalled ()
 {
-  	logDebug "refresh: beginning"
-/*    
-	logDebug "refresh: Refreshing ..."
-    def params = [uri: "https://api.nuki.io/smartlock/${nukiId}",
-                  requestContentType: "application/json",
-                  headers: ['Authorization': "Bearer ${api_token}"]]
-    try
-    {
-	    httpGet(params)
-		{
-            resp ->           
-        	    logDebug "refresh: resp data: ${resp.data}"
-                logDebug "refresh: Battery is Critical: ${resp.data.state.batteryCritical}"
-                sendEvent (name: "battery", value: resp.data.state.batteryCritical ? 0 : 100)
-                switch (resp.data.state.state)
-                {
-                    case 1:
-                        sendEvent(name: "lock", value: "locked")
-                        break
-                    case 2:
-                        sendEvent(name: "lock", value: "Unlocking")
-                        runIn (5, refresh)
-                        break
-                    case 3:
-                        sendEvent(name: "lock", value: "unlocked")
-                        break
-                    case 4:
-                        sendEvent(name: "lock", value: "locking")
-                        runIn(5, refresh)
-                        break
-                    case 6:
-                        sendEvent(name: "lock", value: "lockngo")
-                        runIn(5, refresh)
-                        break
-                    default:
-                        sendEvent(name: "lock", value: "waiting")
-                        runIn(5, refresh)
-                        break
-                }
-        }
-    }
-    catch (e)
-    {
-        logDebug "Error ${e}"
-    }     
-*/
-    logDebug "refresh: finishing"
+    logDebug "uninstalled: IN"
+
+    logInfo "${device.label}: Nuki device '${device.label}' successfully uninstalled"
+       
+    logDebug "uninstalled: OUT"
 }
 
 
 def updated () 
 {
-    logDebug "updated: beginning"
+    logDebug "updated: IN"
 
-//    runEvery1Minute(refresh)
-
-    logDebug "updated: finishing"
+    logDebug "updated: OUT"
 }
 
 
 // ======================================
 // Device specific methods
 // ======================================
+
+
+def getLog ()
+{
+    logDebug "getLog: IN"
+    
+    def nukiLog = sendRequestToNuki (request: "log").data
+    logDebug "getLog: processing response"    
+    
+    nukiLog.each
+    {
+        logInfo (it.value)
+    }
+    
+    logInfo "${_nukiLockTypeName}: Nuki bridge log information copied to this Hubitat Elevation hub log"
+    
+    logDebug "getLog: OUT"
+}
+
 
 //
 // Lock
@@ -237,13 +260,8 @@ def lock (Map cmds)
     logDebug "lock: cmds = ${cmds}"
     //logDebug "lock: device.capabilities = ${device.capabilities}"
 
-    sendCommandToNuki ("lock",             // actionDescription
-                       true,               // waitCompletition
-                       "lock",             // eventName
-                       "locking",          // eventInProcess
-                       "locked",           // eventSuccessValue
-                       "locking failed",   // eventFailureValue
-                       5)                  // runInTime
+    sendCommandToNuki (_lockActions [2],       // action = "lock"
+                       true)                   // waitCompletition
 
     logDebug "lock: OUT"
 }
@@ -251,48 +269,61 @@ def lock (Map cmds)
 
 def lockNGo ()
 {
-    logDebug "lockNGo: beginning"
+    logDebug "lockNGo: IN"
 
-    sendCommandToNuki ("lockNgo",          // actionDescription
-                       true,               // waitCompletition
-                       "lock",             // eventName
-                       "locking",          // eventInProcess
-                       "locked",           // eventSuccessValue
-                       "locking failed",   // eventFailureValue
-                       30)                  // runInTime
+    sendCommandToNuki (_lockActions [4],       // action = "lock 'n' go"
+                       false)                  // waitCompletition
 
-    logDebug "lockNGo: finishing"
+    logDebug "lockNGo: OUT"
 }
 
+
+//
+// Recover device's current status
+//
+def status ()
+{
+    logDebug "status: IN"
+    logDebug "status: device.data = ${parent.device.data}"
+    
+    def deviceInfo = getDeviceInfo (device.data.data, parent.data)
+    logDebug "status: deviceInfo = ${deviceInfo}"
+    
+    def deviceMode = _deviceModes.find { it.key == deviceInfo?.mode }
+    logDebug "status: deviceMode = ${deviceMode.value}"
+
+    def deviceStatus = "Device mode: ${deviceMode.value} //\n" +
+                       "State: ${deviceInfo?.stateName} //\n" +
+                       "Battery: ${deviceInfo?.batteryCritical ? "CRITICAL" : "NORMAL"} //\n\n"+
+                       "<b>NOTE</b>: avoid requesting this status frequently since it may drain your lock's batteries too fast."
+    
+    sendLockEvent (deviceInfo?.stateName)
+    sendProgressEvent (deviceStatus, deviceInfo)
+    
+    logDebug "status: OUT"
+}
+
+
+def unlatch ()
+{
+    logDebug "unlatch: IN"
+    
+    sendCommandToNuki (_lockActions [3],       // action = "unlatch"
+                       true)                   // waitCompletition
+    
+    logDebug "unlatch: OUT"
+}
 
 def unlock (Map cmds) 
 {
     logDebug "unlock: IN"
     logDebug "unlock: cmds = ${cmds}"
+    
+    sendCommandToNuki (_lockActions [1],       // action = "unlock"
+                       true)                   // waitCompletition
 
-    sendCommandToNuki ("unlock",           // actionDescription
-                       true,               // waitCompletition
-                       "unlock",           // eventName
-                       "unlocking",        // eventInProcess
-                       "unlocked",         // eventSuccessValue
-                       "unlocking failed", // eventFailureValue
-                       5)                  // runInTime
+
     logDebug "unlock: OUT"
-}
-
-
-def getLog ()
-{
-    logDebug "getLog: beginning"
-    
-    def nukiLog = sendRequestToNuki (request: "log").data
-    logDebug "getLog: processing response"    
-    nukiLog.each
-    {
-        logInfo (it.value)
-    }
-    
-    logDebug "getLog: finishing"
 }
 
 
@@ -300,104 +331,162 @@ def getLog ()
 //    Support stuff
 //=========================================
 
-def captureState (data)
+
+//
+// Retrieve information about a bridge
+//
+def getDeviceInfo (deviceData, parentData)
 {
-    logDebug "captureState: beginning"
-    data.each 
+    logDebug "getDeviceInfo: IN"
+    logDebug "getDeviceInfo: deviceData = ${deviceData}"
+    logDebug "getDeviceInfo: parentData = ${parentData}"
+
+    def httpRequest = "${parent.buildBridgeURL (parentData)}/lockState?nukiId=${deviceData.DeviceId}&deviceType=${deviceData.DeviceType}&token=${parentData.Token}"
+    logDebug "getBridgeInfo: httpRequest = ${httpRequest}"
+
+    def deviceInfo
+
+    try
     {
-        logDebug ("captureState: adding ${it.value} to state [${it.key}]")
-        state[it.key] = it.value
+	    httpGet (httpRequest)
+		{
+            resp ->           
+                logDebug "refresh: resp data: ${resp.data}"
+                deviceInfo = resp.data
+        }
     }
-    logDebug "captureState: finishing"
+    catch (e)
+    {
+        throw new Exception ("${parent.device.data.Label}: method 'getBridgeInfo' - Fatal error = ${error}")
+    }     
+
+    logDebug "getBridgeInfo: OUT"
+    
+    return deviceInfo
 }
 
 
 //
 // Format and send a command to the Nuki device, handling the result
 //
-def sendCommandToNuki (String actionDescription, 
-                       boolean waitCompletition, 
-                       String eventName, 
-                       String eventInProcess,
-                       String eventSuccessValue, 
-                       String eventFailureValue,
-                       int runInTime)
+def sendCommandToNuki (Map action, boolean waitCompletition) 
 {
     logDebug "sendCommandToNuki: IN"
-    logDebug "sendCommandToNuki: Processing ${actionDescription.toUpperCase()} command"
+    logDebug "sendCommandToNuki: Processing action specs = ${action}"
 
     def returnData
         
     def deviceStatus
-    def actionDescriptionUCase = actionDescription.toUpperCase ()
-    def actionDescriptionLCase = actionDescription.toLowerCase ()
+    def actionNameUCase = action.actionName.toUpperCase ()
+    def actionNameLCase = action.actionName.toLowerCase ()
     def endLoop = false
     def sendCommand = false
     def errorMessage = ""
     
-    sendStatusEvent (eventInProcess)
-    
-    //logDebug "sendCommandToNuki: device.data.data = ${device.data.data}"
+    sendProgressEvent (action.actionInProgress)
+
     for (i in 1..3) 
     {
         deviceStatus = parent.getNukiDeviceStatus (device.data.data)
         logDebug "sendCommandToNuki: deviceStatus = ${deviceStatus}"
-        //def teste = "MOTOR BLOCKED"
+        
+        logDebug "sendCommandToNuki: stateName = ${deviceStatus.lastKnownState.stateName.toUpperCase ()}"
         
         switch (deviceStatus.lastKnownState.stateName.toUpperCase ())
-        //switch (teste)
         {
             case "UNCALIBRATED":
+                logDebug "sendCommandToNuki: falling through case 'UNCALIBRATED'"
                 errorMessage = "Nuki device not calibrated - use Nuki smartphone app to calibrate it"
                 sendCommand = false
                 endLoop = true
                 break
             case "LOCKED":
-                switch (actionDescriptionUCase)
+                logDebug "sendCommandToNuki: falling through case 'LOCKED'"
+                switch (actionNameUCase)
                 {
                     case "LOCK":
                     case "LOCK 'N' GO":
                     case "LOCK 'N' GO WITH UNLATCH":
-                        errorMessage = "Nuki device already locked - ${actionDescriptionUCase} command ignored"
+                        logDebug "sendCommandToNuki: falling through case 'LOCKED', subcase 'LOCK'/'LOCK 'N' GO'/'LOCK 'N' GO WITH UNLATCH'"
+                        errorMessage = "Nuki device already locked - ${actionNameUCase} command ignored"
                         sendCommand = false
                         endLoop = true
                         break
                     case "UNLATCH":
                     case "UNLOCK":
+                        logDebug "sendCommandToNuki: falling through case 'LOCKED', subcase 'UNLATCH'/'UNLOCK'"
                         sendCommand = true
                         endLoop = true
                         break
                     default:
+                        logDebug "sendCommandToNuki: falling through case 'LOCKED', subcase 'default'"
                         break
                 }
                 break
             case "LOCKING":
             case "UNLATCHING":
             case "UNLOCKING":
+                logDebug "sendCommandToNuki: falling through case 'LOCKING'/'UNLATCHING'/'UNLOCKING'"
                 // Let's give some time to the lock to complete the current operation
                 break
             case "UNLATCHED":
-            case "UNLOCKED":
-            case "UNLOCKED (LOCK 'N' GO)":
-                switch (actionDescriptionUCase)
+                logDebug "sendCommandToNuki: falling through case 'UNLATCHED'"
+                switch (actionNameUCase)
                 {
                     case "LOCK":
                     case "LOCK 'N' GO":
                     case "LOCK 'N' GO WITH UNLATCH":
+                        logDebug "sendCommandToNuki: falling through case 'UNLATCHED', subcase 'LOCK'/'LOCK 'N' GO'/'LOCK 'N' GO WITH UNLATCH'"
                         sendCommand = true
                         endLoop = true
                         break
                     case "UNLATCH":
+                        logDebug "sendCommandToNuki: falling through case 'UNLATCHED', subcase 'UNLATCH'"
+                        errorMessage = "Nuki device already unlatched - ${actionNameUCase} command ignored"
+                        sendCommand = false
+                        endLoop = true
+                        break
                     case "UNLOCK":
-                        errorMessage = "Nuki device already unlocked - ${actionDescriptionUCase} command ignored"
+                        logDebug "sendCommandToNuki: falling through case 'UNLATCHED', subcase 'UNLOCK'"
+                        errorMessage = "Nuki device already unlocked & unlatched - ${actionNameUCase} command ignored"
                         sendCommand = false
                         endLoop = true
                         break
                     default:
+                        logDebug "sendCommandToNuki: falling through case 'UNLATCHED', subcase 'default'"
+                        break
+                }
+                break
+            case "UNLOCKED":
+            case "UNLOCKED (LOCK 'N' GO)":
+                logDebug "sendCommandToNuki: falling through case 'UNLATCHED'/'UNLOCKED'/'UNLOCKED (LOCK 'N' GO)'"
+                switch (actionNameUCase)
+                {
+                    case "LOCK":
+                    case "LOCK 'N' GO":
+                    case "LOCK 'N' GO WITH UNLATCH":
+                        logDebug "sendCommandToNuki: falling through case 'UNLOCKED'/'UNLOCKED (LOCK 'N' GO)', subcase 'LOCK'/'LOCK 'N' GO'/'LOCK 'N' GO WITH UNLATCH'"
+                        sendCommand = true
+                        endLoop = true
+                        break
+                    case "UNLATCH":
+                        logDebug "sendCommandToNuki: falling through case 'UNLOCKED'/'UNLOCKED (LOCK 'N' GO)', subcase 'UNLATCH'"
+                        sendCommand = true
+                        endLoop = true
+                        break
+                    case "UNLOCK":
+                        logDebug "sendCommandToNuki: falling through case 'UNLOCKED'/'UNLOCKED (LOCK 'N' GO)', subcase 'UNLOCK'"
+                        errorMessage = "Nuki device already unlocked - ${actionNameUCase} command ignored"
+                        sendCommand = false
+                        endLoop = true
+                        break
+                    default:
+                        logDebug "sendCommandToNuki: falling through case 'UNLOCKED'/'UNLOCKED (LOCK 'N' GO)', subcase 'default'"
                         break
                 }
                 break
             case "MOTOR BLOCKED":
+                logDebug "sendCommandToNuki: falling through case 'MOTOR BLOCKED'"
                 errorMessage = "Nuki lock motor blocked - calibrate the lock using the Nuki smartphone app; please check system log for more information on how to proceed"
                 logWarn "${device.data.label}: 9. When the calibration is finhised, re-execute the previously failed operation"
                 logWarn "${device.data.label}: 8. Follow the instructions provided by the Nuki app"
@@ -414,6 +503,7 @@ def sendCommandToNuki (String actionDescription,
                 endLoop = true
                 break
             case "UNDEFINED":
+                logDebug "sendCommandToNuki: falling through case 'UNDEFINED'"
                 errorMessage = "Nuki device has an UNDEFINED status - please try again latter"
                 sendCommand = false
                 endLoop = true
@@ -431,19 +521,21 @@ def sendCommandToNuki (String actionDescription,
     {
         try
         {
-            //def bridgeURL = parent.buildBridgeURL (parent.data) + "/lockAction"
-            //def commandToSend = buildNukiLockActionCommand (actionDescription, waitCompletition)
-            def httpRequest = "${parent.buildBridgeURL (parent.data)}/lockAction?${buildNukiLockActionCommand (actionDescription, waitCompletition)}"
+            def httpRequest = "${parent.buildBridgeURL (parent.data)}/lockAction?${buildNukiLockActionCommand (action.actionCode, waitCompletition)}"
             logDebug "sendCommandToNuki: httpRequest = ${httpRequest})"
     	    httpGet (httpRequest)
             {
                 resp -> 
                     returnData = resp?.data
             }
-            if (returnData?.success == true)
+            if (returnData?.success)
             {
-                logDebug "sendCommandToNuki: event name = lock - value = ${eventSuccessValue}"
-                sendEvent (name: "lock", value: eventSuccessValue)
+                //logDebug "sendCommandToNuki: event name = lock - value = ${eventSuccessValue}"
+                //sendLockEvent (eventSuccessValue)
+            }
+            else
+            {
+                logWarn "${_nukiLockTypeName}: sending of command '${action.actionName}' to Nuki lock unsuccessful"
             }
         }
         catch (err)
@@ -451,16 +543,16 @@ def sendCommandToNuki (String actionDescription,
             logDebug ("sendCommandToNuki: Error on httpPost = ${err}")
         }
     }
-    else if (errorMessage != "")
+    
+    if (errorMessage == "")
     {
-        sendEvent (name: "error", value: "failed ${actionDescription} operation - see device events for more information by clicking on the 'Events' button at the top of this page", descriptionText: "${errorMessage}", displayed: true)
-        sendStatusEvent (eventFailureValue, errorMessage)
-        logWarn "${_nukiLockTypeName}: ${errorMessage}"
-        returnData = false
+        sendProgressEvent (action.actionSuccess)
     }
     else
     {
-        sendStatusEvent (eventSuccessValue)
+        sendProgressEvent ("${action.actionFailure} - see device events for more information by clicking on the 'Events' button at the top of this page", errorMessage)
+        logWarn "${_nukiLockTypeName}: ${errorMessage}"
+        returnData = false
     }
     logDebug "sendCommandToNuki: OUT"
     
@@ -468,26 +560,19 @@ def sendCommandToNuki (String actionDescription,
 }
 
 
-def buildNukiLockActionCommand (actionDescription, waitCompletition)
+def buildNukiLockActionCommand (actionCode, waitCompletition)
 {
     logDebug "buildNukiLockActionCommand: IN"
-    logDebug "buildNukiLockActionCommand: actionDescription = ${actionDescription}, waitCompletition = ${waitCompletition}"
+    logDebug "buildNukiLockActionCommand: actionCode = ${actionCode}, waitCompletition = ${waitCompletition}"
     
-    // Translating the action code description into the corresponding numeric code
-    // I should be using an enum ... I miss it!
-    def actionCode 
     def httpBody
-    logDebug "buildNukiLockActionCommand: # of actions = ${_lockActions.size ()}"
-    actionCode = _lockActions.find { it.value.toUpperCase () == actionDescription.toUpperCase() }
-    logDebug "buildNukiLockActionCommand: actionCode = ${actionCode}"
     
-    // If the translation went well, let's build the command to send to Nuki
     if (actionCode != null)
     {
         logDebug "buildNukiLockActionCommand: device.data.data = ${device.data.data}"
         httpBody = "nukiId=${device.data.data.DeviceId}" +
                    "&deviceType=${_deviceTypeSmartLock}" +
-                   "&action=${actionCode.key}" +
+                   "&action=${actionCode}" +
                    "&token=${parent.data.Token}" +
                    "&nowait=${waitCompletition ? 0 : 1}"
     }
@@ -502,8 +587,10 @@ def buildNukiLockActionCommand (actionDescription, waitCompletition)
     return httpBody
 }
 
+
 def sendRequestToNuki (String request)
 {
+    logDebug "sendRequestToNuki: IN"
     logDebug "Processing ${request} request"
     
     def returnData
@@ -522,14 +609,19 @@ def sendRequestToNuki (String request)
         handleHttpError (err)
     }
 
+    logDebug "sendRequestToNuki: OUT"
+    
     return returnData
 }
 
 
 def buildNukiLockRequest (request)
 {
-    def requestToSend = "http://${state.ip}/${request}?" +
-                        "token=${state.token}"
+    logDebug "buildNukiLockRequest: IN"
+    def requestToSend = "http://${state.ip}/${request}?token=${state.token}"
+    
+    logDebug "buildNukiLockRequest: requestToSend = ${requestToSend}"
+    logDebug "buildNukiLockRequest: OUT"
     
     return requestToSend
 }
@@ -572,13 +664,35 @@ def sendBatteryEvent (batteryCritical)
 }
 
 
-def sendStatusEvent (status, message = "")
+def sendErrorEvent (errorMessage, errorDescription = "")
 {
-    logDebug "sendStatusEvent: IN"
+    logDebug "sendErrorEvent: IN"
 
-    sendEvent (name: "operation status", value: status, descriptionText: message)          
+    sendEvent (name: "error", value: errorMessage, descriptionText: errorDescription)          
 
-    logDebug "sendStatusEvent: OUT"
+    logDebug "sendErrorEvent: OUT"
+}
+
+
+def sendLockEvent (lockStatus)
+{
+    logDebug "sendLockEvent: IN"
+    logDebug "sendLockEvent: lockStatus = ${lockStatus}"
+
+    sendEvent (name: "lock", value: lockStatus) 
+
+    logDebug "sendLockEvent: OUT"
+}
+
+
+def sendProgressEvent (status, statusMessage = "")
+{
+    logDebug "sendProgressEvent: IN"
+    logDebug "sendProgressEvent: status = ${status} / statusMessage = ${statusMessage}"
+
+    sendEvent (name: "progress", value: status, descriptionText: statusMessage)          
+
+    logDebug "sendProgressEvent: OUT"
 }
 
 
