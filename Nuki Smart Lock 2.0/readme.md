@@ -113,12 +113,16 @@ After the Integration app discovers all Nuki bridges installed on your network, 
  
 - The Integration app is able to discover/detect **only** the Nuki bridges that are installed on the same network as you HE hub where you run the Integration app
 - It is not possible to discover bridges intalled on different networks
-- If you have different neworks for your household and/or home automation equipments, you will need to reconfigure your setup accordingly
+- If you have different networks for your household and/or home automation equipments, you will need to reconfigure your setup accordingly
 - This is not an app limitation: it is Nuki´s behavior, since it is necessary contact first Nuki´s servers to discover the Nuki bridges installed on your network
 - Since it is necessary to contact Nuki´s servers to do the bridges discovery, an Internet connection must be active to properly run the Integration app - no surprise here, right?
 - The app automatically installs all bridge´s paired devices for a given bridge
 - When requested to install an already installed bridge (reinstall), that bridge and all it's paired devices will be automatically deleted
 - **IMPORTANT:** When a bridge is deleted (and by consequence it's paired devices), all Rule Machines (RM) rules that have reference for the deleted devices are affected, resting useless; this happens because HE uses an internal device id instead of their names and this is a good practice to do so
+- The Integration app automatically attributes the names of all Nuki bridges and devices
+- The bridges will be named like this: "Nuki bridge (bridge ID)", being 'bridge ID' the Nuki unique ID for the bridge
+- The devices paired to the bridges will be named using the same name used in the Nuki smartphone app
+- I recommend name the devices with a name that is easely spoken, since it will be use by Alexa; I have named my lock as 7H (that's my apartment number) ang guess what? Alexa called it "Seven hours" - obviously not good ... so, choose wisely
 
 
 ## Future developments
