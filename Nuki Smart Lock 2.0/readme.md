@@ -139,14 +139,20 @@ My signus is Aquarius - the guys that like horoscope use to say that people from
 
 So, here are some enhancements that I plan to implement in app & drivers future versions.
 
+### BETA versions (up to 1.0)
+
+Everything expected to work ... working as expected!
+
 ### Version 1.1
 
 - Integrate app/drivers to Alexa
+- Enhance security using hashed bridge´s token instead of a plain text one
+- Omit the bridge´s token in the debug log
 
 ### Version 1.2
 
 - Nuki Opener, Key Fob and Keypad support
-- If it is possible to detect wich Key Fob and/or Keypad has been used to unlock the door, it will generate a HE event accondingly
+- If it is possible to detect wich Key Fob and/or user´s Keypad key sequence has been used to unlock the door, it will generate a HE event accordingly
 
 ### Version 2.0
 
