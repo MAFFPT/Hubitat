@@ -62,7 +62,14 @@ So far, the following Nuki products are supported by the app/drivers:
 #### To be supported soon ... stay tuned!
 
 * Nuki Keypad
-* Nuki Openner
+* Nuki Opener
+
+**NOTES**
+
+No plan to support Google devices: after a lot of frustating contacts with Google regarding support for various device configurations issues I simply gave up.
+
+However, if the community express desire to see these app/drivers working with Google devices, please let me know. I still have a Google mini and a Google Home display, so I can give a try ... hoping not to need Google´s support, I should say.
+
 
 ## Installation
 
@@ -135,8 +142,6 @@ So, here are some enhancements that I plan to implement in app & drivers future 
 ### Version 1.1
 
 - Integrate app/drivers to Alexa
-
-**NOTE**: No plan to support Google devices altogether: after a lot of frustating contacts with Google regarding support for various device configurations issues I simply gave up.
 
 ### Version 1.2
 
