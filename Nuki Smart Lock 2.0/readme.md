@@ -133,6 +133,10 @@ After the Integration app discovers all Nuki bridges installed on your network, 
 - **VERY IMPORTANT:** All devices paired to a given bridge are installed/created as child devices of that bridge
 - So, when the Integration app finishes the installation of bridges & devices, you will find the paired devices to a given bridge under it in the devices list
 
+### Security notes
+
+- Once the Integration app contacts Nuki´s web servers to discover wich bridge(s) is(are) installed in your LAN, there is no further contact with the web
+
 ## Future developments
 
 My signus is Aquarius - the guys that like horoscope use to say that people from Aquarius is always thinking about the future. I do not know it is true for other Aquarians, but in my case it is ...
@@ -146,7 +150,7 @@ Everything expected to work ... working as expected!
 ### Version 1.1
 
 - Integrate app/drivers to Alexa
-- Enhance security using hashed bridge´s token instead of a plain text one
+- Enhance security using hashed bridge´s token option instead of a plain text one
 - Omit the bridge´s token in the debug log
 
 ### Version 1.2
@@ -160,7 +164,7 @@ Everything expected to work ... working as expected!
 
 ### Version 3.0
 
-- Detection of all Nuki bridges without contacting Nuki's web servers (Internet free version)
+- Internet free version: detection of Nuki bridge(s) without contacting Nuki's web servers
 
 ## Licence
 
