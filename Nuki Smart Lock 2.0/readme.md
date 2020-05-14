@@ -112,7 +112,7 @@ After the Integration app discovers all Nuki bridges installed on your network, 
 ### Installation notes
  
 - The Integration app is able to discover/detect **only** the Nuki bridges that are installed on the same network as you HE hub where you run the Integration app
-  It is not possible to discover bridges intalled on different networks
+    It is not possible to discover bridges intalled on different networks
   If you have different networks for your household and/or home automation equipments, you will need to reconfigure your setup accordingly
   This is not an app limitation: it is Nuki´s behavior, since it is necessary contact first Nuki´s servers to discover the Nuki bridges installed on your network
 - Since it is necessary to contact Nuki´s servers to do the bridges discovery, an Internet connection must be active to properly run the Integration app - no surprise here, right?
