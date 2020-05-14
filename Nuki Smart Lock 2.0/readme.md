@@ -124,7 +124,7 @@ After the Integration app discovers all Nuki bridges installed on your network, 
 - The devices paired to the bridges will be named using the same name used in the Nuki smartphone app
   I recommend naming the paired devices with a name that is easely spoken, since it may be used by Alexa; I have named my lock as 7H (that's my apartment number) ang guess what? Alexa called it "Seven hours" - obviously not good ... so, choose wisely
 - **VERY IMPORTANT:** All devices paired to a given bridge are installed/created as child devices of that bridge
-- So, when the Integration app finishes the installation of bridges & devices, you will find the 
+- So, when the Integration app finishes the installation of bridges & devices, you will find the paired devices to a given bridge under it in the devices list
 
 ## Future developments
 
