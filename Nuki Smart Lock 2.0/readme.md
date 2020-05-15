@@ -70,10 +70,46 @@ No plan to support Google devices: after a lot of frustating contacts with Googl
 
 However, if the community express a desire to see these app/drivers working with Google devices, please let me know. I still have a Google mini and a Google Home display, so I can give a try ... hoping not to need Google´s support, I should say.
 
+## Nuki setup
 
-## Installation
+### Requisites
 
-### Install app & drivers
+The integration of the Nuki Smart Lock into your Hubitat Elevation requires that you have previously installed and configured at least the following Nuki's products:
+
+- Nuki Smart Lock 2.0
+- Nuki bridge
+
+The Nuki bridge is the component of Nuki's solution that will talk to Hubitat Elevation (HE) hub. So, if you do not have one yet and still wants to control your Nuki Smart Lock with your HE hub, please purchase one.
+
+### Configuration
+
+Follow the Nuki's instructions on how to properly install and configure all your Nuki products. 
+
+These instructions can be found here:
+
+- [Nuki brige setup](https://nuki.io/en/support/bridge/)
+- [Nuki Smart Lock 2.0 setup](https://nuki.io/en/support/smart-lock/#sl-features)
+- [Nuki Opener setup](https://nuki.io/en/support/opener/#op-mounting-configuration)
+- [Nuki Keypad setup](https://nuki.io/en/support/keypad/#keypad-mounting)
+- [Nuki Fob](https://nuki.io/en/support/fob/#fob-setup)
+
+### Enabling bridge control over your LAN
+
+In order to connect your Nuki Lock to your HE hub, it is necessary to configure your Nuki bridge followint these [instructions](https://nuki.io/en/support/bridge/bridge-setup/initial-bridge-setup/).
+
+Please note that:
+
+- Using fixed IP addresses
+
+  The app & drivers does not support dynamic IP addresses. So, you must dedicate a fixed IP address for your Nuki bridge both at your bridge or at your Wi-Fi router.
+  
+- Enabling Nuki bridge "developer mode" (API)
+
+  Your Nuki bridge must have the API (developer mode) enabled, otherwise it will not be possible to integrate it to your HE hub.
+
+## App & drivers installation
+
+### Install app & drivers code
 
 First of all you'll need to install the following app and drivers in your HE hub.
 
