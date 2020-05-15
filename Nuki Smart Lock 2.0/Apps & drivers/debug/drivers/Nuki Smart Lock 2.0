@@ -67,7 +67,7 @@ import groovy.transform.Field
                                  
                                   [stateId: 3,
                                    stateName: "unlocked", 
-                                   progressText: "unlock successful"],
+                                   progressText: "unlocking successful"],
                                  
                                   [stateId: 4,
                                    stateName: "locking", 
@@ -79,11 +79,11 @@ import groovy.transform.Field
                                  
                                   [stateId: 6,
                                    stateName: "unlocked lockngo",
-                                   progressText: "unlock 'n' go successful"],
+                                   progressText: "unlocking 'n' go successful"],
                                  
                                   [stateId: 7,
                                    stateName: "unlatching",
-                                   progressText: "unlatchin in progress"],
+                                   progressText: "unlatching in progress"],
                                  
                                   [stateId: 253,
                                    stateName: "booting",
@@ -113,13 +113,15 @@ metadata
     {
         capability "Battery"
 
+        capability "DoorControl"
+        command "open"
+        
         capability "Lock"
         command "lock"
         command "lockNGo"
         command "unlock"
         command "unlatch"
         
-        command "getLog"
         command "status"
     }
 
@@ -135,11 +137,6 @@ metadata
     
     tiles 
     {
-        standardTile ("getLog", "getLog", inactiveLabel: false, decoration: "flat", width: 3, height: 2) 
-        {
-        	state "default", action:"getLog", icon: "st.locks.lock.locked"
-    	}
-
         standardTile ("lockNGo", "lockNGo", inactiveLabel: false, decoration: "flat", width: 3, height: 2) 
         {
             state "default", label:'lock&Go', action:"lockNGo", icon: "st.locks.lock.locked"
@@ -150,7 +147,7 @@ metadata
 
 def initialize () 
 {
-  	logDebug "initialize: IN"
+    logDebug "initialize: IN"
     logDebug "initialize: device.capabilities = ${device.capabilities}"
     logDebug "initialize: OUT"
 }
@@ -158,7 +155,7 @@ def initialize ()
 
 def installed ()
 {
-    // if the parend device was running with debugLogging, it will automatically be passed to this device
+    // if the parent device was running with debugLogging, it will automatically be passed to this device
     if (device.data.DebugLoggingRequired)
     {
         debugLogging = true
@@ -192,13 +189,16 @@ def parse (Map jsonMap)
 
     def lockState = _lockStates.find { it.stateName.toUpperCase () == jsonMap.stateName.toUpperCase ()}
     logDebug "parse: lockState = ${lockState}"
-    
     sendProgressEvent (lockState?.progressText)
 
     logDebug "parse: OUT"
 }
 
 
+//
+// This is here just in case
+// Theoretically all callbacks from the Nuki bridge are handled by the Nuki bridge's driver
+//
 def parse (String description)
 {
     logDebug "parse: IN"
@@ -210,6 +210,9 @@ def parse (String description)
 }
 
 
+//
+// Actually nothing is done here ...
+//
 def uninstalled ()
 {
     logDebug "uninstalled: IN"
@@ -220,6 +223,9 @@ def uninstalled ()
 }
 
 
+//
+// Nor here ...
+//
 def updated () 
 {
     logDebug "updated: IN"
@@ -233,26 +239,8 @@ def updated ()
 // ======================================
 
 
-def getLog ()
-{
-    logDebug "getLog: IN"
-    
-    def nukiLog = sendRequestToNuki (request: "log").data
-    logDebug "getLog: processing response"    
-    
-    nukiLog.each
-    {
-        logInfo (it.value)
-    }
-    
-    logInfo "${_nukiLockTypeName}: Nuki bridge log information copied to this Hubitat Elevation hub log"
-    
-    logDebug "getLog: OUT"
-}
-
-
 //
-// Lock
+// Handles locks requests
 //
 def lock (Map cmds) 
 {
@@ -279,6 +267,21 @@ def lockNGo ()
 
 
 //
+// Unlatches the door
+//
+def open ()
+{
+   	logDebug "open: IN"
+
+    sendCommandToNuki (_lockActions [3],       // action = "unlatch"
+                       false)                  // waitCompletition
+
+  	logDebug "open: OUT"   
+}
+
+
+
+//
 // Recover device's current status
 //
 def status ()
@@ -286,7 +289,7 @@ def status ()
     logDebug "status: IN"
     logDebug "status: device.data = ${parent.device.data}"
     
-    def deviceInfo = getDeviceInfo (device.data.data, parent.data)
+    def deviceInfo = parent.getDeviceInfo (device.data.data, parent.data)
     logDebug "status: deviceInfo = ${deviceInfo}"
     
     def deviceMode = _deviceModes.find { it.key == deviceInfo?.mode }
@@ -330,40 +333,6 @@ def unlock (Map cmds)
 //=========================================
 //    Support stuff
 //=========================================
-
-
-//
-// Retrieve information about a bridge
-//
-def getDeviceInfo (deviceData, parentData)
-{
-    logDebug "getDeviceInfo: IN"
-    logDebug "getDeviceInfo: deviceData = ${deviceData}"
-    logDebug "getDeviceInfo: parentData = ${parentData}"
-
-    def httpRequest = "${parent.buildBridgeURL (parentData)}/lockState?nukiId=${deviceData.DeviceId}&deviceType=${deviceData.DeviceType}&token=${parentData.Token}"
-    logDebug "getBridgeInfo: httpRequest = ${httpRequest}"
-
-    def deviceInfo
-
-    try
-    {
-	    httpGet (httpRequest)
-		{
-            resp ->           
-                logDebug "refresh: resp data: ${resp.data}"
-                deviceInfo = resp.data
-        }
-    }
-    catch (e)
-    {
-        throw new Exception ("${parent.device.data.Label}: method 'getBridgeInfo' - Fatal error = ${error}")
-    }     
-
-    logDebug "getBridgeInfo: OUT"
-    
-    return deviceInfo
-}
 
 
 //
