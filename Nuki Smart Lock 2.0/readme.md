@@ -148,9 +148,11 @@ As much as I prioritized the "on app" documentation, I would like to discuss abo
 
 ### Nuki bridge(s) and paired device(s) discovery and installation
 
-The Integration app is able to install in a single run 'n' bridges and respective paired device(s). It is not necessary to run it multiple times for each Nuki bridge that you eventually have.
+The Integration app automatically detects all bridges and its paired devices automatically. Just follow the instructions presented to you in the Integration app and let it does the heavy lifting for you. However, for this to work, you must enable the "developer mode (API)" as described previously at the **"Enabling bridge control over your LAN"** section in this documentation.
 
-After the Integration app discovers all Nuki bridges installed on your network, it provides to you the possibility to select which one(s) you want to install/reinstall.
+After the Integration app discovers all Nuki bridges installed on your network, it provides to you the possibility to select which bridges you want to install/reinstall.
+
+The Integration app is able to install in a single run an unlimited number of bridges installed on your LAN, and, obviously, their respectively paired device(s). It is not necessary to run it multiple times for each Nuki bridge that you eventually have.
 
 ### Installation notes
  
