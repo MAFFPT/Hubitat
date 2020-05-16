@@ -187,7 +187,7 @@ Everything expected to work ... working as expected!
 
 - Integrate app/drivers to Alexa
 - Enhance security using hashed bridge´s token option instead of a plain text one
-- Omit the bridge´s token in the debug log
+- Omit the bridge´s token in the debug log (for secutity concerns)
 
 ### Version 1.2
 
@@ -196,7 +196,8 @@ Everything expected to work ... working as expected!
 
 ### Version 2.0
 
-- Implement the option of only install new devices connected to a Nuki bridge, not touching the bridge itself and others paired devices
+- App: Implement an option of only install new devices connected to a Nuki bridge, not touching the bridge itself and others paired devices
+- Lock driver: Implement an option to include or not the "unlatch" action when a "lock" request is received  
 
 ### Version 3.0
 
