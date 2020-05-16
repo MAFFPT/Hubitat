@@ -201,7 +201,8 @@ Everything expected to work ... working as expected!
 
 ### Version 3.0
 
-- Internet free version: detection of Nuki bridge(s) without contacting Nuki's web servers
+- App: Internet free version - detection of Nuki bridge(s) without contacting Nuki's web servers
+- HE Dashboard: 'fine tune' the HE dashboard for the drivers
 
 ## Licence
 
