@@ -7,3 +7,9 @@ The debugging information will be logged - in your Hubitat Elevatiion hub system
 You may use this code as your production code. However, since there is a lot - did I mention a **massive** lot before? - of debugging code imbebbed into the apps/drivers code, it not only increases the execution time, but also increases the total code size.
 
 ## 'previous versions' folder
+
+If unfortunatelly you are faced with a new version of an app or driver, please go there and select the most recently previous version. This way your Nuki devices can get back to work again.
+
+But, please do not forget to report the problem that you have found since I can look at it.
+
+Good luck!
