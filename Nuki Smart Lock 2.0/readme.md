@@ -57,12 +57,12 @@ However, it is your choice wich one you want to use.
 So far, the following Nuki products are supported by the app/drivers:
 
 * Nuki Bridge (firmware version ??? and above)
+* Nuki Opener (firmware version ??? and above)
 * Nuki Smart Lock 2.0 (firmware version ??? and above)
 
 #### To be supported soon ... stay tuned!
 
 * Nuki Keypad
-* Nuki Opener
 
 **NOTES**
 
@@ -95,17 +95,17 @@ These instructions can be found here:
 
 ### Enabling bridge control over your LAN
 
-In order to connect your Nuki Lock to your HE hub, it is necessary to configure your Nuki bridge followint these [instructions](https://nuki.io/en/support/bridge/bridge-setup/initial-bridge-setup/).
+In order to connect your Nuki Lock to your HE hub, it is necessary to configure your Nuki bridge following these [instructions](https://nuki.io/en/support/bridge/bridge-setup/initial-bridge-setup/).
 
 Please note that:
 
 - Using fixed IP addresses
 
-  The app & drivers does not support dynamic IP addresses. So, you must dedicate a fixed IP address for your Nuki bridge both at your bridge or at your Wi-Fi router.
+  The app & drivers does not support dynamic IP addresses. So, you must dedicate a fixed IP address for your Nuki bridge both at your Nuki Bridge or at your Wi-Fi router.
   
-- Enabling Nuki bridge "developer mode" (API)
+- Enabling Nuki Bridge "developer mode" (API)
 
-  Your Nuki bridge must have the API (developer mode) enabled, otherwise it will not be possible to integrate it to your HE hub.
+  Your Nuki Bridge must have the API (developer mode) enabled, otherwise it will not be possible to integrate it to your HE hub.
 
 ## App & drivers installation
 
@@ -133,7 +133,8 @@ First of all you'll need to install the following app and drivers in your HE hub
      * Note: PRODUCTION version not available yet
   
   * Nuki Opener driver
-    * [see driver's code raw content - DEBUG version] (https://raw.githubusercontent.com/MAFFPT/Hubitat/master/Nuki%20Smart%20Lock%202.0/Apps%20%26%20drivers/debug/drivers/Nuki%20Opener.groovy)
+    * [see driver's code raw content - DEBUG version](https://raw.githubusercontent.com/MAFFPT/Hubitat/master/Nuki%20Smart%20Lock%202.0/Apps%20%26%20drivers/debug/drivers/Nuki%20Opener.groovy)
+     * Note: PRODUCTION version not available yet
     
   * Nuki Smart Lock driver
      * [see driver's code raw content - DEBUG version](https://raw.githubusercontent.com/MAFFPT/Hubitat/master/Nuki%20Smart%20Lock%202.0/Apps%20%26%20drivers/debug/drivers/Nuki%20Smart%20Lock%202.0.groovy)
