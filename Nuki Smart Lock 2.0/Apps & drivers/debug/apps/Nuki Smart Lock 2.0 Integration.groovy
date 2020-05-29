@@ -19,17 +19,17 @@
 import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt"
-@Field static _nukiBridgeTypeName = "Nuki Bridge"          // name of the device type = driver name
-@Field static _nukiLockTypeName = "Nuki Smart Lock 2.0"    // Nuki Smart Lock 2.0's device driver name
-@Field static _nukiOpenerTypeName = "Nuki Opener"          // Nuki Opener's device driver name
+@Field static _nukiDriverNameBridge = "Nuki Bridge"          // name of the device type = driver name
+@Field static _nukiDriverNameLock = "Nuki Smart Lock 2.0"    // Nuki Smart Lock 2.0's device driver name
+@Field static _nukiDriverNameOpener = "Nuki Opener"          // Nuki Opener's device driver name
 
-@Field static _nukiIntegrationVersion = "0.1"
+@Field static _nukiIntegrationVersion = "0.2"
 
 @Field static _nukiDiscoverBridgesURL = "https://api.nuki.io/discover/bridges"
 
 definition \
 (
-    name: "Nuki<sup>&reg;</sup> Smart Lock 2.0 Integration",
+    name: "Nuki Smart Lock 2.0 Integration",
     namespace: "maffpt",
     author: "Marco Felicio (MAFFPT)",
     description: "Integration app for Nuki<sup>&reg;</sup> Smart Lock 2.0 - version ${_nukiIntegrationVersion}",
@@ -246,7 +246,7 @@ def addedBridgesPage (existingBridgesParam)
                 pairedDevices.each
                 {
                     logDebug "addedBridgesPage: paired device = ${it}"
-                    resultMessages += "&nbsp;&nbsp;- ${getNukiDeviceDriver (it)} '${buildNukiDeviceLabel (it)}' sucessfully installed\n"
+                    resultMessages += "&nbsp;&nbsp;- ${getNukiDeviceDriver (it)} '${buildNukiDeviceLabel (it)}' successfully installed\n"
                 }
             }
             else
@@ -485,7 +485,7 @@ def addBridge (bridge)
 
     Map bridgeProperties = [:]
     bridgeProperties.label = deviceData.Label
-    bridgeProperties.name = _nukiBridgeTypeName
+    bridgeProperties.name = _nukiDriverNameBridge
     bridgeProperties.data = deviceData
     bridgeProperties.isComponent = false
 
@@ -493,25 +493,25 @@ def addBridge (bridge)
     {
         logDebug "addBridge: trying to install bridge with bridgeId = ${bridge.bridgeId}"
         addChildDevice (_nukiNamespace,               // namespace - must be the same for this app and driver
-                        _nukiBridgeTypeName,          // typeName = driver name of the child device - must have been previously installed into this HE hub
+                        _nukiDriverNameBridge,        // typeName = driver name of the child device - must have been previously installed into this HE hub
                         bridgeDNI,                    // Device Network Id
                         location.hubs[0].id,          // This HE hub
                         bridgeProperties)
         // if we pass through here, it means that the bridge was correcly added. Let's flag it!
         //logInfo "Nuki bridge '${deviceData.Label}' successfully installed."
-        logDebug "addBridge: bridge with bridgeId = ${bridge.bridgeId} sucessfully installed"
+        logDebug "addBridge: bridge with bridgeId = ${bridge.bridgeId} successfully installed"
 
         bridgeAddSuccess = true
     }
     catch (com.hubitat.app.exception.UnknownDeviceTypeException e)
     {
-        throw new Exception ("Failed to install bridge with bridgeId = ${bridge.bridgeId}. Driver (${_nukiBridgeTypeName}) not installed on this Hubitat Elevation hub; install it before attempting to run this app again")
+        throw new Exception ("Failed to install bridge with bridgeId = ${bridge.bridgeId}. Driver (${_nukiDeviceTypeBridge}) not installed on this Hubitat Elevation hub; install it before attempting to run this app again")
     }
     catch (error) 
     {
         logDebug "addBridge: Failed to install bridge with bridgeId = ${bridge.bridgeId}. Error = ${error}"
 
-        throw new Exception ("Failed to install bridge with bridgeId = ${bridge.bridgeId}. Driver (${_nukiBridgeTypeName}) most likely not installed on this Hubitat Elevation hub; install it before attempting to run this app again.")
+        throw new Exception ("Failed to install bridge with bridgeId = ${bridge.bridgeId}. Driver (${_nukiDeviceTypeBridge}) most likely not installed on this Hubitat Elevation hub; install it before attempting to run this app again.")
     }
  
     if (bridgeAddSuccess)
@@ -550,7 +550,7 @@ def getPairedDevices (bridge)
         resp -> 
             resp.data?.each
             {
-                logDebug "getPairedDevices: Processing paired device to bridge '${bridge.bridgeId}': ${it}"
+                logDebug "getPairedDevices: Storing information about paired device to bridge '${bridge.bridgeId}': ${it}"
 
                 pairedDevices << it
             }
@@ -573,7 +573,7 @@ def buildBridgeLabel (bridge)
 {
     logDebug "buildBridgeLabel: IN"
 
-    def lbl = "${_nukiBridgeTypeName} (${bridge.bridgeId})"
+    def lbl = "${_nukiDriverNameBridge} (${bridge.bridgeId})"
     
     logDebug "buildBridgeLabel: bridge label = ${lbl}"
     logDebug "buildBridgeLabel: OUT"
@@ -665,7 +665,7 @@ def buildBridgeURL (bridge)
 //
 def buildDeviceDNI (nukiDevice)
 {
-    logDebug "buildDeviceDNI: IN (OUT will not be shown)"
+    logDebug "buildDeviceDNI: IN"
     logDebug "buildDeviceDNI: building DNI for device = ${nukiDevice}"
     
     String deviceDNI = "Nuki ${nukiDevice.nukiId}"
@@ -718,10 +718,10 @@ def getNukiDeviceDriver (nukiDevice)
     switch (nukiDevice.deviceType)
     {
         case "0":
-            deviceDriver = _nukiLockTypeName
+            deviceDriver = _nukiDriverNameLock
             break
         case "2":
-            deviceDriver = _nukiOpenerTypeName
+            deviceDriver = _nukiDriverNameOpener
             break
         default:
             throw new Exception ("Nuki Smart Lock Integration: method 'getNukiDeviceDriver' - Fatal error: unsupported device type (${nukiDevice.deviceType})")
