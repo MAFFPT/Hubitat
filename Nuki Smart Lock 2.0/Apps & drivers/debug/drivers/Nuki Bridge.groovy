@@ -19,9 +19,9 @@
 import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt"                    // All apps and drivers must be at the same namespace
-@Field static _nukiBridgeDriverVersion = "0.1.1"           // Current version of this driver
+@Field static _nukiBridgeDriverVersion = "0.2"             // Current version of this driver
 
-@Field static _nukiBridgeTypeName = "Nuki Bridge"          // name of the device type = driver name
+@Field static _nukiDriverNameBridge = "Nuki Bridge"        // name of the device type = driver name
 
 @Field static _nukiDeviceTypes = [0: "Nuki Smart Lock", 2: "Nuki Opener"]
 
@@ -128,6 +128,7 @@ def parse (description)
     
     logDebug "parse: Parse returned ${result?.descriptionText}"
     logDebug "parse: OUT"
+    
     return result
 }
 
@@ -203,7 +204,7 @@ def uninstalled ()
     String deviceDNI
     def childDevice
     
-    bridgeData.PairedDevices?.each
+    device.data.PairedDevices?.each
     {
         deviceDNI = parent.buildDeviceDNI (it)
         
@@ -429,12 +430,12 @@ def addPairedDevice (bridge, nukiDevice)
     }
     catch (com.hubitat.app.exception.UnknownDeviceTypeException e)
     {
-        logWarn "${_nukiBridgeTypeName}: Failed to install device with nukiId = ${nukiDevice.nukiId}. Driver (${deviceData.DeviceTypeName}) not installed on this Hubitat Elevation hub; install it before attempting to run this app again."
+        logWarn "${_nukiDriverNameBridge}: Failed to install device with nukiId = ${nukiDevice.nukiId}. Driver (${deviceData.DeviceTypeName}) not installed on this Hubitat Elevation hub; install it before attempting to run this app again."
         nukiDevice.successfullyInstalled = false
     }
     catch (error) 
     {
-        logWarn "${_nukiBridgeTypeName}: Failed to install device with nukiId = ${nukiDevice.nukiId}. Error = ${error}"
+        logWarn "${_nukiDriverNameBridge}: Failed to install device with nukiId = ${nukiDevice.nukiId}. Error = ${error}"
         nukiDevice.successfullyInstalled = false
     }
     
