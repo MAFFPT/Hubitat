@@ -56,7 +56,7 @@ However, it is your choice wich one you want to use.
 
 So far, the following Nuki products are supported by the app/drivers:
 
-* Nuki bridge (firmware version ??? and above)
+* Nuki Bridge (firmware version ??? and above)
 * Nuki Smart Lock 2.0 (firmware version ??? and above)
 
 #### To be supported soon ... stay tuned!
@@ -77,7 +77,7 @@ However, if the community express a desire to see these app/drivers working with
 The integration of the Nuki Smart Lock into your Hubitat Elevation requires that you have previously installed and configured at least the following Nuki's products:
 
 - Nuki Smart Lock 2.0
-- Nuki bridge
+- Nuki Bridge
 
 The Nuki bridge is the component of Nuki's solution that will talk to Hubitat Elevation (HE) hub. So, if you do not have one yet and still wants to control your Nuki Smart Lock with your HE hub, please purchase one.
 
@@ -87,7 +87,7 @@ Follow the Nuki's instructions on how to properly install and configure all your
 
 These instructions can be found here:
 
-- [Nuki brige setup](https://nuki.io/en/support/bridge/)
+- [Nuki Brige setup](https://nuki.io/en/support/bridge/)
 - [Nuki Smart Lock 2.0 setup](https://nuki.io/en/support/smart-lock/#sl-features)
 - [Nuki Opener setup](https://nuki.io/en/support/opener/#op-mounting-configuration)
 - [Nuki Keypad setup](https://nuki.io/en/support/keypad/#keypad-mounting)
