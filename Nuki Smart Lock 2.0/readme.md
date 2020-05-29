@@ -131,7 +131,10 @@ First of all you'll need to install the following app and drivers in your HE hub
   * Nuki Bridge driver
     * [see driver's code raw content - DEBUG version](https://raw.githubusercontent.com/MAFFPT/Hubitat/master/Nuki%20Smart%20Lock%202.0/Apps%20%26%20drivers/debug/drivers/Nuki%20Bridge.groovy)
      * Note: PRODUCTION version not available yet
-     
+  
+  * Nuki Opener driver
+    * [see driver's code raw content - DEBUG version] (https://raw.githubusercontent.com/MAFFPT/Hubitat/master/Nuki%20Smart%20Lock%202.0/Apps%20%26%20drivers/debug/drivers/Nuki%20Opener.groovy)
+    
   * Nuki Smart Lock driver
      * [see driver's code raw content - DEBUG version](https://raw.githubusercontent.com/MAFFPT/Hubitat/master/Nuki%20Smart%20Lock%202.0/Apps%20%26%20drivers/debug/drivers/Nuki%20Smart%20Lock%202.0.groovy)
      * Note: PRODUCTION version not available yet
