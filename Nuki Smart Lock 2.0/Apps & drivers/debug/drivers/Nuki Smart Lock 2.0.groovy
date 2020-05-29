@@ -101,11 +101,13 @@ import groovy.transform.Field
 //@Field static Map lockDoorStatus = [0: "UNAVAILABLE", 1: "DEACTIVATED", 2: "DOOR_CLOSED", 3: "DOOR_OPENED", 4: "DOOR_STATE_UNKNOWN", 5: "CALIBRATING"]
 //@Field static Map lockButtonActions = [0: "NO_ACTION", 1: "INTELLIGENT", 2: "UNLOCK", 3: "LOCK", 4: "UNLATCH", 5: "LOCK_N_GO", 6: "SHOW_STATUS"]
 
+@Field static _nukiNamespace = "maffpt"                  // All apps and drivers must be at the same namespace
+@Field static _nukiLockDriverVersion = "0.2"             // Current version of this driver
+
 @Field static Map _deviceModes = [2: "Door mode"]
 
-@Field static _nukiLockTypeName = "Nuki Smart Lock 2.0"    // Nuki Smart Lock 2.0's device driver name
-
-@Field static String _deviceTypeSmartLock = "0"
+@Field static String _nukiDeviceTypeLock = "0"
+@Field static String _nukiDriverNameLock = "Nuki Smart Lock 2.0"    // Nuki Smart Lock 2.0's device driver name
 
 metadata 
 {
@@ -164,10 +166,63 @@ def installed ()
   	logDebug "installed: IN"
 
     initialize()
+    //logInfo "XXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    //addGrandchildDevice ()
 
     logDebug "installed: installed device ${device.data}"
     logDebug "installed: OUT"
 }
+
+
+
+
+//
+// Install a device paired to a bridge
+//
+def addGrandchildDevice ()
+{
+    logDebug "addGrandchildDevice: IN"
+    
+    def deviceData = [:]
+    deviceData.DeviceType = "Switch"
+    deviceData.DeviceTypeName = "Virtual Switch"
+    deviceData.DeviceId = "${device.data.data.DeviceId}-2"
+    deviceData.Name = "${device.name} latch switch"
+    deviceData.DebugLoggingRequired = debugLogging    // if this device is running with debugLogging, the child device will run with it too
+
+    def deviceProperties = [:]
+    deviceProperties.label = deviceData.Name
+    deviceProperties.name = deviceData.DeviceTypeName
+    deviceProperties.data = deviceData
+    deviceProperties.isComponent = true               // the child device will be "attached" to this device
+
+    try 
+    {
+        //logDebug "addGrandchildDevice: trying to install device with nukiId = ${nukiDevice.nukiId}"
+        def deviceDNI = "${device.dni}-Latch"
+        def childDevice = addChildDevice ("hubitat",           // namespace - must be the same for this app and driver
+                                          "Virtual Switch",    // typeName = driver of the child device - must have been previously loaded into this HE hub
+                                          "anyDniWillDo",      // deviceNetworkId
+                                          deviceProperties)
+        // if we pass through here, it means that the device was correcly added. Let's flag it!
+        logDebug "addGrandchildDevice: device with deviceId = '${deviceData.DeviceId}' and deviceDNI = '${deviceDNI}' successfully added"
+        
+        //nukiDevice.successfullyInstalled = true
+    }
+    catch (com.hubitat.app.exception.UnknownDeviceTypeException e)
+    {
+        logWarn "${deviceData.DeviceTypeName}: Failed to install device with nukiId = ${deviceData.DeviceId}. Driver (${deviceData.DeviceTypeName}) not installed on this Hubitat Elevation hub; install it before attempting to run this app again."
+        //nukiDevice.successfullyInstalled = false
+    }
+    catch (error) 
+    {
+        logWarn "${deviceData.DeviceTypeName}: Failed to install device with nukiId = ${deviceData.DeviceId}. Error = ${error}"
+        //nukiDevice.successfullyInstalled = false
+    }
+    
+    logDebug "addGrandchildDevice: OUT"
+}
+
 
 
 def parse (Map jsonMap)
@@ -504,7 +559,7 @@ def sendCommandToNuki (Map action, boolean waitCompletition)
             }
             else
             {
-                logWarn "${_nukiLockTypeName}: sending of command '${action.actionName}' to Nuki lock unsuccessful"
+                logWarn "${_nukiDriverNameLock}: sending of command '${action.actionName}' to Nuki lock unsuccessful"
             }
         }
         catch (err)
@@ -520,7 +575,7 @@ def sendCommandToNuki (Map action, boolean waitCompletition)
     else
     {
         sendProgressEvent ("${action.actionFailure} - see device events for more information by clicking on the 'Events' button at the top of this page", errorMessage)
-        logWarn "${_nukiLockTypeName}: ${errorMessage}"
+        logWarn "${_nukiDriverNameLock}: ${errorMessage}"
         returnData = false
     }
     logDebug "sendCommandToNuki: OUT"
@@ -540,7 +595,7 @@ def buildNukiLockActionCommand (actionCode, waitCompletition)
     {
         logDebug "buildNukiLockActionCommand: device.data.data = ${device.data.data}"
         httpBody = "nukiId=${device.data.data.DeviceId}" +
-                   "&deviceType=${_deviceTypeSmartLock}" +
+                   "&deviceType=${_nukiDeviceTypeLock}" +
                    "&action=${actionCode}" +
                    "&token=${parent.data.Token}" +
                    "&nowait=${waitCompletition ? 0 : 1}"
