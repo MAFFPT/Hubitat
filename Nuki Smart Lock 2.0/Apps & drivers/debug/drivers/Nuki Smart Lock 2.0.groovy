@@ -20,37 +20,42 @@ import groovy.transform.Field
 
 @Field static Map _lockActions = [1: [actionCode:       1,
                                       actionName:       "unlock",
-                                      eventName:        "unlock", 
+                                      eventName:        "unlock",
+                                      transientState:   "unlocking",
                                       actionInProgress: "unlocking (waiting for Nuki bridge to finish operation)",
-                                      actionSuccess:    "unlock command successfully sent (waiting for Nuki bridge confirmation)",
+                                      actionSuccess:    "unlock command successfully sent (waiting for Nuki Bridge confirmation)",
                                       actionFailure:    "unlocking failed"], 
                                   
                                   2: [actionCode:       2,
                                       actionName:       "lock",
                                       eventName:        "lock",
+                                      transientState:   "locking",
                                       actionInProgress: "locking (waiting for Nuki bridge to finish operation)",
-                                      actionSuccess:    "lock command successfully sent (waiting for Nuki bridge confirmation)",
+                                      actionSuccess:    "lock command successfully sent (waiting for Nuki Bridge confirmation)",
                                       actionFailure:    "locking failed"],
                                   
                                   3: [actionCode:       3,
                                       actionName:       "unlatch",
                                       eventName:        "unlatch",
+                                      transientState:   "unlatching",
                                       actionInProgress: "unlatching (waiting for Nuki bridge to finish operation)",
-                                      actionSuccess:    "unlatch command successfully sent (waiting for Nuki bridge confirmation)",
+                                      actionSuccess:    "unlatch command successfully sent (waiting for Nuki Bridge confirmation)",
                                       actionFailure:    "unlatching failed"],
                                   
                                   4: [actionCode:       4,
                                       actionName:       "lock 'n' go",
                                       eventName:        "lock",
+                                      transientState:   "locking",
                                       actionInProgress: "pausing 20 seconds before locking (lock 'n' go)",
-                                      actionSuccess:    "'lock 'n' go' command successfully sent (waiting for Nuki bridge confirmation)",
+                                      actionSuccess:    "'lock 'n' go' command successfully sent (waiting for Nuki Bridge confirmation)",
                                       actionFailure:    "lock 'n' go failed"],
                                  
                                   5: [actionCode:       5,
                                       actionName:       "lock 'n' go with unlatch",
                                       eventName:        "lock",
+                                      transientState:   "locking",
                                       actionInProgress: "locking & unlatching (waiting for Nuki bridge to finish operation)",
-                                      actionSuccess:    "locking & unlatching command successfully sent (waiting for Nuki bridge confirmation)",
+                                      actionSuccess:    "locking & unlatching command successfully sent (waiting for Nuki Bridge confirmation)",
                                       actionFailure:    "locking & unlatching failed"] \
                                   ]
 @Field static List _lockStates = [[stateId: 0,
@@ -104,7 +109,7 @@ import groovy.transform.Field
 @Field static _nukiNamespace = "maffpt"                  // All apps and drivers must be at the same namespace
 @Field static _nukiLockDriverVersion = "0.2"             // Current version of this driver
 
-@Field static Map _deviceModes = [2: "Door mode"]
+@Field static Map _lockDeviceModes = [2: "Door mode"]
 
 @Field static String _nukiDeviceTypeLock = "0"
 @Field static String _nukiDriverNameLock = "Nuki Smart Lock 2.0"    // Nuki Smart Lock 2.0's device driver name
@@ -114,6 +119,8 @@ metadata
     definition (name: "Nuki Smart Lock 2.0", namespace: "maffpt", author: "Marco Felicio") 
     {
         capability "Battery"
+        
+        capability "ContactSensor"
 
         capability "DoorControl"
         command "open"
@@ -126,7 +133,7 @@ metadata
         
         command "status"
     }
-
+/*
     preferences 
     {
         input ("debugLogging",
@@ -136,13 +143,29 @@ metadata
                submitOnChange: true,
                title: "Enable debug logging\n<b>CAUTION:</b> a lot of log entries will be recorded!")
     }
-    
+*/    
     tiles 
     {
+        standardTile ("device.label", "device.lock", inactiveLabel: false, decoration: "flat", width: 3, height: 2) 
+        {
+            state "locked", label:'Locked', action:"unlock", icon: "st.doors.garage.garage-open", backgroundcolor: "#00ff00", nextState: "unlocking"
+            state "unlocking", label: "Unlocking", icon: "st.doors.garage.garage-opening", backgroundcolor: "#0000ff", nextState: "unlocked"
+            
+            state "unlocked", label:'Unlocked', action:"lock", icon: "st.doors.garage.garage-closed", backgroundcolor: "#ff0000", nextState: "locking"
+            state "locking", label:'Locking', icon: "st.doors.garage.garage-closing", backgroundcolor: "#0000ff", nextState: "locked"
+        }
+        
+        valueTile ("battery", "device.battery", inactiveLabel: false, decoration: "flat", width: 3, height: 2)
+        {
+            state "battery", label: "Battery", icon: "st.batteries.battery.full", unit: "%", backgroundColors:[[value: 100, color: "#00ff00"],
+                                                                                                               [value: 20,  color: "#ff0000"]]
+        }
+/*
         standardTile ("lockNGo", "lockNGo", inactiveLabel: false, decoration: "flat", width: 3, height: 2) 
         {
             state "default", label:'lock&Go', action:"lockNGo", icon: "st.locks.lock.locked"
         }
+*/
     }
 }
 
@@ -157,13 +180,7 @@ def initialize ()
 
 def installed ()
 {
-    // if the parent device was running with debugLogging, it will automatically be passed to this device
-    if (device.data.DebugLoggingRequired)
-    {
-        debugLogging = true
-    }
-
-  	logDebug "installed: IN"
+    logDebug "installed: IN"
 
     initialize()
     //logInfo "XXXXXXXXXXXXXXXXXXXXXXXXXXXX"
@@ -172,8 +189,6 @@ def installed ()
     logDebug "installed: installed device ${device.data}"
     logDebug "installed: OUT"
 }
-
-
 
 
 //
@@ -186,7 +201,7 @@ def addGrandchildDevice ()
     def deviceData = [:]
     deviceData.DeviceType = "Switch"
     deviceData.DeviceTypeName = "Virtual Switch"
-    deviceData.DeviceId = "${device.data.data.DeviceId}-2"
+    deviceData.DeviceId = "${device.data.nukiInfo.DeviceId}-2"
     deviceData.Name = "${device.name} latch switch"
     deviceData.DebugLoggingRequired = debugLogging    // if this device is running with debugLogging, the child device will run with it too
 
@@ -232,19 +247,19 @@ def parse (Map jsonMap)
     logDebug "parse: device.capabilities = ${device.capabilities}"
     
     // Let's first be sure that the NukiIds of this device and the parsed one are the same
-    if (jsonMap.nukiId.toString () != device.data.data.DeviceId.toString ())
+    if (jsonMap.nukiId.toString () != device.data.nukiInfo.DeviceId.toString ())
     {
-        trow new Exception ("${device.data.label}: Inconsistent data - events from device with Nuki ID '${jsonMap.nukiId.toString ()}' cannot be handled by device hander for device '${device.data.data.DeviceId.toString ()}'")
+        trow new Exception ("${device.data.label}: Inconsistent data - events from device with Nuki ID '${jsonMap.nukiId.toString ()}' cannot be handled by device hander for device '${device.data.nukiInfo.DeviceId.toString ()}'")
     }
     
     logInfo "${device.data.label}: Status changed on this device to ${jsonMap.stateName.toUpperCase ()}. Battery status is ${jsonMap.batteryCritical ? "CRITICAL" : "NORMAL"}."
 
     sendLockEvent (jsonMap.stateName)
-    sendBatteryEvent (jsonMap.batteryCritical)
+    parent.sendBatteryEvent (device, jsonMap.batteryCritical)
 
     def lockState = _lockStates.find { it.stateName.toUpperCase () == jsonMap.stateName.toUpperCase ()}
     logDebug "parse: lockState = ${lockState}"
-    sendProgressEvent (lockState?.progressText)
+    parent.sendProgressEvent (device, lockState?.progressText)
 
     logDebug "parse: OUT"
 }
@@ -301,7 +316,6 @@ def lock (Map cmds)
 {
     logDebug "lock: IN"
     logDebug "lock: cmds = ${cmds}"
-    //logDebug "lock: device.capabilities = ${device.capabilities}"
 
     sendCommandToNuki (_lockActions [2],       // action = "lock"
                        true)                   // waitCompletition
@@ -344,10 +358,10 @@ def status ()
     logDebug "status: IN"
     logDebug "status: device.data = ${parent.device.data}"
     
-    def deviceInfo = parent.getDeviceInfo (device.data.data, parent.data)
+    def deviceInfo = parent.getDeviceInfo (device.data.nukiInfo, parent.data)
     logDebug "status: deviceInfo = ${deviceInfo}"
     
-    def deviceMode = _deviceModes.find { it.key == deviceInfo?.mode }
+    def deviceMode = _lockDeviceModes.find { it.key == deviceInfo?.mode }
     logDebug "status: deviceMode = ${deviceMode.value}"
 
     def deviceStatus = "Device mode: ${deviceMode.value} //\n" +
@@ -356,7 +370,7 @@ def status ()
                        "<b>NOTE</b>: avoid requesting this status frequently since it may drain your lock's batteries too fast."
     
     sendLockEvent (deviceInfo?.stateName)
-    sendProgressEvent (deviceStatus, deviceInfo)
+    parent.sendProgressEvent (device, deviceStatus, deviceInfo)
     
     logDebug "status: OUT"
 }
@@ -379,7 +393,6 @@ def unlock (Map cmds)
     
     sendCommandToNuki (_lockActions [1],       // action = "unlock"
                        true)                   // waitCompletition
-
 
     logDebug "unlock: OUT"
 }
@@ -407,11 +420,11 @@ def sendCommandToNuki (Map action, boolean waitCompletition)
     def sendCommand = false
     def errorMessage = ""
     
-    sendProgressEvent (action.actionInProgress)
+    parent.sendProgressEvent (device, action.actionInProgress)
 
     for (i in 1..3) 
     {
-        deviceStatus = parent.getNukiDeviceStatus (device.data.data)
+        deviceStatus = parent.getNukiDeviceStatus (device.data.nukiInfo)
         logDebug "sendCommandToNuki: deviceStatus = ${deviceStatus}"
         
         logDebug "sendCommandToNuki: stateName = ${deviceStatus.lastKnownState.stateName.toUpperCase ()}"
@@ -543,9 +556,10 @@ def sendCommandToNuki (Map action, boolean waitCompletition)
 
     if (sendCommand)
     {
+        sendLockEvent (action.transientState)
         try
         {
-            def httpRequest = "${parent.buildBridgeURL (parent.data)}/lockAction?${buildNukiLockActionCommand (action.actionCode, waitCompletition)}"
+            def httpRequest = "${parent.buildBridgeURL (parent.data)}/lockAction?${parent.buildNukiActionCommand (device.data.nukiInfo, _nukiDeviceTypeLock, action.actionCode, waitCompletition)}"
             logDebug "sendCommandToNuki: httpRequest = ${httpRequest})"
     	    httpGet (httpRequest)
             {
@@ -570,11 +584,11 @@ def sendCommandToNuki (Map action, boolean waitCompletition)
     
     if (errorMessage == "")
     {
-        sendProgressEvent (action.actionSuccess)
+        parent.sendProgressEvent (device, action.actionSuccess)
     }
     else
     {
-        sendProgressEvent ("${action.actionFailure} - see device events for more information by clicking on the 'Events' button at the top of this page", errorMessage)
+        parent.sendProgressEvent (device, "${action.actionFailure} - see device events for more information by clicking on the 'Events' button at the top of this page", errorMessage)
         logWarn "${_nukiDriverNameLock}: ${errorMessage}"
         returnData = false
     }
@@ -584,7 +598,7 @@ def sendCommandToNuki (Map action, boolean waitCompletition)
 }
 
 
-def buildNukiLockActionCommand (actionCode, waitCompletition)
+def xxxbuildNukiLockActionCommand (actionCode, waitCompletition)
 {
     logDebug "buildNukiLockActionCommand: IN"
     logDebug "buildNukiLockActionCommand: actionCode = ${actionCode}, waitCompletition = ${waitCompletition}"
@@ -593,8 +607,8 @@ def buildNukiLockActionCommand (actionCode, waitCompletition)
     
     if (actionCode != null)
     {
-        logDebug "buildNukiLockActionCommand: device.data.data = ${device.data.data}"
-        httpBody = "nukiId=${device.data.data.DeviceId}" +
+        logDebug "buildNukiLockActionCommand: device.data.nukiInfo = ${device.data.nukiInfo}"
+        httpBody = "nukiId=${device.data.nukiInfo.DeviceId}" +
                    "&deviceType=${_nukiDeviceTypeLock}" +
                    "&action=${actionCode}" +
                    "&token=${parent.data.Token}" +
@@ -612,7 +626,7 @@ def buildNukiLockActionCommand (actionCode, waitCompletition)
 }
 
 
-def sendRequestToNuki (String request)
+def xxsendRequestToNuki (String request)
 {
     logDebug "sendRequestToNuki: IN"
     logDebug "Processing ${request} request"
@@ -621,7 +635,7 @@ def sendRequestToNuki (String request)
     
     try
     {
-        def requestToSend = buildNukiLockRequest (request)
+        def requestToSend = parent.buildNukiRequest (request)
     	httpPost ( requestToSend )
         {
             resp ->
@@ -639,7 +653,7 @@ def sendRequestToNuki (String request)
 }
 
 
-def buildNukiLockRequest (request)
+def xxxbuildNukiLockRequest (request)
 {
     logDebug "buildNukiLockRequest: IN"
     def requestToSend = "http://${state.ip}/${request}?token=${state.token}"
@@ -678,26 +692,6 @@ def handleHttpError (errorCode)
 }
 
 
-def sendBatteryEvent (batteryCritical)  
-{
-    logDebug "sendBatteryEvent: IN"
-
-    sendEvent (name: "battery", value: (batteryCritital ? 20 : 100), unit: "%")          
-
-    logDebug "sendBatteryEvent: OUT"
-}
-
-
-def sendErrorEvent (errorMessage, errorDescription = "")
-{
-    logDebug "sendErrorEvent: IN"
-
-    sendEvent (name: "error", value: errorMessage, descriptionText: errorDescription)          
-
-    logDebug "sendErrorEvent: OUT"
-}
-
-
 def sendLockEvent (lockStatus)
 {
     logDebug "sendLockEvent: IN"
@@ -709,18 +703,9 @@ def sendLockEvent (lockStatus)
 }
 
 
-def sendProgressEvent (status, statusMessage = "")
-{
-    logDebug "sendProgressEvent: IN"
-    logDebug "sendProgressEvent: status = ${status} / statusMessage = ${statusMessage}"
-
-    sendEvent (name: "progress", value: status, descriptionText: statusMessage)          
-
-    logDebug "sendProgressEvent: OUT"
-}
-
-
 // Logging stuff
-def logDebug (message) { if (debugLogging) log.debug (message) }
+def appDebugLogging () { return parent.appDebugLogging () }
+
+def logDebug (message) { if (appDebugLogging ()) log.debug (message) }
 def logInfo  (message) { log.info (message) }
 def logWarn  (message) { log.warn (message) }
