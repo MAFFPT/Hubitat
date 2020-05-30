@@ -37,7 +37,8 @@ definition \
     singleInstance: true,
     iconUrl:   "https://raw.githubusercontent.com/MAFFPT/Hubitat/Nuki Smart Lock 2.0/icons/nuki-logo-white.svg",
     iconX2Url: "https://raw.githubusercontent.com/erocm123/SmartThingsPublic/master/smartapps/erocm123/sonoff-connect.src/sonoff-connect-icon-2x.png",
-    iconX3Url: "https://raw.githubusercontent.com/erocm123/SmartThingsPublic/master/smartapps/erocm123/sonoff-connect.src/sonoff-connect-icon-3x.png"
+    iconX3Url: "https://raw.githubusercontent.com/erocm123/SmartThingsPublic/master/smartapps/erocm123/sonoff-connect.src/sonoff-connect-icon-3x.png",
+	documentationLink: "https://github.com/MAFFPT/Hubitat/blob/master/Nuki%20Smart%20Lock%202.0/readme.md"
 )
 
 
@@ -97,17 +98,17 @@ def mainPage ()
 	initialize ()
     
     logInfo "Nuki Smart Lock 2.0 Integration started"
-    
+
     return dynamicPage (name: "mainPage",
-		                title: "<b>Nuki<sup>&reg;</sup> Smart Lock 2.0 Integration version ${_nukiIntegrationVersion}</b>",
-		                uninstall: true,
-		                install: true) \
+                        uninstall: true,
+                        install: true) \
                         {
+                            standardHeader ("Bridge discovery")
                             section () \
                             {
                                 href  (page: "selectBridgesToAddPage",
-                                       title: "<b>Discover Nuki<sup>&reg;</sup> bridges</b>",
-                                       description: "\nDiscover bridges present on your local network for installation")
+                                       title: "<b>Discover Nuki<sup>&reg;</sup> Bridges</b>",
+                                       description: "\nDiscover Bridges present on your local network for installation")
                                 
                                 input (name: "debugLogging",
                                        type: "bool",
@@ -120,7 +121,7 @@ def mainPage ()
                                 paragraph "&bull; Set up your bridge(s) and lock(s) correctly using the Nuki<sup>&reg;</sup> smartphone App before using this app."
                                 paragraph "&bull; It is <b>mandatory</b> the use of static IP address(es) for your bridge(s). See your router documentation on how to set static IP on DHCP settings."
 		                    }
-	                    }
+                        }
 }
 
 
@@ -169,9 +170,9 @@ def selectBridgesToAddPage ()
             desc = "${bridgesList.size()} bridges found - select bridges to install"
     }
     
-	return dynamicPage (name: "selectBridgesToAddPage",
-                        title: "<b>Install Nuki<sup>&reg;</sup> bridges and its Nuki<sup>&reg;</sup> paired device(s) to your Hubitat Elevation<sup>&reg;</sup> hub</b>") \
+	return dynamicPage (name: "selectBridgesToAddPage") \
                         {
+                            standardHeader ("<b>Install Nuki<sup>&reg;</sup> Bridges and its Nuki<sup>&reg;</sup> paired device(s) to your Hubitat Elevation<sup>&reg;</sup> hub</b>")
                             section() \
                             {
                                 input (name: "selectedBridgesToAdd", 
@@ -179,23 +180,23 @@ def selectBridgesToAddPage ()
                                        type: "enum",
                                        multiple: true,
                                        options: bridgesList,
-                                       title: "Use the following list to select the bridge(s) to install. Then click on 'Next'.\n\n" +
-                                              "Right after clicking 'Next', the led on every selected bridge will lit up, one by one.\n" +
-                                              "When the led lit up, you must press the button on the bridge to allow it to be recognized by this app.",
+                                       title: "Use the following list to select the Bridge(s) to install. Then click on <b>'Install selected Bridge(s)'</b> box below. " +
+                                              "Right after clicking on it, the led on every selected Bridge will lit up, one by one. " +
+                                              "When the Bridge's led lit up, you must press the button on the Bridge to allow it to be recognized by this app.",
                                        description: desc)
                                 
                                 href  ("addedBridgesPage",
-                                       title: "Install selected bridges",
+                                       title: "Install selected Bridge(s)",
                                        params: existingBridgesParam,
-                                       description: "\nClick here to install\n\nDon't forget to press the selected bridge(s) button when its LED lit up",
+                                       description: "\nClick here to install\n\n<b>NOTICE:</b>Don't forget to press the selected Bridge(s) button when its LED lit up",
                                        state: "")
                                 
-                                paragraph "<b>WARNING</b>: Selecting a bridge already installed will automatically delete it, its paired device(s) and\n" +
+                                paragraph "<b>WARNING</b>: Selecting a Bridge already installed will automatically delete it, its paired device(s) and\n" +
                                           "all references to them in this Hubitat Elevation<sup>&reg;</sup> hub (e.g. Rules in Rule Machine)." 
                                 paragraph "Sometimes it gets difficult to get an answer from the Nuki<sup>&reg;</sup> bridges ...\n" +
                                           "If it happens, you must execute the most important debug action in all history of IT: power recicle!\n" +
-                                          "So, unplug your Nuki<sup>&reg;</sup> bridge(s), wait 15 seconds, plug it again and wait for the led stop flashing.\n" +
-                                          "Then, restart the installation of the bridge(s) and paired device(s)."
+                                          "So, unplug your Nuki<sup>&reg;</sup> Bridge(s), wait 15 seconds, plug it again and wait for the led stop flashing.\n" +
+                                          "Then, restart the installation of the Bridge(s) and paired device(s)."
                              }
                         }
 }
@@ -259,9 +260,10 @@ def addedBridgesPage (existingBridgesParam)
     
   
 	return dynamicPage (name: "addedBridgesPage",
-                        title: "<b>Installation of Nuki<sup>&reg;</sup> bridges to your Hubitat Elevation<sup>&reg;</sup> hub</b>",
+                        title: "",
                         install: true) \
                         {
+                            standardHeader ("<b>Installation of Nuki<sup>&reg;</sup> bridges to your Hubitat Elevation<sup>&reg;</sup> hub</b>")
                             section() \
                             {
                                 if (addedBridges.size() != 0)
@@ -388,23 +390,31 @@ def getBridgeToken (bridge)
     def httpRequest = "${buildBridgeURL (bridge)}/auth"
     logDebug "getBridgeToken: httpRequest = ${httpRequest}"
     
-    httpGet (httpRequest) 
-    { 
-        resp -> 
-            if (resp.data.success) 
-            {
-                logDebug "getBridgeToken: got response (${resp.data})"
-                logDebug "getBridgeToken: before getting bridge token"
-                bridgeToken = resp.data.token
-                logDebug "getBridgeToken: after getting token = ${resp.data.token}"
-            }
-            else
-            {
-                logDebug "getBridgeToken: pausing 5 seconds"
-                pauseExecution (5000)
-            }           
+    try
+    {
+        httpGet (httpRequest) 
+        { 
+            resp -> 
+                if (resp.data.success) 
+                {
+                    logebug "getBridgeToken: got response (${resp.data})"
+                    logDebug "getBridgeToken: before getting bridge token"
+                    bridgeToken = resp.data.token
+                    logDebug "getBridgeToken: after getting token = ${resp.data.token}"
+                }
+                else
+                {
+                    logDebug "getBridgeToken: pausing 5 seconds"
+                    pauseExecution (5000)
+                }
+        }
     }
-   
+    catch (java.net.SocketTimeoutException e)
+    {
+        logWarn "Nuki Smart Lock 2.0 Integration failed"
+        throw new Exception ("Button at Bridge with ID = ${bridge.bridgeId} not pressed. Installation failed.")
+    }
+
     logDebug "getBridgeToken: bridge token = ${bridgeToken}"
     logDebug "getBridgeToken: OUT"
 
@@ -424,13 +434,12 @@ def addBridges (bridgesToAdd, existingBridges)
     def addedBridges = []
     def addedBridge = [:]
     
-    def bridge // = [:]
-    def installThisBridge
+    def bridge
     
     bridgesToAdd.each 
     { 
         bridgeId ->
-            //logDebug "addBridges: checking if user want to install bridge with bridgeId = ${bridgeId}"
+            //logDebug "addBridges: checking if user wants to install bridge with bridgeId = ${bridgeId}"
             bridge = existingBridges [bridgeId]
             logDebug "addBridges: let's install bridge = ${bridge}"
 
@@ -481,7 +490,7 @@ def addBridge (bridge)
     deviceData.Port = bridge.port
     deviceData.Label = buildBridgeLabel (bridge)
     deviceData.PairedDevices = pairedDevices
-    deviceData.DebugLoggingRequired = debugLogging    // if this app is running with debugLogging, the child device will run with it too
+//    deviceData.DebugLoggingRequired = debugLogging    // if this app is running with debugLogging, the child device will run with it too
 
     Map bridgeProperties = [:]
     bridgeProperties.label = deviceData.Label
@@ -505,13 +514,13 @@ def addBridge (bridge)
     }
     catch (com.hubitat.app.exception.UnknownDeviceTypeException e)
     {
-        throw new Exception ("Failed to install bridge with bridgeId = ${bridge.bridgeId}. Driver (${_nukiDeviceTypeBridge}) not installed on this Hubitat Elevation hub; install it before attempting to run this app again")
+        throw new Exception ("Failed to install bridge with bridgeId = ${bridge.bridgeId}. Driver (${_nukiDriverNameBridge}) not installed on this Hubitat Elevation hub; install it before attempting to run this app again")
     }
     catch (error) 
     {
         logDebug "addBridge: Failed to install bridge with bridgeId = ${bridge.bridgeId}. Error = ${error}"
 
-        throw new Exception ("Failed to install bridge with bridgeId = ${bridge.bridgeId}. Driver (${_nukiDeviceTypeBridge}) most likely not installed on this Hubitat Elevation hub; install it before attempting to run this app again.")
+        throw new Exception ("Failed to install bridge with bridgeId = ${bridge.bridgeId}. Error = ${error}")
     }
  
     if (bridgeAddSuccess)
@@ -544,17 +553,18 @@ def getPairedDevices (bridge)
     def httpRequest = "${buildBridgeURL (bridge)}/list?token=${bridge.token}"
     
     logDebug "getPairedDevices: httpRequest = '${httpRequest}'"
-    
-    httpGet(httpRequest) 
-    { 
-        resp -> 
-            resp.data?.each
-            {
-                logDebug "getPairedDevices: Storing information about paired device to bridge '${bridge.bridgeId}': ${it}"
 
-                pairedDevices << it
-            }
+    httpGet (httpRequest) 
+    {
+        resp -> 
+        resp.data?.each
+        {
+            logDebug "getPairedDevices: Storing information about paired device to bridge '${bridge.bridgeId}': ${it}"
+
+            pairedDevices << it
+        }
     }
+    
     logDebug "getPairedDevices: pairedDevices = ${pairedDevices}"
     logDebug "getPairedDevices: OUT"
     
@@ -735,8 +745,32 @@ def getNukiDeviceDriver (nukiDevice)
 
 
 //
+// Formatting stuff
+//
+def standardHeader (subheader)
+{
+    def header = "<h3 style='color: white; background-color: #ff8517; text-align: center; vertical-align: bottom; height: 30px;'><b>Nuki<sup>&reg;</sup> Smart Lock 2.0 Integration version ${_nukiIntegrationVersion}</b></h3>"
+    
+    if (subheader != "")
+    {
+        header += "<h4 style='color: #29b5fb; font-size: large;'><b>${subheader}</b></h4>"
+    }
+    
+    section (header) 
+    {
+        if (subheader != "")
+        {
+            //paragraph "<h4 style='color: #29b5fb; font-size: large;'><b>${subheader}</b></h4>"
+        }
+    }
+}
+
+
+//
 // Logging stuff
 //
+def appDebugLogging () { return debugLogging }
+
 def logDebug (message) { if (debugLogging) log.debug (message) }
 def logInfo  (message) { log.info (message) }
 def logWarn  (message) { log.warn (message) }
