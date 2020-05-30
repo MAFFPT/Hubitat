@@ -38,7 +38,7 @@ metadata
         command "getLog"
         command "status"
     }
-    
+/*    
 	preferences 
     {
         // This toogle switch enables/disables debug information logging
@@ -49,7 +49,7 @@ metadata
                submitOnChange: true,
                title: "Enable debug logging\n<b>CAUTION:</b> a lot of log entries will be recorded!")
     }
-    
+*/    
     tiles 
     {
         // When clicked, retrieves the last 20 log entries of this Nuki bridge
@@ -85,15 +85,6 @@ def initialize ()
 //
 def installed ()
 {
-    // If the Nuki Smart Lock Integration app was running with debugLogging selected, 
-    // it will automatically be passed on to this bridge, since the default value is false (disabled)
-    // Note: it happens only during the first install of this driver, not affecting permanently the
-    // debugLogging option
-    if (device.data.DebugLoggingRequired)
-    {
-        debugLogging = true
-    }
-    
   	logDebug "installed: IN"
     logDebug "installed: installing device ${device.data}"
 
@@ -400,17 +391,17 @@ def addPairedDevice (bridge, nukiDevice)
     logDebug "addPairedDevice: IN"
     logDebug "addPairedDevice: nukiDevice = ${nukiDevice}"
     
-    def deviceData = [:]
-    deviceData.DeviceType = nukiDevice.deviceType
-    deviceData.DeviceTypeName = parent.getNukiDeviceDriver (nukiDevice)
-    deviceData.DeviceId = nukiDevice.nukiId
-    deviceData.Name = nukiDevice.name
-    deviceData.DebugLoggingRequired = debugLogging    // if this device is running with debugLogging, the child device will run with it too
+    def nukiInfo = [:]
+    nukiInfo.DeviceType = nukiDevice.deviceType
+    nukiInfo.DeviceTypeName = parent.getNukiDeviceDriver (nukiDevice)
+    nukiInfo.DeviceId = nukiDevice.nukiId
+    nukiInfo.Name = nukiDevice.name
+//    nukiInfo.DebugLoggingRequired = debugLogging    // if this device is running with debugLogging, the child device will run with it too
 
     def deviceProperties = [:]
     deviceProperties.label = parent.buildNukiDeviceLabel (nukiDevice)
-    deviceProperties.name = deviceData.DeviceTypeName
-    deviceProperties.data = deviceData
+    deviceProperties.name = nukiInfo.DeviceTypeName
+    deviceProperties.nukiInfo = nukiInfo
     deviceProperties.isComponent = true               // the child device will be "attached" to this device
 
     try 
@@ -418,7 +409,7 @@ def addPairedDevice (bridge, nukiDevice)
         logDebug "addPairedDevice: trying to install device with nukiId = ${nukiDevice.nukiId}"
         def deviceDNI = parent.buildDeviceDNI (nukiDevice)
         def childDevice = addChildDevice (_nukiNamespace,               // namespace - must be the same for this app and driver
-                                          deviceData.DeviceTypeName,    // typeName = driver of the child device - must have been previously loaded into this HE hub
+                                          nukiInfo.DeviceTypeName,      // typeName = driver of the child device - must have been previously loaded into this HE hub
                                           deviceDNI,                    // deviceNetworkId
                                           deviceProperties)
         // if we pass through here, it means that the device was correcly added. Let's flag it!
@@ -430,7 +421,7 @@ def addPairedDevice (bridge, nukiDevice)
     }
     catch (com.hubitat.app.exception.UnknownDeviceTypeException e)
     {
-        logWarn "${_nukiDriverNameBridge}: Failed to install device with nukiId = ${nukiDevice.nukiId}. Driver (${deviceData.DeviceTypeName}) not installed on this Hubitat Elevation hub; install it before attempting to run this app again."
+        logWarn "${_nukiDriverNameBridge}: Failed to install device with nukiId = ${nukiDevice.nukiId}. Driver (${nukiInfo.DeviceTypeName}) not installed on this Hubitat Elevation hub; install it before attempting to run this app again."
         nukiDevice.successfullyInstalled = false
     }
     catch (error) 
@@ -552,15 +543,15 @@ def getNukiDeviceStatus (targetDeviceData)
 
 
 //
-// Retrieve information about a bridge (shared method between device drivers)
+// Retrieve information about a bridge (NOTE: shared method between device drivers)
 //
-def getDeviceInfo (deviceData, parentData)
+def getDeviceInfo (bridgeData, parentData)
 {
     logDebug "getDeviceInfo: IN"
-    logDebug "getDeviceInfo: deviceData = ${deviceData}"
+    logDebug "getDeviceInfo: bridgeData = ${bridgeData}"
     logDebug "getDeviceInfo: parentData = ${parentData}"
 
-    def httpRequest = "${parent.buildBridgeURL (parentData)}/lockState?nukiId=${deviceData.DeviceId}&deviceType=${deviceData.DeviceType}&token=${parentData.Token}"
+    def httpRequest = "${parent.buildBridgeURL (parentData)}/lockState?nukiId=${bridgeData.DeviceId}&deviceType=${bridgeData.DeviceType}&token=${parentData.Token}"
     logDebug "getBridgeInfo: httpRequest = ${httpRequest}"
 
     def deviceInfo
@@ -576,7 +567,7 @@ def getDeviceInfo (deviceData, parentData)
     }
     catch (e)
     {
-        throw new Exception ("${parent.device.data.Label}: method 'getBridgeInfo' - Fatal error = ${error}")
+        throw new Exception ("${parentData.Label}: method 'getBridgeInfo' - Fatal error = ${error}")
     }     
 
     logDebug "getBridgeInfo: OUT"
@@ -585,10 +576,103 @@ def getDeviceInfo (deviceData, parentData)
 }
 
 
+//
+// Builds a Nuki action command to be sent to the bridge (NOTE: shared method between device drivers)
+//
+def buildNukiActionCommand (nukiInfo, deviceType, actionCode, waitCompletition)
+{
+    logDebug "buildNukiActionCommand: IN"
+    logDebug "buildNukiActionCommand: waitCompletition = ${waitCompletition}"
+    logDebug "buildNukiActionCommand: actionCode = ${actionCode}"
+    logDebug "buildNukiActionCommand: deviceType = ${deviceType}"
+    logDebug "buildNukiActionCommand: nukiInfo = ${nukiInfo}"
+    
+    def httpBody
+    
+    if (actionCode != null)
+    {
+        httpBody = "nukiId=${nukiInfo.DeviceId}" +
+                   "&deviceType=${deviceType}" +
+                   "&action=${actionCode}" +
+                   "&token=${device.data.Token}" +
+                   "&nowait=${waitCompletition ? 0 : 1}"
+    }
+    else
+    {
+        log.debug "buildNukiActionCommand: OUT with exception"
+        throw new Exception ("Invalid action description (${actionDescription})")
+    }
+    logDebug "buildNukiActionCommand: httpBody = ${httpBody}"
+    logDebug "buildNukiActionCommand: OUT"
+
+    return httpBody
+}
+
+
+//
+// Builds a request to be sent to the bridge (NOTE: shared method between device drivers)
+//
+def buildNukiRequest (request)
+{
+    logDebug "buildNukiRequest: IN"
+    def requestToSend = "http://${state.ip}/${request}?token=${state.token}"
+    
+    logDebug "buildNukiRequest: requestToSend = ${requestToSend}"
+    logDebug "buildNukiRequest: OUT"
+    
+    return requestToSend
+}
+
+
+//
+// Event methods (NOTE: shared methods between device drivers)
+//
+
+//
+// Record a battery event
+//
+def sendBatteryEvent (forDevice, batteryCritical)  
+{
+    logDebug "sendBatteryEvent: IN"
+
+    forDevice.sendEvent (name: "battery", value: (batteryCritital ? 20 : 100), unit: "%")          
+
+    logDebug "sendBatteryEvent: OUT"
+}
+
+
+//
+// Record a progress event
+//
+def sendProgressEvent (forDevice, status, statusMessage = "")
+{
+    logDebug "sendProgressEvent: IN"
+    logDebug "sendProgressEvent: status = ${status} / statusMessage = ${statusMessage}"
+
+    forDevice.sendEvent (name: "progress", value: status, descriptionText: statusMessage)          
+
+    logDebug "sendProgressEvent: OUT"
+}
+
+
+//
+// Record an error event
+//
+def xxsendErrorEvent (forDevice, errorMessage, errorDescription = "")
+{
+    logDebug "sendErrorEvent: IN"
+
+    forDevice.sendEvent (name: "error", value: errorMessage, descriptionText: errorDescription)          
+
+    logDebug "sendErrorEvent: OUT"
+}
+
 
 //
 // Logging stuff
 //
-def logDebug (message) { if (debugLogging) log.debug (message) }
+def appDebugLogging () { return parent.appDebugLogging () }
+
+def logDebug (message) { if (appDebugLogging ()) log.debug (message) }
 def logInfo  (message) { log.info (message) }
 def logWarn  (message) { log.warn (message) }
