@@ -85,7 +85,7 @@ import groovy.transform.Field
 //@Field static Map lockDoorStatus = [0: "UNAVAILABLE", 1: "DEACTIVATED", 2: "DOOR_CLOSED", 3: "DOOR_OPENED", 4: "DOOR_STATE_UNKNOWN", 5: "CALIBRATING"]
 //@Field static Map lockButtonActions = [0: "NO_ACTION", 1: "INTELLIGENT", 2: "UNLOCK", 3: "LOCK", 4: "UNLATCH", 5: "LOCK_N_GO", 6: "SHOW_STATUS"]
 
-@Field static _nukiNamespace = "maffpt"                  // All apps and drivers must be at the same namespace
+@Field static _nukiNamespace = "maffpt.nuki"             // All apps and drivers must be at the same namespace
 @Field static _nukiOpenerDriverVersion = "0.2"           // Current version of this driver
 
 @Field static Map _openerDeviceModes = [2: "Door mode", 3: "Continuous mode"]
@@ -96,7 +96,7 @@ import groovy.transform.Field
 
 metadata 
 {
-    definition (name: "Nuki Opener", namespace: "maffpt", author: "Marco Felicio") 
+    definition (name: "Nuki Opener", namespace: "maffpt.nuki", author: "Marco Felicio") 
     {
         capability "Battery"
         
