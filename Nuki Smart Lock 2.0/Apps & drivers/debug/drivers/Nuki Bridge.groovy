@@ -18,7 +18,7 @@
 
 import groovy.transform.Field
 
-@Field static _nukiNamespace = "maffpt"                    // All apps and drivers must be at the same namespace
+@Field static _nukiNamespace = "maffpt.nuki"               // All apps and drivers must be at the same namespace
 @Field static _nukiBridgeDriverVersion = "0.2"             // Current version of this driver
 
 @Field static _nukiDriverNameBridge = "Nuki Bridge"        // name of the device type = driver name
@@ -27,7 +27,7 @@ import groovy.transform.Field
 
 metadata 
 {
-    definition (name: "Nuki Bridge", namespace: "maffpt", author: "Marco Felicio") 
+    definition (name: "Nuki Bridge", namespace: "maffpt.nuki", author: "Marco Felicio") 
     {
         capability "Health Check"
         command "ping"
