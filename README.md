@@ -1,2 +1,2 @@
 # Hubitat
-My Hubitat apps, drivers and forked repos all goes here
+My Hubitat app and drivers all goes here
