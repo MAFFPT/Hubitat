@@ -27,8 +27,7 @@ import groovy.transform.Field
 
 @Field static _nukiDiscoverBridgesURL = "https://api.nuki.io/discover/bridges"
 
-definition \
-(
+definition (
     name: "Nuki Smart Lock 2.0 Integration",
     namespace: "maffpt",
     author: "Marco Felicio (MAFFPT)",
