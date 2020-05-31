@@ -60,10 +60,6 @@ So far, the following Nuki products are supported by the app/drivers:
 * Nuki Opener (firmware version ??? and above)
 * Nuki Smart Lock 2.0 (firmware version ??? and above)
 
-#### To be supported soon ... stay tuned!
-
-* Nuki Keypad
-
 **NOTES**
 
 No plan to support Google devices: after a lot of frustating contacts with Google regarding support for various device configurations issues I simply gave up.
@@ -112,6 +108,16 @@ Please note that:
 ### Install app & drivers code
 
 First of all you'll need to install the following app and drivers in your HE hub.
+
+You have two options to do that: manually or using the amazing **Hubitat Package Manager (HPM)** developed by [@dman2306](https://community.hubitat.com/u/dman2306/summary).
+
+### Automatic installation using HPM
+
+This is the easyest way to install all components of this Integration. Just follow the instructions to install HPM in your HE hub found [here](https://community.hubitat.com/t/beta-hubitat-package-manager/38016).
+
+### Manual installation
+
+If you prefer to do it by yourself, keep reading ...
 
 **Suggestion:** Open these links in a new browser tab so it will be easier for you to follow the instructions.
 
