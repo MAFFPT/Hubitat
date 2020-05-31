@@ -107,7 +107,7 @@ Please note that:
 
 ### Install app & drivers code
 
-First of all you'll need to install the following app and drivers in your HE hub.
+First of all you'll need to install the app and drivers in your HE hub.
 
 You have two options to do that: manually or using the amazing **Hubitat Package Manager (HPM)** developed by [@dman2306](https://community.hubitat.com/u/dman2306/summary).
 
