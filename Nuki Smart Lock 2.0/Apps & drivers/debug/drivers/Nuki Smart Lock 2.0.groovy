@@ -106,7 +106,7 @@ import groovy.transform.Field
 //@Field static Map lockDoorStatus = [0: "UNAVAILABLE", 1: "DEACTIVATED", 2: "DOOR_CLOSED", 3: "DOOR_OPENED", 4: "DOOR_STATE_UNKNOWN", 5: "CALIBRATING"]
 //@Field static Map lockButtonActions = [0: "NO_ACTION", 1: "INTELLIGENT", 2: "UNLOCK", 3: "LOCK", 4: "UNLATCH", 5: "LOCK_N_GO", 6: "SHOW_STATUS"]
 
-@Field static _nukiNamespace = "maffpt"                  // All apps and drivers must be at the same namespace
+@Field static _nukiNamespace = "maffpt.nuki"             // All apps and drivers must be at the same namespace
 @Field static _nukiLockDriverVersion = "0.2"             // Current version of this driver
 
 @Field static Map _lockDeviceModes = [2: "Door mode"]
@@ -116,15 +116,12 @@ import groovy.transform.Field
 
 metadata 
 {
-    definition (name: "Nuki Smart Lock 2.0", namespace: "maffpt", author: "Marco Felicio") 
+    definition (name: "Nuki Smart Lock 2.0", namespace: "maffpt.nuki", author: "Marco Felicio") 
     {
         capability "Battery"
         
         capability "ContactSensor"
 
-        capability "DoorControl"
-        command "open"
-        
         capability "Lock"
         command "lock"
         command "lockNGo"
@@ -133,28 +130,28 @@ metadata
         
         command "status"
     }
-/*
+
     preferences 
     {
-        input ("debugLogging",
+        input ("unlatchWhenUnlock",
                "bool",
                defaultValue: false,
                required: false,
                submitOnChange: true,
-               title: "Enable debug logging\n<b>CAUTION:</b> a lot of log entries will be recorded!")
+               title: "Unlock & unlatch the door when the UNLOCK command is received")
     }
-*/    
+    
     tiles 
-    {
-        standardTile ("device.label", "device.lock", inactiveLabel: false, decoration: "flat", width: 3, height: 2) 
+    {//decoration: "flat", 
+        standardTile ("device.label", "device.lock", inactiveLabel: false, width: 3, height: 2) 
         {
-            state "locked", label:'Locked', action:"unlock", icon: "st.doors.garage.garage-open", backgroundcolor: "#00ff00", nextState: "unlocking"
-            state "unlocking", label: "Unlocking", icon: "st.doors.garage.garage-opening", backgroundcolor: "#0000ff", nextState: "unlocked"
+            state "locked",    label: "Locked",     action:"unlock", icon: "st.doors.garage.garage-open",    backgroundcolor: "#00ff00" //, nextState: "unlocking"
+            state "unlocking", label: "Unlocking",                   icon: "st.doors.garage.garage-opening", backgroundcolor: "#0000ff" //, nextState: "unlocked"
             
-            state "unlocked", label:'Unlocked', action:"lock", icon: "st.doors.garage.garage-closed", backgroundcolor: "#ff0000", nextState: "locking"
-            state "locking", label:'Locking', icon: "st.doors.garage.garage-closing", backgroundcolor: "#0000ff", nextState: "locked"
+            state "unlocked",  label: "Unlocked",   action:"lock",   icon: "st.doors.garage.garage-closed",  backgroundcolor: "#ff0000" //, nextState: "locking"
+            state "locking",   label: "Locking",                     icon: "st.doors.garage.garage-closing", backgroundcolor: "#0000ff" //, nextState: "locked"
         }
-        
+       
         valueTile ("battery", "device.battery", inactiveLabel: false, decoration: "flat", width: 3, height: 2)
         {
             state "battery", label: "Battery", icon: "st.batteries.battery.full", unit: "%", backgroundColors:[[value: 100, color: "#00ff00"],
@@ -336,21 +333,6 @@ def lockNGo ()
 
 
 //
-// Unlatches the door
-//
-def open ()
-{
-   	logDebug "open: IN"
-
-    sendCommandToNuki (_lockActions [3],       // action = "unlatch"
-                       false)                  // waitCompletition
-
-  	logDebug "open: OUT"   
-}
-
-
-
-//
 // Recover device's current status
 //
 def status ()
@@ -379,10 +361,10 @@ def status ()
 def unlatch ()
 {
     logDebug "unlatch: IN"
-    
+
     sendCommandToNuki (_lockActions [3],       // action = "unlatch"
                        true)                   // waitCompletition
-    
+
     logDebug "unlatch: OUT"
 }
 
@@ -390,10 +372,17 @@ def unlock (Map cmds)
 {
     logDebug "unlock: IN"
     logDebug "unlock: cmds = ${cmds}"
-    
-    sendCommandToNuki (_lockActions [1],       // action = "unlock"
-                       true)                   // waitCompletition
 
+    if (unlatchWhenUnlock)
+    {
+        unlatch ()
+    }
+    else
+    {
+        sendCommandToNuki (_lockActions [1],       // action = "unlock"
+                           true)                   // waitCompletition
+    }
+    
     logDebug "unlock: OUT"
 }
 
@@ -578,7 +567,7 @@ def sendCommandToNuki (Map action, boolean waitCompletition)
         }
         catch (err)
         {
-            logDebug ("sendCommandToNuki: Error on httpPost = ${err}")
+            logWarn ("sendCommandToNuki: Error on httpPost = ${err}")
         }
     }
     
