@@ -27,18 +27,16 @@ import groovy.transform.Field
 
 @Field static _nukiDiscoverBridgesURL = "https://api.nuki.io/discover/bridges"
 
-definition (
-    name: "Nuki Smart Lock 2.0 Integration",
-    namespace: "maffpt",
-    author: "Marco Felicio (MAFFPT)",
-    description: "Integration app for Nuki<sup>&reg;</sup> Smart Lock 2.0 - version ${_nukiIntegrationVersion}",
-    category: "Convenience",
-    singleInstance: true,
-    iconUrl:   "https://raw.githubusercontent.com/MAFFPT/Hubitat/Nuki Smart Lock 2.0/icons/nuki-logo-white.svg",
-    iconX2Url: "https://raw.githubusercontent.com/erocm123/SmartThingsPublic/master/smartapps/erocm123/sonoff-connect.src/sonoff-connect-icon-2x.png",
-    iconX3Url: "https://raw.githubusercontent.com/erocm123/SmartThingsPublic/master/smartapps/erocm123/sonoff-connect.src/sonoff-connect-icon-3x.png",
-	documentationLink: "https://github.com/MAFFPT/Hubitat/blob/master/Nuki%20Smart%20Lock%202.0/readme.md"
-)
+definition (name: "Nuki Smart Lock 2.0 Integration",
+    	    namespace: "maffpt",
+            author: "Marco Felicio (MAFFPT)",
+            description: "Integration app for Nuki<sup>&reg;</sup> Smart Lock 2.0 - version ${_nukiIntegrationVersion}",
+            category: "Convenience",
+            singleInstance: true,
+            iconUrl:   "https://raw.githubusercontent.com/MAFFPT/Hubitat/Nuki Smart Lock 2.0/icons/nuki-logo-white.svg",
+            iconX2Url: "https://raw.githubusercontent.com/erocm123/SmartThingsPublic/master/smartapps/erocm123/sonoff-connect.src/sonoff-connect-icon-2x.png",
+            iconX3Url: "https://raw.githubusercontent.com/erocm123/SmartThingsPublic/master/smartapps/erocm123/sonoff-connect.src/sonoff-connect-icon-3x.png",
+	    documentationLink: "https://github.com/MAFFPT/Hubitat/blob/master/Nuki%20Smart%20Lock%202.0/readme.md")
 
 
 preferences 
