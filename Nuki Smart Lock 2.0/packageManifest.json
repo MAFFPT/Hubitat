@@ -1,45 +1,32 @@
 {
-	"packageName": "Nuki Smart Lock 2.0 Interation",
-	"minimumHEVersion": "2.1.9",
-	"author": "Marco Felicio",
-	"version": "0.3.0",
-	"betaVersion": "0.3.1",
-	"dateReleased": "2020-05-30",
-	"documentationLink": "https://github.com/MAFFPT/Hubitat/blob/master/Nuki%20Smart%20Lock%202.0/readme.md",
-	"communityLink": "https://community.hubitat.com/t/beta-nuki-smart-lock-2-0/40654",
-	"licenseFile": "https://github.com/MAFFPT/Hubitat/blob/master/Nuki%20Smart%20Lock%202.0/LICENSE.md",
-	"releaseNotes": "Using Hubitat Package Manager",
-	"apps" : [
-		{
-			"id" : "bf7c20fb-1fa9-436f-9cfc-fb8520cda22a",
-			"name": "Sample App",
-			"namespace": "dcm",
-			"alternateNames" : [
-				{
-					"name": "Old App Name",
-					"namespace": "oldnamespace"
-				}
-			],
-			"location": "https://raw.githubusercontent.com/dcmeglio/.../file.groovy",
-			"betaLocation": "https://raw.githubusercontent.com/dcmeglio/.../betafile.groovy",
-			"required": true,
-			"oauth": false
-		}
-	],
-	"drivers" : [
-		{
-			"id": "163f6821-e8a7-48fc-8e66-c1787cfe54eb",
-			"name": "Sample Driver",
-			"namespace": "dcm",
-			"alternateNames" : [
-				{
-					"name": "Old Driver Name",
-					"namespace": "oldnamespace"
-				}
-			],
-			"location": "https://raw.githubusercontent.com/dcmeglio/.../file.groovy",
-			"betaLocation": "https://raw.githubusercontent.com/dcmeglio/.../betafile.groovy",
-			"required": true
-		}
-	]
+  "packageName": "Nuki Smart Lock 2.0 Integration",
+  "author": "Marco Felicio (maffpt@gmail.com)",
+  "version": "0.3.0",
+  "minimumHEVersion": "2.1.9",
+  "dateReleased": "2020-05-30",
+  "apps":    [{"id":        "d8453be8-b65a-4d79-ac30-307cf8951b67",
+      	       "name":      "Nuki Smart Lock 2.0 Integration",
+      	       "namespace": "maffpt",
+      	       "location":  "https://raw.githubusercontent.com/MAFFPT/Hubitat/master/Nuki%20Smart%20Lock%202.0/Apps%20%26%20drivers/debug/apps/Nuki%20Smart%20Lock%202.0%20Integration.groovy",
+      	       "required":  true,
+      	       "oauth":     false}
+             ],
+  "drivers": [{"id":         "798e15d4-01ac-4266-a223-c3473c36db82",
+      	       "name":       "Nuki Bridge",
+               "namespace":  "maffpt",
+               "location":   "https://raw.githubusercontent.com/MAFFPT/Hubitat/master/Nuki%20Smart%20Lock%202.0/Apps%20%26%20drivers/debug/drivers/Nuki%20Bridge.groovy",
+               "required":    true},
+	      
+	      {"id":         "6cf831d5-6801-492d-b2b7-f51a8be42259",
+               "name":       "Nuki Opener",
+               "namespace":  "maffpt",
+               "location":   "https://raw.githubusercontent.com/MAFFPT/Hubitat/master/Nuki%20Smart%20Lock%202.0/Apps%20%26%20drivers/debug/drivers/Nuki%20Opener.groovy",
+               "required":   true},
+	      
+              {"id":         "9795b0d7-7938-4169-9e31-a5df267661dc",
+               "name":       "Nuki Smart Lock 2.0",
+               "namespace":  "maffpt",
+               "location":   "https://raw.githubusercontent.com/MAFFPT/Hubitat/master/Nuki%20Smart%20Lock%202.0/Apps%20%26%20drivers/debug/drivers/Nuki%20Smart%20Lock%202.0.groovy",
+               "required":   true}
+             ]
 }
