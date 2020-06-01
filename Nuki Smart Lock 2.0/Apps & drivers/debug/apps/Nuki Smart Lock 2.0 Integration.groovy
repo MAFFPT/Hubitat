@@ -18,7 +18,7 @@
 
 import groovy.transform.Field
 
-@Field static _nukiNamespace = "maffpt"
+@Field static _nukiNamespace = "maffpt.nuki"
 @Field static _nukiDriverNameBridge = "Nuki Bridge"          // name of the device type = driver name
 @Field static _nukiDriverNameLock = "Nuki Smart Lock 2.0"    // Nuki Smart Lock 2.0's device driver name
 @Field static _nukiDriverNameOpener = "Nuki Opener"          // Nuki Opener's device driver name
@@ -27,16 +27,16 @@ import groovy.transform.Field
 
 @Field static _nukiDiscoverBridgesURL = "https://api.nuki.io/discover/bridges"
 
-definition (name: "Nuki Smart Lock 2.0 Integration",
-    	    namespace: "maffpt",
-            author: "Marco Felicio (MAFFPT)",
-            description: "Integration app for Nuki<sup>&reg;</sup> Smart Lock 2.0 - version ${_nukiIntegrationVersion}",
-            category: "Convenience",
-            singleInstance: true,
-            iconUrl:   "https://raw.githubusercontent.com/MAFFPT/Hubitat/Nuki Smart Lock 2.0/icons/nuki-logo-white.svg",
-            iconX2Url: "https://raw.githubusercontent.com/erocm123/SmartThingsPublic/master/smartapps/erocm123/sonoff-connect.src/sonoff-connect-icon-2x.png",
-            iconX3Url: "https://raw.githubusercontent.com/erocm123/SmartThingsPublic/master/smartapps/erocm123/sonoff-connect.src/sonoff-connect-icon-3x.png",
-	    documentationLink: "https://github.com/MAFFPT/Hubitat/blob/master/Nuki%20Smart%20Lock%202.0/readme.md")
+definition (name:              "Nuki Smart Lock 2.0 Integration",
+            namespace:         "maffpt.nuki",
+            author:            "Marco Felicio (MAFFPT)",
+            description:       "Integration app for Nuki<sup>&reg;</sup> Smart Lock 2.0 - version ${_nukiIntegrationVersion}",
+            category:          "Convenience",
+            singleInstance:    true,
+            iconUrl:           "https://raw.githubusercontent.com/MAFFPT/Hubitat/Nuki Smart Lock 2.0/icons/nuki-logo-white.svg",
+            iconX2Url:         "https://raw.githubusercontent.com/erocm123/SmartThingsPublic/master/smartapps/erocm123/sonoff-connect.src/sonoff-connect-icon-2x.png",
+            iconX3Url:         "https://raw.githubusercontent.com/erocm123/SmartThingsPublic/master/smartapps/erocm123/sonoff-connect.src/sonoff-connect-icon-3x.png",
+	        documentationLink: "https://github.com/MAFFPT/Hubitat/blob/master/Nuki%20Smart%20Lock%202.0/README.md")
 
 
 preferences 
@@ -100,7 +100,7 @@ def mainPage ()
                         uninstall: true,
                         install: true) \
                         {
-                            standardHeader ("Bridge discovery")
+                            standardHeader ("Bridges discovery")
                             section () \
                             {
                                 href  (page: "selectBridgesToAddPage",
@@ -112,7 +112,7 @@ def mainPage ()
                                        defaultValue: false,
                                        required: true,
                                        submitOnChange: true,
-                                       title: "Enable application debug logging\n<b>CAUTION:</b> a lot of log entries will be recorded!")
+                                       title: "Enable <u>app</u> and <u>drivers</u> debug logging\n<b>CAUTION:</b> a lot of log entries will be recorded!")
 			                    
                                 paragraph "<br/><b>Please note:</b><br />"
                                 paragraph "&bull; Set up your bridge(s) and lock(s) correctly using the Nuki<sup>&reg;</sup> smartphone App before using this app."
@@ -394,7 +394,7 @@ def getBridgeToken (bridge)
             resp -> 
                 if (resp.data.success) 
                 {
-                    logebug "getBridgeToken: got response (${resp.data})"
+                    logDebug "getBridgeToken: got response (${resp.data})"
                     logDebug "getBridgeToken: before getting bridge token"
                     bridgeToken = resp.data.token
                     logDebug "getBridgeToken: after getting token = ${resp.data.token}"
