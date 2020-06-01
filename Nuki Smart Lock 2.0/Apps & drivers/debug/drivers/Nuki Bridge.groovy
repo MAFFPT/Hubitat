@@ -19,7 +19,7 @@
 import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt.nuki"               // All apps and drivers must be at the same namespace
-@Field static _nukiBridgeDriverVersion = "0.2"             // Current version of this driver
+@Field static _nukiBridgeDriverVersion = "0.3.1"           // Current version of this driver
 
 @Field static _nukiDriverNameBridge = "Nuki Bridge"        // name of the device type = driver name
 
@@ -38,18 +38,7 @@ metadata
         command "getLog"
         command "status"
     }
-/*    
-	preferences 
-    {
-        // This toogle switch enables/disables debug information logging
-        input (name: "debugLogging",
-               type: "bool",
-               defaultValue: false,
-               required: false,
-               submitOnChange: true,
-               title: "Enable debug logging\n<b>CAUTION:</b> a lot of log entries will be recorded!")
-    }
-*/    
+
     tiles 
     {
         // When clicked, retrieves the last 20 log entries of this Nuki bridge
