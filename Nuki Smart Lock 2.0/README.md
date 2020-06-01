@@ -113,7 +113,11 @@ You have two options to do that: manually or using the amazing **Hubitat Package
 
 ### Automatic installation using HPM
 
-This is the easyest way to install all components of this Integration. Just follow the instructions to install HPM in your HE hub found [here](https://community.hubitat.com/t/beta-hubitat-package-manager/38016).
+This is the easyest way to install all components of this Integration. 
+
+Hubitat Package Manager (HPM) made it easy to install and keep up to date apps and drivers installed using it. It is a very powerful and easy to use tool.
+
+Before using HPM you must ollow the instructions to install HPM itself in your HE hub found [here](https://community.hubitat.com/t/beta-hubitat-package-manager/38016).
 
 ### Manual installation
 
