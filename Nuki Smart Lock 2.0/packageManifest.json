@@ -1,9 +1,9 @@
 {
   "packageName": "Nuki Smart Lock 2.0 Integration",
   "author": "Marco Felicio (maffpt@gmail.com)",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "minimumHEVersion": "2.1.9",
-  "dateReleased": "2020-05-30",
+  "dateReleased": "2020-06-06",
   "apps":    [{"id":         "d8453be8-b65a-4d79-ac30-307cf8951b67",
       	       "name":       "Nuki Smart Lock 2.0 Integration",
       	       "namespace":  "maffpt",
