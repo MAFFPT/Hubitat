@@ -86,7 +86,7 @@ import groovy.transform.Field
 //@Field static Map lockButtonActions = [0: "NO_ACTION", 1: "INTELLIGENT", 2: "UNLOCK", 3: "LOCK", 4: "UNLATCH", 5: "LOCK_N_GO", 6: "SHOW_STATUS"]
 
 @Field static _nukiNamespace = "maffpt.nuki"             // All apps and drivers must be at the same namespace
-@Field static _nukiOpenerDriverVersion = "0.3.1"         // Current version of this driver
+@Field static _nukiOpenerDriverVersion = "0.3.2"         // Current version of this driver
 
 @Field static Map _openerDeviceModes = [2: "Door mode", 3: "Continuous mode"]
 
@@ -101,13 +101,15 @@ metadata
         capability "Battery"
         
         capability "DoorControl"
+        command "open"
+        command "close"
         command "activateCM"
         command "activateRTO"
         command "deactivateCM"
         command "deactivateRTO"
         command "electricStrikeActuation"
         
-        capability "Actuator"
+        //capability "Actuator"
         
         command "status"
     }
@@ -248,7 +250,7 @@ def activateCM ()
 {
    	logDebug "activateCM: IN"
 
-    sendCommandToNuki (_lockActions [3],       // action = "activate continuous mode"
+    sendCommandToNuki (_lockActions [4],       // action = "activate continuous mode"
                        false)                  // waitCompletition
 
   	logDebug "activateCM: OUT"   
@@ -266,6 +268,23 @@ def activateRTO ()
                        false)                  // waitCompletition
 
   	logDebug "activateRTO: OUT"   
+}
+
+
+//
+// Close: deactivate RTO and CM modes
+//
+def close ()
+{
+   	logDebug "close: IN"
+    
+    deactivateCM ()
+    
+    deactivateRTO ()
+    
+    parent.sendProgressEvent (device, "Close requested")
+    
+    logDebug "close: OUT"   
 }
 
 
@@ -308,6 +327,20 @@ def electricStrikeActuation ()
                        false)                  // waitCompletition
 
   	logDebug "electricStrikeActuation: OUT"   
+}
+
+
+//
+// Open (calls for the door's electric unlatching)
+//
+def open ()
+{
+   	logDebug "open: IN"
+
+    sendCommandToNuki (_lockActions [3],       // action = "electric strike actuation"
+                       false)                  // waitCompletition
+
+  	logDebug "open: OUT"   
 }
 
 
