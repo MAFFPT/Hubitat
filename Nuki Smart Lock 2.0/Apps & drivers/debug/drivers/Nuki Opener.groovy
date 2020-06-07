@@ -113,16 +113,6 @@ metadata
         
         command "status"
     }
-
-    preferences 
-    {
-        input ("debugLogging",
-               "bool",
-               defaultValue: false,
-               required: false,
-               submitOnChange: true,
-               title: "Enable debug logging\n<b>CAUTION:</b> a lot of log entries will be recorded!")
-    }
 /*    
     tiles 
     {
