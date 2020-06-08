@@ -67,14 +67,16 @@ Finally **The Good** part!
   
     being 
      
-     - *myAppLogFileDevice* the object that references the VD you have created 
+     - ***myAppLogFileDevice*** the object that references the VD you have created 
   
   Then, read the **fileContents** attribute of the device
   
-  - Example: *myAppLogFileDevice*.currentValue ("fileContents")
+  - Example: *myAppLogFileDevice*.currentValue ("fileContents", true)
   
     being 
     
-     - *myAppLogFileDevice* the object that references the VD you have created 
+     - ***myAppLogFileDevice*** the object that references the VD you have created
+     - **"fileContents"** the attribute where you will find the contents of the file
+     - **true** argument is to force the reading of the attribute skipping the cache, reading the last information from the database
 
 After creating the
