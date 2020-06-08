@@ -21,7 +21,7 @@ This solution has two components:
 
 ### Installation
 
-- **The custom driver above must be used to create a Virtual Device (VD), specific to access a particular file**
+- **The custom driver above must be installed in your HE hub and used to create Virtual Devices (VD), one for each particular file you want to access**
 
   ### What? A Virtual Device for EACH file that I want to access?
 
