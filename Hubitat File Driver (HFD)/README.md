@@ -119,10 +119,10 @@ Call the **write** method of the specific VD created for the file
 
   When ask for a write operation, two things can happen:
   
-  - If the file does not exist yet, it will be created and the **"content to be written"** will be stored in it
-  - If the file already exists, it will be **overwritten**, and the ***content to be written*** will be stored in it
+  - If the file does not exist yet, it will be created and the ***"content to be written"*** will be stored in it
+  - If the file already exists, its contents will be **overwritten**, and the ***"content to be written"*** will be stored in it
   
-  So, be careful when requesting a **write** operation!
+  So, **be careful** when requesting a **write** operation!
 
 ### Appending to a file
 
