@@ -49,7 +49,7 @@ This solution has two components:
   
 - **Suggested naming convention for drivers and rules**
 
-  First of all, I must stress that this is only a suggested naming convention. You, obviously, can use the naming convention that best suits ypur needs or preferences.
+  First of all, I must stress that this is only a suggested naming convention. You, obviously, can use the naming convention that best suits your needs or preferences.
   
   - Driver: **File Driver [** *filename* **]**
   
