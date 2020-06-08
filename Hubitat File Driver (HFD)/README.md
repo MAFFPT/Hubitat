@@ -87,7 +87,7 @@ Then, read the **fileContents** attribute of the device
     
    - ***myStringVariable*** is the String variable to receive the contents of the fil
    - ***myAppLogFileDevice*** is the object that references the VD you have created
-   - **"fileContents"** is the attribute where you will find the contents of the file
+   - **"fileContents"** is the attribute where you will find the file contents (this attribute name is fixed)
    - **true** argument is to force the reading of the attribute skipping the cache, reading the last information from the database
      
 **NOTE** 
