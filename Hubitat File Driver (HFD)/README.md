@@ -17,7 +17,7 @@ This solution uses two components:
 
 - A custom driver [Hubitat File Driver (HFD)](https://github.com/MAFFPT/Hubitat/blob/master/Hubitat%20File%20Driver%20(HFD)/driver/Hubitat%20File%20Driver%20(HFD).groovy)
 
-- A Rule Machine rule [HFD base rulez9(https://github.com/MAFFPT/Hubitat/tree/master/Hubitat%20File%20Driver%20(HFD)/rule)
+- A model Rule Machine rule [HFD base rulez9(https://github.com/MAFFPT/Hubitat/tree/master/Hubitat%20File%20Driver%20(HFD)/rule)
 
 ## Installation
 
@@ -31,7 +31,7 @@ This solution uses two components:
   
   And there is more ...
   
-  **The Ugly"** goes on: this device must be created as a child device of the user app or driver, otherwise it will not be possible to access it.
+  **The Ugly"** goes on: this device must be created as a **child device** of the user app or driver, otherwise it will not be possible to access it.
 
 - **A Rule Machine rule - and guess what? Also specific for each file**
 
@@ -55,7 +55,26 @@ This solution uses two components:
   
     Example: for the same file, the suggested driver name would be **File Driver [myAppLogFile]**
   
+## Using HFD
+
+Finally **The Good** part!
+
+- Reading from a file
+
+  Call the **read** method of the specific VD created for the file
   
+  - Example: *myAppLogFileDevice*.read ()
   
-  **NOTE:** A naming convention for devices and rules suggestion is
-- When the user, from his/hers code, calls the desired method/command (append, read, write) 
+    being 
+     
+     - *myAppLogFileDevice* the object that references the VD you have created 
+  
+  Then, read the **fileContents** attribute of the device
+  
+  - Example: *myAppLogFileDevice*.currentValue ("fileContents")
+  
+    being 
+    
+     - *myAppLogFileDevice* the object that references the VD you have created 
+
+After creating the
