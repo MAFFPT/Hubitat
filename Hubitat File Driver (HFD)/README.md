@@ -9,7 +9,7 @@ This solution intended to be a "provisory" one, while Hubitat moves ahead with t
 **NOTE:** This solution itself is a BETA version - users input is expected and very welcome!
 
 
-## HFD - The Good, the Bad and the Ugly
+## HFD - "The Good, the Bad and the Ugly"
 
 ### Components
 
