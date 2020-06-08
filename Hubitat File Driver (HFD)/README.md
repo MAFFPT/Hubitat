@@ -63,7 +63,9 @@ Finally **The Good** part!
 
   Call the **read** method of the specific VD created for the file
   
-  - Example: *myAppLogFileDevice*.read ()
+  >
+  > *myAppLogFileDevice*.read ()
+  >
   
     Being 
      
@@ -71,7 +73,9 @@ Finally **The Good** part!
   
   Then, read the **fileContents** attribute of the device
   
-  - Example: *myAppLogFileDevice*.currentValue ("fileContents", true)
+  >
+  > *myAppLogFileDevice*.currentValue ("fileContents", true)
+  >
   
     Being 
     
