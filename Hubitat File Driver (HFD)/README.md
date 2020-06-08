@@ -35,7 +35,7 @@ This solution has two components:
 
 - **A Rule Machine rule**
 
-  **The Bad** part: also specific for each file!
+  This is, for sure, **"The Bad"** part: also specific for each file!
   
   And, please, do not shoot me! I have tried my best !!!
   
