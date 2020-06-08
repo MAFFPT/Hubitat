@@ -58,7 +58,9 @@ This solution has two components:
   - Rule: **File Driver [** *filename* **]**
   
     Example: for the same file, the suggested driver name would be **File Driver [myAppLogFile]**
-  
+
+
+
 ## Using HFD
 
 Finally, **"The Good"** part!
@@ -71,7 +73,7 @@ Call the **read** method of the specific VD created for the file
 > *myAppLogFileDevice*.read ()
 >
   
-  where 
+  where:
      
   - ***myAppLogFileDevice*** is the object that references the VD you have created 
   
@@ -81,7 +83,7 @@ Then, read the **fileContents** attribute of the device
 > *myStringVariable* = *myAppLogFileDevice*.currentValue ("fileContents", true)
 >
   
-  where 
+  where:
     
    - ***myStringVariable*** is the String variable to receive the contents of the fil
    - ***myAppLogFileDevice*** is the object that references the VD you have created
