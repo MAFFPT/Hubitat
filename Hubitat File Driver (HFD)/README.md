@@ -53,11 +53,11 @@ This solution has two components:
   
   - Driver: **File Driver [** *filename* **]**
   
-    Example: for the file **myAppLogFile**, the suggested driver name would be **File Driver [myAppLogFile]**
+    Example: for the file **myLogFile**, the suggested driver name would be **File Driver [myLogFile]**
     
   - Rule: **File Driver [** *filename* **]**
   
-    Example: for the same file, the suggested driver name would be **File Driver [myAppLogFile]**
+    Example: for the same file, the suggested driver name would be **File Driver [myLogFile]**
 
 
 
@@ -70,23 +70,23 @@ Finally, **"The Good"** part!
 Call the **read** method of the specific VD created for the file
   
 >
-> *myAppLogFileDevice*.read ()
+> *myLogFileDevice*.read ()
 >
   
   where:
      
-  - ***myAppLogFileDevice*** is the object that references the VD you have created 
+  - ***myLogFileDevice*** is the object that references the VD you have created 
   
 Then, read the **fileContents** attribute of the device
   
 >
-> *myStringVariable* = *myAppLogFileDevice*.currentValue ("fileContents", true)
+> *myStringVariable* = *myLogFileDevice*.currentValue ("fileContents", true)
 >
   
   where:
     
    - ***myStringVariable*** is the String variable to receive the contents of the fil
-   - ***myAppLogFileDevice*** is the object that references the VD you have created
+   - ***myLogFileDevice*** is the object that references the VD you have created
    - **"fileContents"** is the attribute where you will find the file contents (this attribute name is fixed)
    - **true** argument is to force the reading of the attribute skipping the cache, reading the last information from the database
      
@@ -107,12 +107,12 @@ Then, read the **fileContents** attribute of the device
 Call the **write** method of the specific VD created for the file
   
 >
-> *myAppLogFileDevice*.write (*content to be written*)
+> *myLogFileDevice*.write (*content to be written*)
 >
   
   where:
      
-  - ***myAppLogFileDevice*** is the object that references the VD you have created
+  - ***myLogFileDevice*** is the object that references the VD you have created
   - ***content to be written*** is - guess what ... - the string to be written to the file! It can be a literal string, a variable, a string value returned from a function, method, etc.
   
 **NOTE**
@@ -129,12 +129,12 @@ Call the **write** method of the specific VD created for the file
 Call the **append** method of the specific VD created for the file
   
 >
-> *myAppLogFileDevice*.append (*content to be appended*)
+> *myLogFileDevice*.append (*content to be appended*)
 >
   
   where:
      
-  - ***myAppLogFileDevice*** is the object that references the VD you have created
+  - ***myLogFileDevice*** is the object that references the VD you have created
   - ***content to be appended*** is the string literal or string variable to be appended to the end of the file
 
 ## Final words
