@@ -48,9 +48,11 @@ This solution uses two components:
   First of all, I must stress that this is only a suggested naming convention. The user, obviously, can use the naming convention that best suit his/hers needs or preferences.
   
   - Driver: **File Driver [** *filename* **]**
+  
     Example: for the file **myAppLogFile**, the suggested driver name would be **File Driver [myAppLogFile]**
     
   - Rule: **File Driver [** *filename* **]**
+  
     Example: for the same file, the suggested driver name would be **File Driver [myAppLogFile]**
   
   
