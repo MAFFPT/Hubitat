@@ -6,7 +6,7 @@ This solution was developed to allow you to read/write/append files at the brand
 
 This solution intended to be a "provisory" one, while Hubitat moves ahead with the BETA and awards us with a full API to access files from apps and drivers.
 
-**NOTE:** This solution itself is a BETA version - users input is expected and very welcome!
+**NOTE:** This solution itself is a BETA version - your input is expected and very welcome!
 
 
 ## HFD - "The Good, the Bad and the Ugly"
