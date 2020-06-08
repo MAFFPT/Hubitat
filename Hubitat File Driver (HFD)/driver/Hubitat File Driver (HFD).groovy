@@ -14,8 +14,8 @@
 
 import groovy.transform.Field
 
-@Field static _Namespace = "maffpt.FileDriver"           // All apps and drivers must be at the same namespace
-@Field static _driverVersion = "0.1.0"                   // Current version of this driver
+@Field static _Namespace = "maffpt.HFD"
+@Field static _driverVersion = "0.1.0"
 
 metadata 
 {
