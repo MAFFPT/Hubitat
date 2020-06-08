@@ -88,10 +88,10 @@ Then, read the **fileContents** attribute of the device
    
  It has been observed some delay between the execution of the **read** command and the availability of the file contents at the **"fileContents"** attribute.
    
- To avoid data inconsistency, it has been added a delay (pause) at the end of the execution of the **read** command to give time to the HE to update the attribute. This delay, expressed in miliseconds, is stored, for now, in a internal driver constant:
+ To avoid data inconsistency, it has been added a delay (pause) at the end of the execution of the **write** and **append** commands to give time to the HE to update the attribute. This delay, expressed in miliseconds is stored, for now, in a internal driver constant:
    
  >
- > @Field static _afterCommandDelay = 250
+ > @Field static Long _afterCommandDelay = 250
  >
     
  If this value is deemed sufficient, it will stay that way. However, in case if you need to increase this value to fit your particular HE hub enviroment, please report it to me. If necessary, I can create a driver's preference variable to store that value and made easier to change it.
@@ -107,7 +107,7 @@ Call the **write** method of the specific VD created for the file
   where 
      
   - ***myAppLogFileDevice*** is the object that references the VD you have created
-  - ***content to be written*** is - guess what ... - is the string to be written to the file! It can be a literal string, a variable, etc.
+  - ***content to be written*** is - guess what ... - is the string to be written to the file! It can be a literal string, a variable, a string value returned from a function, method, etc.
   
 **NOTE**
 
@@ -129,9 +129,8 @@ Call the **append** method of the specific VD created for the file
   where 
      
   - ***myAppLogFileDevice*** is the object that references the VD you have created
-  - ***content to be appended*** is the string to be appended to the end of the file
+  - ***content to be appended*** is the string literal or string variable to be appended to the end of the file
 
 ## Final words
 
 I hope that everything works as expected ... 
-
