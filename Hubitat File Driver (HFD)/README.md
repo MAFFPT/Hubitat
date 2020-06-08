@@ -67,7 +67,7 @@ Finally **The Good** part!
   > *myAppLogFileDevice*.read ()
   >
   
-    Being 
+    where 
      
      - ***myAppLogFileDevice*** the object that references the VD you have created 
   
@@ -77,7 +77,7 @@ Finally **The Good** part!
   > *myAppLogFileDevice*.currentValue ("fileContents", true)
   >
   
-    Being 
+    where 
     
      - ***myAppLogFileDevice*** the object that references the VD you have created
      - **"fileContents"** the attribute where you will find the contents of the file
