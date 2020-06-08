@@ -47,8 +47,8 @@ This solution uses two components:
 
   First of all, I must stress that this is only a suggested naming convention. The user, obviously, can use the naming convention that best suit his/hers needs or preferences.
   
-  - Driver: File Driver [*filename*]
-  - Rule: File Driver [*filename*]
+  - Driver: **File Driver [** *filename* **]**
+  - Rule: **File Driver [** *filename* **]**
   
   
   
