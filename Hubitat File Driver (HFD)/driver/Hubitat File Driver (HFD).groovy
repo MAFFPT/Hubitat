@@ -47,7 +47,7 @@ metadata
 
 def initialize () 
 {
-  	logDebug "initialize: IN"
+    logDebug "initialize: IN"
     logDebug "initialize: device.capabilities = ${device.capabilities}"
     logDebug "initialize: OUT"
 }
@@ -55,7 +55,7 @@ def initialize ()
 
 def installed ()
 {
-  	logDebug "installed: IN"
+    logDebug "installed: IN"
 
     initialize()
 
