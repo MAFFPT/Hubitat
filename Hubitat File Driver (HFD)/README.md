@@ -37,11 +37,15 @@ This solution has two components:
 
   **The Bad** part: also specific for each file!
   
-  And, please, do not shoot me ! I have tried my best !!!
+  And, please, do not shoot me! I have tried my best !!!
   
   So, you will need to create a rule for each file you want to access, using the model Rule Machine provided. I know ... this is really **"The Bad"**, don't you agree?
   
   When creating the rule you will need to replace the items indicated by the "clue" colored lines found all around the model rule image for the appropriate ones. The box at the upper right corner tells you what you need to replace to do the necessary adjustments.
+  
+  **TIP**
+  
+  If you want to access more than one file, create the first rule, clone it and make the adjustments on the cloned rule. I am trying to help ... so, again, please do not shoot me! 
   
 - **Suggested naming convention for drivers and rules**
 
