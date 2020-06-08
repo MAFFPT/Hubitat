@@ -61,7 +61,7 @@ This solution has two components:
   
 ## Using HFD
 
-Finally **The Good** part!
+Finally, **"The Good"** part!
 
 ### Reading from a file
 
