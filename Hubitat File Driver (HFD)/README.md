@@ -21,11 +21,11 @@ This solution uses two components:
 
 ## Working process
 
-- A custom driver is used to create a Virtual Device (VD), specific to access a particular file. 
+- The custom driver above must used to create a Virtual Device (VD), specific to access a particular file. 
 
   ### What? A Virtual Device for EACH file that I want to access?
 
-I am afraid that it is the way it will work ... at least for now.
+  I am afraid that it is the way it will work ... at least for now.
 
-I am aware that creating a VD for each file is cumbersome. However, so far, it is the only way I have found to implement this solution. The problem that caused this is the fact that I could not find a way of referencing a file name as a variable, since a file reference is implemented as variable itself.
+  I am aware that creating a VD for each file is cumbersome. However, so far, it is the only way I have found to implement this solution. The problem that caused this is the fact that I could not find a way of referencing a file name as a variable, since a file reference is implemented as variable itself.
 
