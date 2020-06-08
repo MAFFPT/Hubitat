@@ -19,9 +19,9 @@ This solution uses two components:
 
 - A Rule Machine rule [HFD base rulez9(https://github.com/MAFFPT/Hubitat/tree/master/Hubitat%20File%20Driver%20(HFD)/rule)
 
-## Working process
+## Installation
 
-- The custom driver above must used to create a Virtual Device (VD), specific to access a particular file. 
+- The custom driver above must be used to create a Virtual Device (VD), specific to access a particular file. 
 
   ### What? A Virtual Device for EACH file that I want to access?
 
@@ -31,7 +31,7 @@ This solution uses two components:
   
   And there is more ...
   
-  This device must be created as a child device of the user app or driver, otherwise 
+  This device must be created as a child device of the user app or driver, otherwise it will not be possible to access it.
 
 - A Rule Machine rule - and guess what? Also specific for each file.
 
