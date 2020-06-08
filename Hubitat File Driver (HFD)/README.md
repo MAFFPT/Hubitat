@@ -88,7 +88,7 @@ Then, read the **fileContents** attribute of the device
    
  It has been observed some delay between the execution of the **read** command and the availability of the file contents at the **"fileContents"** attribute.
    
- To avoid data inconsistency, it has been added a delay (pause) at the end of the execution of the **read** command to give time to the HE to update the attribute. This delay, expressed in miliseconds, for now, is stored in a internal driver variable:
+ To avoid data inconsistency, it has been added a delay (pause) at the end of the execution of the **read** command to give time to the HE to update the attribute. This delay, expressed in miliseconds, is stored, for now, in a internal driver constant:
    
  >
  > @Field static _afterCommandDelay = 250
@@ -98,4 +98,13 @@ Then, read the **fileContents** attribute of the device
 
 ### Writing to a file
 
-As in the case of the 
+Call the **write** method of the specific VD created for the file
+  
+>
+> *myAppLogFileDevice*.write ("string to be written")
+>
+  
+  where 
+     
+  - **myAppLogFileDevice** the object that references the VD you have created
+  - **
