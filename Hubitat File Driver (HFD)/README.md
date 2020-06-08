@@ -35,9 +35,9 @@ This solution has two components:
 
 - **A Rule Machine rule**
 
-  **The Bad** part ... also specific for each file
+  **The Bad** part: also specific for each file!
   
-  And, please, do not shoot me !
+  And, please, do not shoot me ! I have tried my best !!!
   
   So, you will need to create a rule for each file you want to access, using the model Rule Machine provided. I know ... this is really **"The Bad"**, don't you agree?
   
