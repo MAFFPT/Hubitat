@@ -113,7 +113,7 @@ Call the **write** method of the specific VD created for the file
   where 
      
   - ***myAppLogFileDevice*** is the object that references the VD you have created
-  - ***content to be written*** is - guess what ... - is the string to be written to the file! It can be a literal string, a variable, a string value returned from a function, method, etc.
+  - ***content to be written*** is - guess what ... - the string to be written to the file! It can be a literal string, a variable, a string value returned from a function, method, etc.
   
 **NOTE**
 
