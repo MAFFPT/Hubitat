@@ -25,16 +25,32 @@ This solution uses two components:
 
   ### What? A Virtual Device for EACH file that I want to access?
 
-  This is "The Ugly" part: I am afraid that it is the way it will work ... at least for now.
+  This is **"The Ugly"** part: I am afraid that it is the way it will work ... at least for now.
 
   I am aware that creating a VD for each file may be cumbersome. However, so far, it is the only way I have found to implement this solution. The problem that caused this is the fact that I could not find a way of referencing a file name as a variable, since a file reference is implemented as variable itself.
   
   And there is more ...
   
-  This device must be created as a child device of the user app or driver, otherwise it will not be possible to access it.
+  **The Ugly"** goes on: this device must be created as a child device of the user app or driver, otherwise it will not be possible to access it.
 
 - A Rule Machine rule - and guess what? Also specific for each file.
 
-  Please do not shoot me !
+  **The Bad** part ...
   
+  And, please, do not shoot me !
+  
+  The user needs to create a rule for each file he/she wants to access, using the model Rule Machine provided.
+  
+  When creating the rule the user needs to replace the string "TestFile5" found all around the model rule for the name of the file that will be handled.
+  
+- Suggested naming convention for drivers and rules
+
+  First of all, I must stress that this is only a suggested naming convention. The user, obviously, can use the naming convention that best suit his/hers needs or preferences.
+  
+  - Driver: File Driver [*filename*]
+  - Rule: File Driver [*filename*]
+  
+  
+  
+  **NOTE:** A naming convention for devices and rules suggestion is
 - When the user, from his/hers code, calls the desired method/command (append, read, write) 
