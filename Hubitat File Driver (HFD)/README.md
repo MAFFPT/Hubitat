@@ -59,23 +59,23 @@ This solution has two components:
 
 Finally **The Good** part!
 
-- Reading from a file
+### Reading from a file
 
-  Call the **read** method of the specific VD created for the file
+Call the **read** method of the specific VD created for the file
   
-  >
-  > *myAppLogFileDevice*.read ()
-  >
+>
+> *myAppLogFileDevice*.read ()
+>
   
-    where 
+  where 
      
-     - ***myAppLogFileDevice*** the object that references the VD you have created 
+  - ***myAppLogFileDevice*** the object that references the VD you have created 
   
-  Then, read the **fileContents** attribute of the device
+Then, read the **fileContents** attribute of the device
   
-  >
-  > *myStringVariable* = *myAppLogFileDevice*.currentValue ("fileContents", true)
-  >
+>
+> *myStringVariable* = *myAppLogFileDevice*.currentValue ("fileContents", true)
+>
   
     where 
     
@@ -96,5 +96,6 @@ Finally **The Good** part!
     
     If this value is deemed sufficient, it will stay that way. However, in case if you need to increase this value to fit your particular HE hub enviroment, please report it to me. If necessary, I can create a driver's preference variable to store that value and made easier to change it.
 
-- Writing to a file
+### Writing to a file
 
+As in the case of the 
