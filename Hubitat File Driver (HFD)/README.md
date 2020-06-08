@@ -6,10 +6,10 @@ This driver was developed to allow other developers to read/write/append files a
 
 It is intended to be a "provisory" solution, while Hubitat moves ahead with the BETA and awards us with a full API to access files from apps and drivers.
 
-**NOTE:** This solution itself is a BETA version - users input will be expected and very welcome!
+**NOTE:** This solution itself is a BETA version - users input is expected and very welcome!
 
 
-# HFD
+# HFD - The Good, the Bad and the Ugly
 
 ## Components
 
@@ -25,7 +25,7 @@ This solution uses two components:
 
   ### What? A Virtual Device for EACH file that I want to access?
 
-  I am afraid that it is the way it will work ... at least for now.
+  This is "The Ugly" part: I am afraid that it is the way it will work ... at least for now.
 
   I am aware that creating a VD for each file may be cumbersome. However, so far, it is the only way I have found to implement this solution. The problem that caused this is the fact that I could not find a way of referencing a file name as a variable, since a file reference is implemented as variable itself.
   
