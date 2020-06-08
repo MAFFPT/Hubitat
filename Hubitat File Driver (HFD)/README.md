@@ -65,7 +65,7 @@ Finally **The Good** part!
   
   - Example: *myAppLogFileDevice*.read ()
   
-    being 
+    Being 
      
      - ***myAppLogFileDevice*** the object that references the VD you have created 
   
@@ -73,7 +73,7 @@ Finally **The Good** part!
   
   - Example: *myAppLogFileDevice*.currentValue ("fileContents", true)
   
-    being 
+    Being 
     
      - ***myAppLogFileDevice*** the object that references the VD you have created
      - **"fileContents"** the attribute where you will find the contents of the file
@@ -85,9 +85,9 @@ Finally **The Good** part!
    
    To avoid data inconsistency, it has been added a delay (pause) at the end of the execution of the **read** command to give time to the HE to update the attribute. This delay, expressed in miliseconds, for now, is stored in a internal driver variable:
    
->
-> @Field static _afterCommandDelay = 250
->
+    >
+    > @Field static _afterCommandDelay = 250
+    >
 
 
 After creating the
