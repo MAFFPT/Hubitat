@@ -27,5 +27,14 @@ This solution uses two components:
 
   I am afraid that it is the way it will work ... at least for now.
 
-  I am aware that creating a VD for each file is cumbersome. However, so far, it is the only way I have found to implement this solution. The problem that caused this is the fact that I could not find a way of referencing a file name as a variable, since a file reference is implemented as variable itself.
+  I am aware that creating a VD for each file may be cumbersome. However, so far, it is the only way I have found to implement this solution. The problem that caused this is the fact that I could not find a way of referencing a file name as a variable, since a file reference is implemented as variable itself.
+  
+  And there is more ...
+  
+  This device must be created as a child device of the user app or driver, otherwise 
 
+- A Rule Machine rule - and guess what? Also specific for each file.
+
+  Please do not shoot me !
+  
+- When the user, from his/hers code, calls the desired method/command (append, read, write) 
