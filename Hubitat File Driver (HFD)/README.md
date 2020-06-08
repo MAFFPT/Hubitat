@@ -27,7 +27,7 @@ This solution has two components:
 
   I am afraid this is **"The Ugly"** part: this is the way it works ... at least for now.
 
-  I am aware that creating a VD for each file may be cumbersome. However, so far, it is the only way I have found to implement this solution. The problem that caused this is the fact that I could not find a way of referencing a file name as a variable, since a file reference is implemented as variable itself.
+  I am aware that creating a VD for each file may be cumbersome. However, so far, it is the only way I have found to implement this solution. The problem that caused this is the fact that I could not find a way of referencing a file name as a variable, since a file reference is implemented as variable itself. Maybe there is, but unfortunatelly I could not find it.
   
   And there is more ...
   
