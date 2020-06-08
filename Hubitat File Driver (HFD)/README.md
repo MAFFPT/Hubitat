@@ -1,6 +1,6 @@
 # Hubitat<small><sup>&copy;</sup></small> File Driver (HFD)
 
-# Introduction
+## Introduction
 
 This solution was developed to allow you to read/write/append files at the brand new (BETA) and powerfull local storage in the Hubitat<small><sup>&copy;</sup></small> Elevation hub.
 
@@ -9,9 +9,9 @@ This solution intended to be a "provisory" one, while Hubitat moves ahead with t
 **NOTE:** This solution itself is a BETA version - users input is expected and very welcome!
 
 
-# HFD - The Good, the Bad and the Ugly
+## HFD - The Good, the Bad and the Ugly
 
-## Components
+### Components
 
 This solution has two components:
 
@@ -19,7 +19,7 @@ This solution has two components:
 
 - A model Rule Machine rule [HFD model rule](https://github.com/MAFFPT/Hubitat/tree/master/Hubitat%20File%20Driver%20(HFD)/rule)
 
-## Installation
+### Installation
 
 - **The custom driver above must be used to create a Virtual Device (VD), specific to access a particular file**
 
@@ -69,7 +69,7 @@ Call the **read** method of the specific VD created for the file
   
   where 
      
-  - ***myAppLogFileDevice*** the object that references the VD you have created 
+  - ***myAppLogFileDevice*** is the object that references the VD you have created 
   
 Then, read the **fileContents** attribute of the device
   
@@ -79,9 +79,9 @@ Then, read the **fileContents** attribute of the device
   
   where 
     
-   - **myStringVariable** is the String variable to receive the contents of the fil
-   - ***myAppLogFileDevice*** the object that references the VD you have created
-   - **"fileContents"** the attribute where you will find the contents of the file
+   - ***myStringVariable*** is the String variable to receive the contents of the fil
+   - ***myAppLogFileDevice*** is the object that references the VD you have created
+   - **"fileContents"** is the attribute where you will find the contents of the file
    - **true** argument is to force the reading of the attribute skipping the cache, reading the last information from the database
      
 **NOTE** 
@@ -101,10 +101,37 @@ Then, read the **fileContents** attribute of the device
 Call the **write** method of the specific VD created for the file
   
 >
-> *myAppLogFileDevice*.write ("string to be written")
+> *myAppLogFileDevice*.write (*content to be written*)
 >
   
   where 
      
-  - **myAppLogFileDevice** the object that references the VD you have created
-  - **
+  - ***myAppLogFileDevice*** is the object that references the VD you have created
+  - ***content to be written*** is - guess what ... - is the string to be written to the file! It can be a literal string, a variable, etc.
+  
+**NOTE**
+
+  When ask for a write operation, two things can happen:
+  
+  - If the file does not exist yet, it will be created and the **"content to be written"** will be stored in it
+  - If the file already exists, it will be **overwritten**, and the ***content to be written*** will be stored in it
+  
+  So, be careful when requesting a **write** operation!
+
+### Appending to a file
+
+Call the **append** method of the specific VD created for the file
+  
+>
+> *myAppLogFileDevice*.append (*content to be appended*)
+>
+  
+  where 
+     
+  - ***myAppLogFileDevice*** is the object that references the VD you have created
+  - ***content to be appended*** is the string to be appended to the end of the file
+
+## Final words
+
+I hope that everything works as expected ... 
+
