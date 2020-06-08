@@ -77,24 +77,24 @@ Then, read the **fileContents** attribute of the device
 > *myStringVariable* = *myAppLogFileDevice*.currentValue ("fileContents", true)
 >
   
-    where 
+  where 
     
-     - **myStringVariable** is the String variable to receive the contents of the file
-     - ***myAppLogFileDevice*** the object that references the VD you have created
-     - **"fileContents"** the attribute where you will find the contents of the file
-     - **true** argument is to force the reading of the attribute skipping the cache, reading the last information from the database
+   - **myStringVariable** is the String variable to receive the contents of the fil
+   - ***myAppLogFileDevice*** the object that references the VD you have created
+   - **"fileContents"** the attribute where you will find the contents of the file
+   - **true** argument is to force the reading of the attribute skipping the cache, reading the last information from the database
      
-   **NOTE** 
+**NOTE** 
    
-   It has been observed some delay between the execution of the **read** command and the availability of the file contents at the **"fileContents"** attribute.
+ It has been observed some delay between the execution of the **read** command and the availability of the file contents at the **"fileContents"** attribute.
    
-   To avoid data inconsistency, it has been added a delay (pause) at the end of the execution of the **read** command to give time to the HE to update the attribute. This delay, expressed in miliseconds, for now, is stored in a internal driver variable:
+ To avoid data inconsistency, it has been added a delay (pause) at the end of the execution of the **read** command to give time to the HE to update the attribute. This delay, expressed in miliseconds, for now, is stored in a internal driver variable:
    
-    >
-    > @Field static _afterCommandDelay = 250
-    >
+ >
+ > @Field static _afterCommandDelay = 250
+ >
     
-    If this value is deemed sufficient, it will stay that way. However, in case if you need to increase this value to fit your particular HE hub enviroment, please report it to me. If necessary, I can create a driver's preference variable to store that value and made easier to change it.
+ If this value is deemed sufficient, it will stay that way. However, in case if you need to increase this value to fit your particular HE hub enviroment, please report it to me. If necessary, I can create a driver's preference variable to store that value and made easier to change it.
 
 ### Writing to a file
 
