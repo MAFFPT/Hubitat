@@ -16,6 +16,8 @@ import groovy.transform.Field
 @Field static _Namespace = "maffpt.HFD"
 @Field static _driverVersion = "0.1.0"
 
+@Field static Long _afterCommandDelay = 250
+
 metadata 
 {
     definition (name: "Hubitat File Driver (HFD)", namespace: "maffpt.HFD", author: "Marco Felicio") 
@@ -214,7 +216,16 @@ def changeState (String operation, String content = "")
         logDebug "changeState: changing device state to = 'on'"
         sendEvent (name: "switch", value: "on")
     }
-
+    
+    switch (operation)
+    {
+        case "append":
+        case "write":
+            pauseExecution (_afterCommandDelay)
+            break
+        default:
+            break
+    }
 }
 
 
