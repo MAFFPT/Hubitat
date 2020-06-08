@@ -25,13 +25,13 @@ This solution has two components:
 
   ### What? A Virtual Device for EACH file that I want to access?
 
-  This is **"The Ugly"** part: I am afraid that it is the way it will work ... at least for now.
+  This is **"The Ugly"** part: I am afraid that this is the way it will work ... at least for now.
 
   I am aware that creating a VD for each file may be cumbersome. However, so far, it is the only way I have found to implement this solution. The problem that caused this is the fact that I could not find a way of referencing a file name as a variable, since a file reference is implemented as variable itself.
   
   And there is more ...
   
-  **The Ugly"** goes on: this device must be created as a **child device** of the user app or driver, otherwise it will not be possible to use it.
+  **"The Ugly"** goes on: this device must be created as a **child device** of the user app or driver, otherwise it will not be possible to use it.
 
 - **A Rule Machine rule**
 
@@ -39,7 +39,7 @@ This solution has two components:
   
   And, please, do not shoot me !
   
-  So, you will need to create a rule for each file you want to access, using the model Rule Machine provided. I know ... this is really **The Bad**, don't you agree?
+  So, you will need to create a rule for each file you want to access, using the model Rule Machine provided. I know ... this is really **"The Bad"**, don't you agree?
   
   When creating the rule you will need to replace the items indicated by the "clue" colored lines found all around the model rule image for the appropriate ones. The box at the upper right corner tells you what you need to replace to do the necessary adjustments.
   
