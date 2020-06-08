@@ -110,7 +110,7 @@ Call the **write** method of the specific VD created for the file
 > *myAppLogFileDevice*.write (*content to be written*)
 >
   
-  where 
+  where:
      
   - ***myAppLogFileDevice*** is the object that references the VD you have created
   - ***content to be written*** is - guess what ... - the string to be written to the file! It can be a literal string, a variable, a string value returned from a function, method, etc.
@@ -132,7 +132,7 @@ Call the **append** method of the specific VD created for the file
 > *myAppLogFileDevice*.append (*content to be appended*)
 >
   
-  where 
+  where:
      
   - ***myAppLogFileDevice*** is the object that references the VD you have created
   - ***content to be appended*** is the string literal or string variable to be appended to the end of the file
