@@ -21,7 +21,7 @@ This solution uses two components:
 
 ## Installation
 
-- The custom driver above must be used to create a Virtual Device (VD), specific to access a particular file. 
+- **The custom driver above must be used to create a Virtual Device (VD), specific to access a particular file**
 
   ### What? A Virtual Device for EACH file that I want to access?
 
@@ -33,7 +33,7 @@ This solution uses two components:
   
   **The Ugly"** goes on: this device must be created as a child device of the user app or driver, otherwise it will not be possible to access it.
 
-- A Rule Machine rule - and guess what? Also specific for each file.
+- **A Rule Machine rule - and guess what? Also specific for each file**
 
   **The Bad** part ...
   
@@ -43,7 +43,7 @@ This solution uses two components:
   
   When creating the rule the user needs to replace the string "TestFile5" found all around the model rule for the name of the file that will be handled.
   
-- Suggested naming convention for drivers and rules
+- **Suggested naming convention for drivers and rules**
 
   First of all, I must stress that this is only a suggested naming convention. The user, obviously, can use the naming convention that best suit his/hers needs or preferences.
   
