@@ -17,7 +17,7 @@ This solution uses two components:
 
 - A custom driver [Hubitat File Driver (HFD)](https://github.com/MAFFPT/Hubitat/blob/master/Hubitat%20File%20Driver%20(HFD)/driver/Hubitat%20File%20Driver%20(HFD).groovy)
 
-- A model Rule Machine rule [HFD base rulez9(https://github.com/MAFFPT/Hubitat/tree/master/Hubitat%20File%20Driver%20(HFD)/rule)
+- A model Rule Machine rule [HFD model rule](https://github.com/MAFFPT/Hubitat/tree/master/Hubitat%20File%20Driver%20(HFD)/rule)
 
 ## Installation
 
