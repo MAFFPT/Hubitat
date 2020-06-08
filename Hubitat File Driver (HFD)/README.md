@@ -25,7 +25,7 @@ This solution has two components:
 
   ### What? A Virtual Device for EACH file that I want to access?
 
-  This is **"The Ugly"** part: I am afraid that this is the way it will work ... at least for now.
+  I am afraid this is **"The Ugly"** part: I am afraid that this is the way it will work ... at least for now.
 
   I am aware that creating a VD for each file may be cumbersome. However, so far, it is the only way I have found to implement this solution. The problem that caused this is the fact that I could not find a way of referencing a file name as a variable, since a file reference is implemented as variable itself.
   
