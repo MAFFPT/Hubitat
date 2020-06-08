@@ -41,7 +41,7 @@ This solution has two components:
   
   So, you will need to create a rule for each file you want to access, using the model Rule Machine provided. I know ... this is really **"The Bad"**, don't you agree?
   
-  When creating the rule you will need to replace the items indicated by the "clue" colored lines found all around the model rule image for the appropriate ones. The box at the upper right corner tells you what you need to replace to do the necessary adjustments.
+  When creating the rule you will need to replace the items indicated by the "clue" colored lines found all around the model rule image by the appropriate ones. The box at the upper right corner of the image tells you what you need to replace to do the necessary adjustments.
   
   **TIP**
   
