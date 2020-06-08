@@ -31,7 +31,7 @@ This solution has two components:
   
   And there is more ...
   
-  And **"The Ugly"** part goes on: this device must be created as a **child device** of the user app or driver, otherwise it will not be possible to use it.
+  And **"The Ugly"** part goes on: this device must be created as a **child device** of the your app or driver, otherwise it will not be possible to use it.
 
 - **A Rule Machine rule**
 
