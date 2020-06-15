@@ -19,7 +19,7 @@
 import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt.nuki"               // All apps and drivers must be at the same namespace
-@Field static _nukiBridgeDriverVersion = "0.3.1"           // Current version of this driver
+@Field static _nukiBridgeDriverVersion = "0.3.3"           // Current version of this driver
 
 @Field static _nukiDriverNameBridge = "Nuki Bridge"        // name of the device type = driver name
 
@@ -119,12 +119,12 @@ def parse (description)
 def ping ()
 {
     logDebug "ping: IN"
-    
-    def bridgeInfo = getBridgeInfo (device.data, true)
+
+    def bridgeInfo = getBridgeInfo (device.data)
 
     def bridgeStatus = "${bridgeInfo?.wlanConnected ? "Ping successuful - Bridge reachable." : "Ping failed - bridge unreachable"}"
     
-    sendEvent (name: "ping", value: bridgeStatus, data: bridgeInfo)
+    sendEvent (name: "ping", value: bridgeStatus)
     
     logDebug "ping: OUT"
 }
@@ -661,6 +661,8 @@ def xxsendErrorEvent (forDevice, errorMessage, errorDescription = "")
 // Logging stuff
 //
 def appDebugLogging () { return parent.appDebugLogging () }
+//def appDebugLogging () { return true }
+
 
 def logDebug (message) { if (appDebugLogging ()) log.debug (message) }
 def logInfo  (message) { log.info (message) }
