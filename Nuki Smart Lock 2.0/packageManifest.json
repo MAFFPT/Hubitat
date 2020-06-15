@@ -1,9 +1,9 @@
 {
   "packageName": "Nuki Smart Lock 2.0 Integration",
   "author": "Marco Felicio (maffpt@gmail.com)",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "minimumHEVersion": "2.1.9",
-  "dateReleased": "2020-06-06",
+  "dateReleased": "2020-06-15",
   "apps":    [{"id":         "d8453be8-b65a-4d79-ac30-307cf8951b67",
       	       "name":       "Nuki Smart Lock 2.0 Integration",
       	       "namespace":  "maffpt",
@@ -21,7 +21,7 @@
                "name":       "Nuki Opener",
                "namespace":  "maffpt",
                "location":   "https://raw.githubusercontent.com/MAFFPT/Hubitat/master/Nuki%20Smart%20Lock%202.0/Apps%20%26%20drivers/debug/drivers/Nuki%20Opener.groovy",
-               "required":   true},
+               "required":   false},
 	      
               {"id":         "9795b0d7-7938-4169-9e31-a5df267661dc",
                "name":       "Nuki Smart Lock 2.0",
