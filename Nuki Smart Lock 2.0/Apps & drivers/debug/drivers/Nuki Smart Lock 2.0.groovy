@@ -102,17 +102,53 @@ import groovy.transform.Field
                                    stateName: "undefined",
                                    progressText: "I don't know what to do ..."]
                                  ]
+
+
+@Field static List _doorSensorStates = [[stateId: 0,
+                                         stateName: "unavailable",
+                                         sendEvent: false,
+                                         eventText: ""],
+                                  
+                                        [stateId: 1,
+                                         stateName: "deactivated",
+                                         sendEvent: false,
+                                         eventText: ""],
+                                 
+                                        [stateId: 2,
+                                         stateName: "door closed",
+                                         sendEvent: true,
+                                         eventText: "closed"],
+                                 
+                                        [stateId: 3,
+                                         stateName: "door opened",
+                                         sendEvent: true,
+                                         eventText: "open"],
+                                 
+                                        [stateId: 4,
+                                         stateName: "door state unknown",
+                                         sendEvent: false,
+                                         eventText: ""],
+                                 
+                                        [stateId: 5,
+                                         stateName: "calibrating",
+                                         sendEvent: false,
+                                         eventText: ""]
+                                       ]
+
+
 //@Field static Map lockActions2 = [0: "NO_ACTION", 1: "UNLOCK", 2: "LOCK", 3: "UNLATCH", 4: "LOCK_N_GO", 5: "LOCK_N_GO_WITH_UNLATCH"]
 //@Field static Map lockDoorStatus = [0: "UNAVAILABLE", 1: "DEACTIVATED", 2: "DOOR_CLOSED", 3: "DOOR_OPENED", 4: "DOOR_STATE_UNKNOWN", 5: "CALIBRATING"]
 //@Field static Map lockButtonActions = [0: "NO_ACTION", 1: "INTELLIGENT", 2: "UNLOCK", 3: "LOCK", 4: "UNLATCH", 5: "LOCK_N_GO", 6: "SHOW_STATUS"]
 
 @Field static _nukiNamespace = "maffpt.nuki"             // All apps and drivers must be at the same namespace
-@Field static _nukiLockDriverVersion = "0.3.1"           // Current version of this driver
+@Field static _nukiLockDriverVersion = "0.4.0"           // Current version of this driver
 
 @Field static Map _lockDeviceModes = [2: "Door mode"]
 
 @Field static String _nukiDeviceTypeLock = "0"
 @Field static String _nukiDriverNameLock = "Nuki Smart Lock 2.0"    // Nuki Smart Lock 2.0's device driver name
+
+@Field static String _bridgeFirmwareDoorSensorSupport = "2.6.0"
 
 metadata 
 {
@@ -180,8 +216,6 @@ def installed ()
     logDebug "installed: IN"
 
     initialize()
-    //logInfo "XXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-    //addGrandchildDevice ()
 
     logDebug "installed: installed device ${device.data}"
     logDebug "installed: OUT"
@@ -249,15 +283,37 @@ def parse (Map jsonMap)
         trow new Exception ("${device.data.label}: Inconsistent data - events from device with Nuki ID '${jsonMap.nukiId.toString ()}' cannot be handled by device hander for device '${device.data.nukiInfo.DeviceId.toString ()}'")
     }
     
-    logInfo "${device.data.label}: Status changed on this device to ${jsonMap.stateName.toUpperCase ()}. Battery status is ${jsonMap.batteryCritical ? "CRITICAL" : "NORMAL"}."
+    // starting at bridge version 2.6.0 - support for doorSensor
+    def doorSensorMessageText = ""
+    def doorSensorState = [:]
+    
+    def bridgeInfo = parent.getBridgeInfo (parent.data)
 
+    if (bridgeInfo.versions.firmwareVersion >= _bridgeFirmwareDoorSensorSupport)
+    {
+        doorSensorState = _doorSensorStates.find { it.stateId == jsonMap.doorsensorState }
+        doorSensorMessageText = " Door sensor state = ${jsonMap.doorsensorStateName.toUpperCase ()}."
+    }
+    
+    logInfo "${device.data.label}: Status changed on this device to ${jsonMap.stateName.toUpperCase ()}.${doorSensorMessageText} Battery status is ${jsonMap.batteryCritical ? "CRITICAL" : "NORMAL"}."
+    
+    // end
+    
     sendLockEvent (jsonMap.stateName)
     parent.sendBatteryEvent (device, jsonMap.batteryCritical)
 
     def lockState = _lockStates.find { it.stateName.toUpperCase () == jsonMap.stateName.toUpperCase ()}
     logDebug "parse: lockState = ${lockState}"
+    
     parent.sendProgressEvent (device, lockState?.progressText)
-
+    
+    // starting at bridge version 2.6.0 - support for doorSensor
+    if (doorSensorState?.sendEvent)
+    {
+        sendDoorEvent (doorSensorState.eventText)
+    }
+    // end
+    
     logDebug "parse: OUT"
 }
 
@@ -680,7 +736,9 @@ def handleHttpError (errorCode)
     logDebug "handleHttpError: OUT"
 }
 
-
+//
+//
+//
 def sendLockEvent (lockStatus)
 {
     logDebug "sendLockEvent: IN"
@@ -689,6 +747,22 @@ def sendLockEvent (lockStatus)
     sendEvent (name: "lock", value: lockStatus) 
 
     logDebug "sendLockEvent: OUT"
+}
+
+
+//
+//
+//
+def sendDoorEvent (doorEvent)
+{
+    logDebug "sendDoorEvent: IN"
+    logDebug "sendDoorEvent: doorEvent = ${doorEvent}"
+    
+    def sendIt = false
+    
+    sendEvent (name: "contact", value: doorEvent) 
+
+    logDebug "sendDoorEvent: OUT"
 }
 
 
