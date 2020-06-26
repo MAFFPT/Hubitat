@@ -97,7 +97,7 @@ Please note that:
 
 - Using fixed IP addresses
 
-  The app & drivers does not support dynamic IP addresses. So, you must dedicate a fixed IP address for your Nuki bridge both at your Nuki Bridge or at your Wi-Fi router.
+  The app & drivers does not support dynamic IP addresses. So, you must dedicate a fixed IP address for your Nuki bridge either at your Nuki Bridge or at your Wi-Fi router.
   
 - Enabling Nuki Bridge "developer mode" (API)
 
@@ -117,7 +117,7 @@ This is the easyest way to install all components of this Integration.
 
 Hubitat Package Manager (HPM) made it easy to install and keep up to date apps and drivers installed using it. It is a very powerful and easy to use tool.
 
-Before using HPM you must ollow the instructions to install HPM itself in your HE hub found [here](https://community.hubitat.com/t/beta-hubitat-package-manager/38016).
+Before using HPM you must ollow the instructions to install HPM itself in your HE hub found [here](https://community.hubitat.com/t/beta-hubitat-package-manager/38016). Then, follow HPM instructions to install these app & drivers.
 
 ### Manual installation
 
@@ -158,7 +158,7 @@ If you prefer to do it by yourself, keep reading ...
 
 Once you have installed the app and pertinent drivers, the installation of your Nuki bridge(s) and it's paired device(s) is straightforward: just open the app and follow the steps and, very important, _read carefully_ all the information contained on each page presented to you _before_ requesting any action to the app - meaning, do not be a "fast clicker"! However, the app is - at least I hope it is ... - carefully crafted to alert you of any potential damaging operation **before** you act. So, _please read the all the information on each and every page before acting_ !!!
 
-As much as I prioritized the "on app" documentation, I would like to discuss about some app/drivers features an general information about them.
+As much as I prioritized the "on app" documentation whenever possible, I would like to discuss about some app/drivers features an general information about them.
 
 ### Nuki bridge(s) and paired device(s) discovery and installation
 
@@ -201,19 +201,19 @@ Everything expected to work ... working as expected!
 
 ### Version 1.1
 
-- Integrate app/drivers to Alexa
+- Integrate app/drivers to Alexa (done already - I'm a little bit ansious to see things working)
 - Enhance security using hashed bridge´s token option instead of a plain text one
 - Omit the bridge´s token in the debug log (for secutity concerns)
 
 ### Version 1.2
 
-- Nuki Opener, Key Fob and Keypad support
+- Nuki Opener (done already), Key Fob and Keypad support
 - If it is possible to detect wich Key Fob and/or user´s Keypad key sequence has been used to unlock the door, it will generate a HE event accordingly
 
 ### Version 2.0
 
 - App: Implement an option of only install new devices connected to a Nuki bridge, not touching the bridge itself and others paired devices
-- Lock driver: Implement an option to include or not the "unlatch" action when a "lock" request is received  
+- Lock driver: Implement an option to include or not the "unlatch" action when a "lock" request is received (done already too)
 
 ### Version 3.0
 
