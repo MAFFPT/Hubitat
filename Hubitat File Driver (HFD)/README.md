@@ -1,8 +1,8 @@
-# Hubitat<small><sup>&copy;</sup></small> File Driver (HFD) [BETA]
+# Hubitat<small><sup>&reg;</sup></small> File Driver (HFD) [BETA]
 
 ## Introduction
 
-This solution was developed to allow you to read/write/append files at the brand new (BETA) and powerfull local storage in the Hubitat<small><sup>&copy;</sup></small> Elevation hub.
+This solution was developed to allow you to read/write/append files at the brand new (BETA) and powerfull local storage in the Hubitat Elevation<small><sup>&reg;</sup></small>  hub.
 
 This solution intended to be a "provisory" one, while Hubitat moves ahead with the BETA and awards us with a full API to access files from apps and drivers.
 
