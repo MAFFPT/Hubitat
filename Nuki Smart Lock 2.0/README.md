@@ -12,4 +12,4 @@
 
 # Nuki Smart Lock 2.0<small><sup>&copy;</sup></small> Integration for Hubitat Elevation<small><sup>&copy;</sup></small>
 
-As of version 0.5.0, the Integration package documentation has been moved to a [new location](https://github.com/MAFFPT/Hubitat/wiki), with a new format (wiki pages).
+As of version 0.5.0, the documentation has been moved to a [new location](https://github.com/MAFFPT/Hubitat/wiki), with a new format (wiki pages).
