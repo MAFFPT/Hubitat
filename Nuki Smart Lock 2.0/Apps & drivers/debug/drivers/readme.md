@@ -1,4 +1,3 @@
 # drivers folder - debug version
 
-This folder contains the **DEBUGGING** versions of the drivers that enable you to use a Nuki Smart Lock 2.0<sup>&reg;</sup> lock with your Hubitat Elevevation<sup>&reg;</sup> hub.
-
+As of version 0.5.0, the documentation has been moved to a [new location](https://github.com/MAFFPT/Hubitat/wiki), with a new format (wiki pages).
