@@ -18,75 +18,8 @@
 
 import groovy.transform.Field
 
-@Field static Map _lockActions = [1: [actionCode:       1,
-                                      actionName:       "activate rto",
-                                      eventName:        "unlock", 
-                                      actionInProgress: "unlocking (waiting for Nuki bridge to finish operation)",
-                                      actionSuccess:    "unlock command successfully sent (waiting for Nuki bridge confirmation)",
-                                      actionFailure:    "unlocking failed"], 
-                                  
-                                  2: [actionCode:       2,
-                                      actionName:       "deactivate rto",
-                                      eventName:        "lock",
-                                      actionInProgress: "locking (waiting for Nuki bridge to finish operation)",
-                                      actionSuccess:    "lock command successfully sent (waiting for Nuki bridge confirmation)",
-                                      actionFailure:    "locking failed"],
-                                  
-                                  3: [actionCode:       3,
-                                      actionName:       "electric strike actuation",
-                                      eventName:        "unlatch",
-                                      actionInProgress: "unlatching (waiting for Nuki bridge to finish operation)",
-                                      actionSuccess:    "unlatch command successfully sent (waiting for Nuki bridge confirmation)",
-                                      actionFailure:    "unlatching failed"],
-                                  
-                                  4: [actionCode:       4,
-                                      actionName:       "activate continuous mode",
-                                      eventName:        "lock",
-                                      actionInProgress: "pausing 20 seconds before locking (lock 'n' go)",
-                                      actionSuccess:    "'lock 'n' go' command successfully sent (waiting for Nuki bridge confirmation)",
-                                      actionFailure:    "lock 'n' go failed"],
-                                 
-                                  5: [actionCode:       5,
-                                      actionName:       "deactivate continuous mode",
-                                      eventName:        "lock",
-                                      actionInProgress: "locking & unlatching (waiting for Nuki bridge to finish operation)",
-                                      actionSuccess:    "locking & unlatching command successfully sent (waiting for Nuki bridge confirmation)",
-                                      actionFailure:    "locking & unlatching failed"] \
-                                  ]
-@Field static List _openerStates = [[stateId: 0,
-                                   stateName: "untrained",
-                                   progressText: "Opener needs calibration - check Nuki smartphone app"],
-                                  
-                                  [stateId: 1,
-                                   stateName: "online",
-                                   progressText: "Opener"],
-                                 
-                                  [stateId: 3,
-                                   stateName: "rto active", 
-                                   progressText: "Ring to open option active"],
-
-                                  [stateId: 5,
-                                   stateName: "open",
-                                   progressText: "Opened"],
-                                 
-                                  [stateId: 7,
-                                   stateName: "opening",
-                                   progressText: "Opening in progress"],
-                                 
-                                  [stateId: 253,
-                                   stateName: "booting",
-                                   progressText: "Nuki opener booting - please wait"],
-                                 
-                                  [stateId: 255,
-                                   stateName: "undefined",
-                                   progressText: "I don't know what to do ..."]
-                                 ]
-//@Field static Map lockActions2 = [0: "NO_ACTION", 1: "UNLOCK", 2: "LOCK", 3: "UNLATCH", 4: "LOCK_N_GO", 5: "LOCK_N_GO_WITH_UNLATCH"]
-//@Field static Map lockDoorStatus = [0: "UNAVAILABLE", 1: "DEACTIVATED", 2: "DOOR_CLOSED", 3: "DOOR_OPENED", 4: "DOOR_STATE_UNKNOWN", 5: "CALIBRATING"]
-//@Field static Map lockButtonActions = [0: "NO_ACTION", 1: "INTELLIGENT", 2: "UNLOCK", 3: "LOCK", 4: "UNLATCH", 5: "LOCK_N_GO", 6: "SHOW_STATUS"]
-
 @Field static _nukiNamespace = "maffpt.nuki"             // All apps and drivers must be at the same namespace
-@Field static _nukiOpenerDriverVersion = "0.5.0"         // Current version of this driver
+@Field static _nukiOpenerDriverVersion = "0.5.1"         // Current version of this driver
 
 @Field static Map _openerDeviceModes = [2: "Door mode", 3: "Continuous mode"]
 
@@ -546,3 +479,73 @@ def appDebugLogging () { return parent.appDebugLogging () }
 def logDebug (message) { if (appDebugLogging ()) log.debug (message) }
 def logInfo  (message) { log.info (message) }
 def logWarn  (message) { log.warn (message) }
+
+
+// Static globals
+@Field static Map _lockActions = [1: [actionCode:       1,
+                                      actionName:       "activate rto",
+                                      eventName:        "unlock", 
+                                      actionInProgress: "unlocking (waiting for Nuki bridge to finish operation)",
+                                      actionSuccess:    "unlock command successfully sent (waiting for Nuki bridge confirmation)",
+                                      actionFailure:    "unlocking failed"], 
+                                  
+                                  2: [actionCode:       2,
+                                      actionName:       "deactivate rto",
+                                      eventName:        "lock",
+                                      actionInProgress: "locking (waiting for Nuki bridge to finish operation)",
+                                      actionSuccess:    "lock command successfully sent (waiting for Nuki bridge confirmation)",
+                                      actionFailure:    "locking failed"],
+                                  
+                                  3: [actionCode:       3,
+                                      actionName:       "electric strike actuation",
+                                      eventName:        "unlatch",
+                                      actionInProgress: "unlatching (waiting for Nuki bridge to finish operation)",
+                                      actionSuccess:    "unlatch command successfully sent (waiting for Nuki bridge confirmation)",
+                                      actionFailure:    "unlatching failed"],
+                                  
+                                  4: [actionCode:       4,
+                                      actionName:       "activate continuous mode",
+                                      eventName:        "lock",
+                                      actionInProgress: "pausing 20 seconds before locking (lock 'n' go)",
+                                      actionSuccess:    "'lock 'n' go' command successfully sent (waiting for Nuki bridge confirmation)",
+                                      actionFailure:    "lock 'n' go failed"],
+                                 
+                                  5: [actionCode:       5,
+                                      actionName:       "deactivate continuous mode",
+                                      eventName:        "lock",
+                                      actionInProgress: "locking & unlatching (waiting for Nuki bridge to finish operation)",
+                                      actionSuccess:    "locking & unlatching command successfully sent (waiting for Nuki bridge confirmation)",
+                                      actionFailure:    "locking & unlatching failed"] \
+                                  ]
+@Field static List _openerStates = [[stateId: 0,
+                                   stateName: "untrained",
+                                   progressText: "Opener needs calibration - check Nuki smartphone app"],
+                                  
+                                  [stateId: 1,
+                                   stateName: "online",
+                                   progressText: "Opener"],
+                                 
+                                  [stateId: 3,
+                                   stateName: "rto active", 
+                                   progressText: "Ring to open option active"],
+
+                                  [stateId: 5,
+                                   stateName: "open",
+                                   progressText: "Opened"],
+                                 
+                                  [stateId: 7,
+                                   stateName: "opening",
+                                   progressText: "Opening in progress"],
+                                 
+                                  [stateId: 253,
+                                   stateName: "booting",
+                                   progressText: "Nuki opener booting - please wait"],
+                                 
+                                  [stateId: 255,
+                                   stateName: "undefined",
+                                   progressText: "I don't know what to do ..."]
+                                 ]
+//@Field static Map lockActions2 = [0: "NO_ACTION", 1: "UNLOCK", 2: "LOCK", 3: "UNLATCH", 4: "LOCK_N_GO", 5: "LOCK_N_GO_WITH_UNLATCH"]
+//@Field static Map lockDoorStatus = [0: "UNAVAILABLE", 1: "DEACTIVATED", 2: "DOOR_CLOSED", 3: "DOOR_OPENED", 4: "DOOR_STATE_UNKNOWN", 5: "CALIBRATING"]
+//@Field static Map lockButtonActions = [0: "NO_ACTION", 1: "INTELLIGENT", 2: "UNLOCK", 3: "LOCK", 4: "UNLATCH", 5: "LOCK_N_GO", 6: "SHOW_STATUS"]
+
