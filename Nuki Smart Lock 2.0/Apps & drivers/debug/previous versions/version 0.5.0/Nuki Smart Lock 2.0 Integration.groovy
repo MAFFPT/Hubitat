@@ -18,756 +18,875 @@
 
 import groovy.transform.Field
 
-@Field static _nukiNamespace = "maffpt.nuki"
-@Field static _nukiDriverNameBridge = "Nuki Bridge"          // name of the device type = driver name
-@Field static _nukiDriverNameLock = "Nuki Smart Lock 2.0"    // Nuki Smart Lock 2.0's device driver name
-@Field static _nukiDriverNameOpener = "Nuki Opener"          // Nuki Opener's device driver name
+@Field static _nukiNamespace = "maffpt.nuki"             // All apps and drivers must be at the same namespace
+@Field static _nukiLockDriverVersion = "0.5.1"           // Current version of this driver
 
-@Field static _nukiIntegrationVersion = "0.5.0"
+@Field static Map _lockDeviceModes = [2: "Door mode"]
 
-@Field static _nukiDiscoverBridgesURL = "https://api.nuki.io/discover/bridges"
+@Field static String _nukiDeviceTypeLock = "0"
+@Field static String _nukiDriverNameLock = "Nuki Smart Lock 2.0"    // Nuki Smart Lock 2.0's device driver name
 
-definition (name:              "Nuki Smart Lock 2.0 Integration",
-            namespace:         "maffpt.nuki",
-            author:            "Marco Felicio (MAFFPT)",
-            description:       "Integration app for Nuki<sup>&reg;</sup> Smart Lock 2.0 - version ${_nukiIntegrationVersion}",
-            category:          "Convenience",
-            singleInstance:    true,
-            iconUrl:           "https://raw.githubusercontent.com/MAFFPT/Hubitat/Nuki Smart Lock 2.0/icons/nuki-logo-white.svg",
-            iconX2Url:         "https://raw.githubusercontent.com/erocm123/SmartThingsPublic/master/smartapps/erocm123/sonoff-connect.src/sonoff-connect-icon-2x.png",
-            iconX3Url:         "https://raw.githubusercontent.com/erocm123/SmartThingsPublic/master/smartapps/erocm123/sonoff-connect.src/sonoff-connect-icon-3x.png",
-	        documentationLink: "https://github.com/MAFFPT/Hubitat/blob/master/Nuki%20Smart%20Lock%202.0/README.md")
+@Field static String _bridgeFirmwareDoorSensorSupport = "2.6.0"
 
-
-preferences 
+metadata 
 {
-	page (name: "mainPage")
-	page (name: "selectBridgesToAddPage")
-    page (name: "addedBridgesPage")
-}
+    definition (name: "Nuki Smart Lock 2.0", namespace: "maffpt.nuki", author: "Marco Felicio") 
+    {
+        capability "Battery"
+        
+        capability "ContactSensor"
 
+        capability "Lock"
+        command "lock"
+        command "lockNGo"
+        command "unlock"
+        command "unlatch"
+        
+        command "status"
+        
+        attribute "commandRejectionReason", "string"
+    }
 
-def installed () 
-{
-    logDebug "installed: IN"
+    preferences 
+    {
+        input ("unlatchWhenUnlock",
+               "bool",
+               defaultValue: false,
+               required: false,
+               submitOnChange: true,
+               title: "Unlock & unlatch the door when the UNLOCK command is received",
+               description: "<br/><b>NOTES:</b>" +
+                            "<ul>" +
+                               "<li>Once this option is set, the UNLOCK command will also perform the UNLATCH operation, thus allowing a faster door opening</li>" +
+                            "</ul>"
+              )
+        
+        input ("ignoreLockCommandWhenOpened",
+               "bool",
+               defaultValue: false,
+               required: false,
+               submitOnChange: true,
+               title: "Ignores LOCK command when the door is open/ajar",
+               description: "<br/><b>NOTES:</b>" +
+                            "<ul>" +
+                               "<li>Once this option is set, the LOCK / LOCK&GO commands will be ignored (rejected) if the door is not closed</li>" +
+                               "<li>Also, the <b><i>commandRejectionReason</i></b> custom attribute will be set with the <b><i>doorOpened</i></b> value in order to allow the rejection to be handled at Rule Machine; also, a log entry ('info' type) will be generated</li>" +
+                               "<li>This option will be innefective if no door sensor is installed or detected and a log entry ('info' type) will be gererated to reflect it</li>" +
+                            "</ul>"
+              )
+    }
 
-    initialize()
-    
-    logDebug "installed: OUT"
-}
-
-
-def updated () 
-{
-    logDebug "updated: IN"
-    
-    initialize () 
-    
-    logInfo "Nuki Smart Lock 2.0 Integration finished"
-
-    logDebug "updated: OUT"
+    tiles 
+    {//decoration: "flat", 
+        standardTile ("device.label", "device.lock", inactiveLabel: false, width: 3, height: 2) 
+        {
+            state "locked",    label: "Locked",     action:"unlock", icon: "st.doors.garage.garage-open",    backgroundcolor: "#00ff00" //, nextState: "unlocking"
+            state "unlocking", label: "Unlocking",                   icon: "st.doors.garage.garage-opening", backgroundcolor: "#0000ff" //, nextState: "unlocked"
+            
+            state "unlocked",  label: "Unlocked",   action:"lock",   icon: "st.doors.garage.garage-closed",  backgroundcolor: "#ff0000" //, nextState: "locking"
+            state "locking",   label: "Locking",                     icon: "st.doors.garage.garage-closing", backgroundcolor: "#0000ff" //, nextState: "locked"
+        }
+       
+        valueTile ("battery", "device.battery", inactiveLabel: false, decoration: "flat", width: 3, height: 2)
+        {
+            state "battery", label: "Battery", icon: "st.batteries.battery.full", unit: "%", backgroundColors:[[value: 100, color: "#00ff00"],
+                                                                                                               [value: 20,  color: "#ff0000"]]
+        }
+/*
+        standardTile ("lockNGo", "lockNGo", inactiveLabel: false, decoration: "flat", width: 3, height: 2) 
+        {
+            state "default", label:'lock&Go', action:"lockNGo", icon: "st.locks.lock.locked"
+        }
+*/
+    }
 }
 
 
 def initialize () 
 {
-	logDebug "initialize: IN"
-
-    //unschedule ()
-    
-	logDebug "initialize: OUT"
+    logDebug "initialize: IN"
+    logDebug "initialize: device.capabilities = ${device.capabilities}"
+    logDebug "initialize: OUT"
 }
 
 
-def parse (description)
+def installed ()
 {
-    throw new Exception ("Unexpected call to parse method. Received parameter: ${parseLanMessage (description)}")   
-}
+    logDebug "installed: IN"
 
+    initialize()
 
-//
-//    mainPage
-//
-def mainPage ()
-{
-	logDebug "mainPage: IN (OUT will not be shown)"
-    
-	initialize ()
-    
-    logInfo "Nuki Smart Lock 2.0 Integration started"
-
-    return dynamicPage (name: "mainPage",
-                        uninstall: true,
-                        install: true) \
-                        {
-                            standardHeader ("Bridges discovery")
-                            section () \
-                            {
-                                href  (page: "selectBridgesToAddPage",
-                                       title: "<b>Discover Nuki<sup>&reg;</sup> Bridges</b>",
-                                       description: "\nDiscover Bridges present on your local network for installation")
-                                
-                                input (name: "debugLogging",
-                                       type: "bool",
-                                       defaultValue: false,
-                                       required: true,
-                                       submitOnChange: true,
-                                       title: "Enable <u>app</u> and <u>drivers</u> debug logging\n<b>CAUTION:</b> a lot of log entries will be recorded!")
-			                    
-                                paragraph "<br/><b>Please note:</b><br />"
-                                paragraph "&bull; Set up your bridge(s) and lock(s) correctly using the Nuki<sup>&reg;</sup> smartphone App before using this app."
-                                paragraph "&bull; It is <b>mandatory</b> the use of static IP address(es) for your bridge(s). See your router documentation on how to set static IP on DHCP settings."
-		                    }
-                        }
+    logDebug "installed: installed device ${device.data}"
+    logDebug "installed: OUT"
 }
 
 
 //
-// Look for the bridges present on this network
+// Install a device paired to a bridge
 //
-def selectBridgesToAddPage ()
+def addGrandchildDevice ()
 {
-    logDebug "selectBridgesToAddPage: IN (OUT will not be shown)"
-
-    def existingBridges = []
-    existingBridges = discoverBridges ()
-    logDebug "selectBridgesToAddPage: existing bridges = ${existingBridges}"
+    logDebug "addGrandchildDevice: IN"
     
-    def existingBridgesParam = [:]
-    
-    // create a list of discovered bridges, flaging if it is already installed or not
-	def bridgesList = [:]
-    
-    existingBridges.each
-    {
-        logDebug "selectBridgesToAddPage: processing bridge: ${it}"
-        logDebug "selectBridgesToAddPage: bridge (${it.bridgeId}) ${it.alreadyInstalled ? "is already installed" : "has not been installed yet"}"
-        
-        bridgesList ["${it.bridgeId}"] = "Nuki bridge (${it.bridgeId}) - ${it.alreadyInstalled ? "already installed (check warnings below)" : "new"}"
-//        bridgesList ["${it.bridgeId}#"] = "Nuki bridge (${it.bridgeId}) - ${it.alreadyInstalled ? "already installed (check warnings below)" : "new"}"
-
-        existingBridgesParam << [ (it.bridgeId): it ]
-	}
-    bridgesList.sort () // let's make it neat ...
-    
-	logDebug "selectBridgesToAddPage: bridgesList = ${bridgesList}"
-	logDebug "selectBridgesToAddPage: existingBridgesParam = ${existingBridgesParam}"
-	//logDebug "selectBridgesToAddPage: existingBridges = ${existingBridges}"
-    
-    def desc
-    switch (bridgesList.size())
-    {
-        case 0:
-            desc = "No bridges to install"
-            break
-        case 1:
-            desc = "1 bridge found - select it to install"
-            break
-        default:
-            desc = "${bridgesList.size()} bridges found - select bridges to install"
-    }
-    
-	return dynamicPage (name: "selectBridgesToAddPage") \
-                        {
-                            standardHeader ("<b>Install Nuki<sup>&reg;</sup> Bridges and its Nuki<sup>&reg;</sup> paired device(s) to your Hubitat Elevation<sup>&reg;</sup> hub</b>")
-                            section() \
-                            {
-                                input (name: "selectedBridgesToAdd", 
-                                       required: true,
-                                       type: "enum",
-                                       multiple: true,
-                                       options: bridgesList,
-                                       title: "Use the following list to select the Bridge(s) to install. Then click on <b>'Install selected Bridge(s)'</b> box below. " +
-                                              "Right after clicking on it, the led on every selected Bridge will lit up, one by one. " +
-                                              "When the Bridge's led lit up, you must press the button on the Bridge to allow it to be recognized by this app.",
-                                       description: desc)
-                                
-                                href  ("addedBridgesPage",
-                                       title: "Install selected Bridge(s)",
-                                       params: existingBridgesParam,
-                                       description: "\nClick here to install\n\n<b>NOTICE:</b>Don't forget to press the selected Bridge(s) button when its LED lit up",
-                                       state: "")
-                                
-                                paragraph "<b>WARNING</b>: Selecting a Bridge already installed will automatically delete it, its paired device(s) and\n" +
-                                          "all references to them in this Hubitat Elevation<sup>&reg;</sup> hub (e.g. Rules in Rule Machine)." 
-                                paragraph "Sometimes it gets difficult to get an answer from the Nuki<sup>&reg;</sup> bridges ...\n" +
-                                          "If it happens, you must execute the most important debug action in all history of IT: power recicle!\n" +
-                                          "So, unplug your Nuki<sup>&reg;</sup> Bridge(s), wait 15 seconds, plug it again and wait for the led stop flashing.\n" +
-                                          "Then, restart the installation of the Bridge(s) and paired device(s)."
-                             }
-                        }
-}
-
-
-def addedBridgesPage (existingBridgesParam)
-{
-    logDebug "addedBridgesPage: IN (OUT will not be shown)"
-    logDebug "addedBridgesPage: existingBridgesParam = ${existingBridgesParam}"
-    logDebug "addedBridgesPage: selectedBridgesToAdd = ${selectedBridgesToAdd}"
-    
-    def bridge
-    def addedBridges // = []
-    def addedBridge
-    def resultMessages = ""
-    def pairedDevices
-    def pairedDevice
-    
-    if (selectedBridgesToAdd)
-    {
-        logDebug "addedBridgesPage: before adding bridges ..."
-        
-        addedBridges = addBridges (selectedBridgesToAdd, existingBridgesParam)
-        
-        logDebug "addedBridgesPage: after adding bridges ... installed bridges = ${addedBridges}"
-    }
-    
-    // Let's build a list of bridges and paired devices
-    logDebug "addedBridgesPage: existingBridgesParam = ${existingBridgesParam}"
-    logDebug "addedBridgesPage: selectedBridgesToAdd = ${selectedBridgesToAdd}"
-    
-    addedBridges.each
-    {
-        logDebug "addedBridgesPage: current bridge ID = ${it.bridgeId}"
-        // currentBridgeId = it.bridgeId
-        addedBridge = existingBridgesParam [it.bridgeId] 
-        logDebug "addedBridgesPage: addedBridge found = ${addedBridge}"
-        
-        resultMessages += "&bull; Nuki bridge '${it.label}'${it.installationSuccess ? " successfully installed" : ": installation failed - please check system log for more information"}"
-        
-        if (it.installationSuccess)
-        {
-            pairedDevices = getPairedDevices (addedBridge)
-            if (pairedDevices.size () != 0)
-            {
-                resultMessages += "\n&nbsp;&nbsp;Paired devices:\n"
-                logDebug "addedBridgesPage: pairedDevices = ${pairedDevices}"
-                pairedDevices.each
-                {
-                    logDebug "addedBridgesPage: paired device = ${it}"
-                    resultMessages += "&nbsp;&nbsp;- ${getNukiDeviceDriver (it)} '${buildNukiDeviceLabel (it)}' successfully installed\n"
-                }
-            }
-            else
-            {
-                resultMessages += "\n&nbsp;&nbsp;&nbsp;&nbsp;No paired devices to this bridge\n\n"
-            }
-        }
-        resultMessages += "\n\n"
-    }
-    
-  
-	return dynamicPage (name: "addedBridgesPage",
-                        title: "",
-                        install: true) \
-                        {
-                            standardHeader ("<b>Installation of Nuki<sup>&reg;</sup> bridges to your Hubitat Elevation<sup>&reg;</sup> hub</b>")
-                            section() \
-                            {
-                                if (addedBridges.size() != 0)
-                                {
-                                    paragraph resultMessages
-                                }
-                                else
-                                {
-                                    paragraph "No Nuki<sup>&reg;</sup> bridges selected to install. Click 'Done' to finish."
-                                }
-                            }
-                        }
-}
-
-
-//
-//    Ask nuki.io about all Nuki bridges knwon on the same
-//    network where this HE hub is installed
-//
-def discoverBridges () 
-{
-    logDebug "discoverBridges: IN"
-    
-    def discoveredBridges = []
-    def success
-    
-    for (i=0; i<3; i++) // I would rather use the "3.times" loop construction (elegant, isn't it?), 
-                        // but with it I can't exit the loop with "break" ... so sad 
-    {
-        success = false
-        try 
-        {
-            logDebug "discoverBridges: trying to discover local bridges - try # ${i}"
-            httpGet (_nukiDiscoverBridgesURL) 
-            { 
-                resp -> 
-                    if (resp.data.errorCode == 0) 
-                    {
-                        logDebug "discoverBridges: got response (${resp.data})"
-
-                        discoveredBridges = getBridgesData (resp)
-                        success = true
-                    }
-                    else
-                    {
-                        logDebug "discoverBridges: pausing 5 seconds"
-                        pauseExecution (5000)
-                    }
-            }
-        }
-        catch (Exception e) 
-        {
-            logDebug "discoverBridges: failed attempt to discover bridges - error message = ${e.message}"
-        }
-        
-        if (success)
-        {
-            logDebug "discoverBridges: found (${discoveredBridges.size()}) bridges ... finishing discovery loop"
-            break
-        }
-    }
-    
-    logDebug "discoverBridges: discovered bridges = ${discoveredBridges}"
-    logDebug "discoverBridges: OUT"
-
-    return discoveredBridges
-}
-
-
-//
-//    Parse the HTTP response from nuki.io,
-//    extracting the data of all existing bridges 
-//    on the same network of the HE
-//
-def getBridgesData (response)
-{
-    logDebug "getBridgesData: IN"
-    logDebug "getBridgesData: getting bridge data from response = ${response.data}"
-    
-    def bridgesData = []
-    def bridgeData = [:]
-    def alreadyInstalled
-    def bridgeDNI
-    
-    response?.data?.bridges.each 
-    {
-        bridgeDNI = buildBridgeDNI (it)
-        alreadyInstalled = getChildDevice (bridgeDNI) ? true : false
-        
-        bridgeData = ["bridgeId": it.bridgeId.toString(),            // took me hours and hours to figure it out ... need to convert int to string!
-                      "dni": bridgeDNI, 
-                      "ip": it.ip,
-                      //"mac": getDottedMacAddress (it.ip),
-                      "port": it.port, 
-                      "dateUpdated": it.dateUpdated, 
-                      //"token": getBridgeToken (it),
-                      "label": buildBridgeLabel (it),
-                      "alreadyInstalled" : alreadyInstalled]
-        bridgesData << bridgeData
-        
-        logDebug "getBridgesData: bridge added to list: ${bridgeData}"
-    }
-    
-    logDebug "getBridgesData: total of ${bridgesData.size ()} bridge(s) found"
-    logDebug "getBridgesData: current list of bridges = ${bridgesData}"
-	logDebug "getBridgesData: OUT"
-    
-    return bridgesData
-}
-
-
-//
-//    Get the bridge token asking the bridge itself
-//
-//    Note: User must press bridge button to allow it to provide it's token
-//
-def getBridgeToken (bridge)
-{
-    logDebug "getBridgeToken: IN"
-    logDebug "getBridgeToken: getting token for bridge = ${bridge}"
-    
-    def bridgeToken = ""
-
-    def httpRequest = "${buildBridgeURL (bridge)}/auth"
-    logDebug "getBridgeToken: httpRequest = ${httpRequest}"
-    
-    try
-    {
-        httpGet (httpRequest) 
-        { 
-            resp -> 
-                if (resp.data.success) 
-                {
-                    logDebug "getBridgeToken: got response (${resp.data})"
-                    logDebug "getBridgeToken: before getting bridge token"
-                    bridgeToken = resp.data.token
-                    logDebug "getBridgeToken: after getting token = ${resp.data.token}"
-                }
-                else
-                {
-                    logDebug "getBridgeToken: pausing 5 seconds"
-                    pauseExecution (5000)
-                }
-        }
-    }
-    catch (java.net.SocketTimeoutException e)
-    {
-        logWarn "Nuki Smart Lock 2.0 Integration failed"
-        throw new Exception ("Button at Bridge with ID = ${bridge.bridgeId} not pressed. Installation failed.")
-    }
-
-    logDebug "getBridgeToken: bridge token = ${bridgeToken}"
-    logDebug "getBridgeToken: OUT"
-
-    return bridgeToken
-}
-
-
-//
-// Add all selected bridges to this HE hub
-//
-def addBridges (bridgesToAdd, existingBridges)
-{
-    logDebug "addBridges: IN"
-    logDebug "addBridges: bridges IDs to install = ${bridgesToAdd}"
-    logDebug "addBridges: existing bridges = ${existingBridges}"
-
-    def addedBridges = []
-    def addedBridge = [:]
-    
-    def bridge
-    
-    bridgesToAdd.each 
-    { 
-        bridgeId ->
-            //logDebug "addBridges: checking if user wants to install bridge with bridgeId = ${bridgeId}"
-            bridge = existingBridges [bridgeId]
-            logDebug "addBridges: let's install bridge = ${bridge}"
-
-            addedBridge = addBridge (bridge)
-            addedBridges << addedBridge
-    }
-    
-    logDebug "addBridges: installed bridges = ${addedBridges}"
-    logDebug "addBridges: OUT"
-    
-    return addedBridges
-}
-
-
-//
-// Add a bridge and return the operation result
-//
-def addBridge (bridge)
-{
-    logDebug "addBridge: IN"
-    logDebug "addBridge: installing bridge = ${bridge}"
-    
-    def bridgeAddSuccess
-    def pairedDevices = [:]
-    def addedBridge = [:]
-    def bridgeDNI
-    
-    bridge.token = getBridgeToken (bridge)
-    pairedDevices = getPairedDevices (bridge)
-    bridgeDNI = buildBridgeDNI (bridge)
-    
-    // Let's check first if this bridge is already installed
-    if (bridge.alreadyInstalled)
-    {
-        // It's flagged as already installed ... let's uninstall it and its paired devices
-        def installedBridge = getChildDevice (bridgeDNI)
-
-        logInfo "${app.name}: Bridge '${bridge.label}' was previously installed and will be uninstalled now to allow it to be installed again."          
-
-        deleteChildDevice (bridgeDNI)        
-    }
-
     def deviceData = [:]
-    deviceData.Token = bridge.token
-    deviceData.BridgeId = bridge.bridgeId
-    deviceData.IP = bridge.ip
-    deviceData.Mac = getDottedMacAddress (bridge.ip)
-    deviceData.Port = bridge.port
-    deviceData.Label = buildBridgeLabel (bridge)
-    deviceData.PairedDevices = pairedDevices
-//    deviceData.DebugLoggingRequired = debugLogging    // if this app is running with debugLogging, the child device will run with it too
+    deviceData.DeviceType = "Switch"
+    deviceData.DeviceTypeName = "Virtual Switch"
+    deviceData.DeviceId = "${device.data.nukiInfo.DeviceId}-2"
+    deviceData.Name = "${device.name} latch switch"
+    deviceData.DebugLoggingRequired = debugLogging    // if this device is running with debugLogging, the child device will run with it too
 
-    Map bridgeProperties = [:]
-    bridgeProperties.label = deviceData.Label
-    bridgeProperties.name = _nukiDriverNameBridge
-    bridgeProperties.data = deviceData
-    bridgeProperties.isComponent = false
+    def deviceProperties = [:]
+    deviceProperties.label = deviceData.Name
+    deviceProperties.name = deviceData.DeviceTypeName
+    deviceProperties.data = deviceData
+    deviceProperties.isComponent = true               // the child device will be "attached" to this device
 
     try 
     {
-        logDebug "addBridge: trying to install bridge with bridgeId = ${bridge.bridgeId}"
-        addChildDevice (_nukiNamespace,               // namespace - must be the same for this app and driver
-                        _nukiDriverNameBridge,        // typeName = driver name of the child device - must have been previously installed into this HE hub
-                        bridgeDNI,                    // Device Network Id
-                        location.hubs[0].id,          // This HE hub
-                        bridgeProperties)
-        // if we pass through here, it means that the bridge was correcly added. Let's flag it!
-        //logInfo "Nuki bridge '${deviceData.Label}' successfully installed."
-        logDebug "addBridge: bridge with bridgeId = ${bridge.bridgeId} successfully installed"
-
-        bridgeAddSuccess = true
+        //logDebug "addGrandchildDevice: trying to install device with nukiId = ${nukiDevice.nukiId}"
+        def deviceDNI = "${device.dni}-Latch"
+        def childDevice = addChildDevice ("hubitat",           // namespace - must be the same for this app and driver
+                                          "Virtual Switch",    // typeName = driver of the child device - must have been previously loaded into this HE hub
+                                          "anyDniWillDo",      // deviceNetworkId
+                                          deviceProperties)
+        // if we pass through here, it means that the device was correcly added. Let's flag it!
+        logDebug "addGrandchildDevice: device with deviceId = '${deviceData.DeviceId}' and deviceDNI = '${deviceDNI}' successfully added"
+        
+        //nukiDevice.successfullyInstalled = true
     }
     catch (com.hubitat.app.exception.UnknownDeviceTypeException e)
     {
-        throw new Exception ("Failed to install bridge with bridgeId = ${bridge.bridgeId}. Driver (${_nukiDriverNameBridge}) not installed on this Hubitat Elevation hub; install it before attempting to run this app again")
+        logWarn "${deviceData.DeviceTypeName}: Failed to install device with nukiId = ${deviceData.DeviceId}. Driver (${deviceData.DeviceTypeName}) not installed on this Hubitat Elevation hub; install it before attempting to run this app again."
+        //nukiDevice.successfullyInstalled = false
     }
     catch (error) 
     {
-        logDebug "addBridge: Failed to install bridge with bridgeId = ${bridge.bridgeId}. Error = ${error}"
-
-        throw new Exception ("Failed to install bridge with bridgeId = ${bridge.bridgeId}. Error = ${error}")
-    }
- 
-    if (bridgeAddSuccess)
-    {
-        pairedDevices = getPairedDevices (bridge)
+        logWarn "${deviceData.DeviceTypeName}: Failed to install device with nukiId = ${deviceData.DeviceId}. Error = ${error}"
+        //nukiDevice.successfullyInstalled = false
     }
     
-    addedBridge = bridge.clone ()
-    addedBridge.installationSuccess = bridgeAddSuccess       // new value
-    addedBridge.pairedDevices = pairedDevices.clone()        // new value
-   
-    logDebug "addBridge: installed bridge = ${addedBridge}"
-    logDebug "addBridge: OUT"
-
-    return addedBridge
+    logDebug "addGrandchildDevice: OUT"
 }
 
 
-//
-// Get all Nuki devices paired to a bridge
-//
-def getPairedDevices (bridge)
+
+def parse (Map jsonMap)
 {
-    logDebug "getPairedDevices: IN"
-    logDebug "getPairedDevices: discovering all Nuki devices paired to the bridge with ID = ${bridge.bridgeId}"
+    logDebug "parse: IN"
+    logDebug "parse: received jsonMap = ${jsonMap}"
+    logDebug "parse: device.capabilities = ${device.capabilities}"
     
-    def pairedDevices = []
-  
-    // First, let's ask the Nuki bridge the devices paired to it
-    def httpRequest = "${buildBridgeURL (bridge)}/list?token=${bridge.token}"
-    
-    logDebug "getPairedDevices: httpRequest = '${httpRequest}'"
-
-    httpGet (httpRequest) 
+    // Let's first be sure that the NukiIds of this device and the parsed one are the same
+    if (jsonMap.nukiId.toString () != device.data.nukiInfo.DeviceId.toString ())
     {
-        resp -> 
-        resp.data?.each
-        {
-            logDebug "getPairedDevices: Storing information about paired device to bridge '${bridge.bridgeId}': ${it}"
-
-            pairedDevices << it
-        }
+        trow new Exception ("${device.data.label}: Inconsistent data - events from device with Nuki ID '${jsonMap.nukiId.toString ()}' cannot be handled by device hander for device '${device.data.nukiInfo.DeviceId.toString ()}'")
     }
     
-    logDebug "getPairedDevices: pairedDevices = ${pairedDevices}"
-    logDebug "getPairedDevices: OUT"
+    // starting at bridge version 2.6.0 - support for doorSensor
+    def doorSensorMessageText = ""
+    def doorSensorState = [:]
     
-    return pairedDevices
-}
+    def bridgeInfo = parent.getBridgeInfo (parent.data)
 
-
-//==================================================
-//    Support stuff
-//==================================================
-
-//
-// Build a bridge label
-//
-def buildBridgeLabel (bridge)
-{
-    logDebug "buildBridgeLabel: IN"
-
-    def lbl = "${_nukiDriverNameBridge} (${bridge.bridgeId})"
-    
-    logDebug "buildBridgeLabel: bridge label = ${lbl}"
-    logDebug "buildBridgeLabel: OUT"
-
-    return lbl
-}
-
-
-//
-//    Build a DNI (Device Network Identifier) based on the bridge ID
-//
-def buildBridgeDNI (bridge)
-{
-    logDebug "buildBridgeDNI: IN"
-    
-    def dni = getMacAddress (bridge.ip)
-
-    logDebug "buildBridgeDNI: DNI = ${dni}"
-    logDebug "buildBridgeDNI: OUT"
-    
-    return dni
-}
-
-//
-// Get mac address from ip address
-//
-def getMacAddress (ip)
-{
-    logDebug "getMacAddress: IN"
-  
-    def macAddress = getMACFromIP (ip)
-    
-    logDebug "getMacAddress: macAddress = ${macAddress}"
-    logDebug "getMacAddress: OUT"
-    
-    return macAddress
-}
-
-
-//
-// Build a dotted notation mac address string
-//
-def getDottedMacAddress (ip)
-{
-    logDebug "getDottedMacAddress: IN"
-
-    def macAddress = getMacAddress (ip).toLowerCase()
-    def standardMacAddress = macAddress.substring ( 0, 2) + ":" + 
-                             macAddress.substring ( 2, 4) + ":" + 
-                             macAddress.substring ( 4, 6) + ":" + 
-                             macAddress.substring ( 6, 8) + ":" + 
-                             macAddress.substring ( 8,10) + ":" +
-                             macAddress.substring (10)
-    
-    logDebug "getDottedMacAddress: dotted mac address = ${macAddress} / ${standardMacAddress}"
-    logDebug "getDottedMacAddress: OUT"
-
-    return standardMacAddress
-}
-
-
-//
-// Get Nuki bridge url
-//
-def buildBridgeURL (bridge)
-{
-    logDebug "buildBridgeURL: IN"
-    
-    def bridgeURL
-    
-    if (bridge?.IP)
+    if (bridgeInfo.versions.firmwareVersion >= _bridgeFirmwareDoorSensorSupport)
     {
-        bridgeURL = "http://${bridge.IP}:${bridge.Port}"
+        doorSensorState = _doorSensorStates.find { it.stateId == jsonMap.doorsensorState }
+        doorSensorMessageText = " Door sensor state = ${jsonMap.doorsensorStateName.toUpperCase ()}."
+    }
+    
+    logInfo "${device.data.label}: Status changed on this device to ${jsonMap.stateName.toUpperCase ()}.${doorSensorMessageText} Battery status is ${jsonMap.batteryCritical ? "CRITICAL" : "NORMAL"}."
+    
+    // end
+    
+    sendLockEvent (jsonMap.stateName)
+    parent.sendBatteryEvent (device, jsonMap.batteryCritical)
+
+    def lockState = _lockStates.find { it.stateName.toUpperCase () == jsonMap.stateName.toUpperCase ()}
+    logDebug "parse: lockState = ${lockState}"
+    
+    parent.sendProgressEvent (device, lockState?.progressText)
+    
+    // starting at bridge version 2.6.0 - support for doorSensor
+    if (doorSensorState?.sendEvent)
+    {
+        sendDoorEvent (doorSensorState.eventText)
+    }
+    // end
+    
+    logDebug "parse: OUT"
+}
+
+
+//
+// This is here just in case
+// Theoretically all callbacks from the Nuki bridge are handled by the Nuki bridge's driver
+//
+def parse (String description)
+{
+    logDebug "parse: IN"
+    
+    def parsedDescription = parseLanMessage (description)
+    logDebug "parse: parsed description = ${parsedDescription}"
+    
+    logDebug "parse: OUT"
+}
+
+
+//
+// Actually nothing is done here ...
+//
+def uninstalled ()
+{
+    logDebug "uninstalled: IN"
+
+    logInfo "${device.label}: Nuki device '${device.label}' successfully uninstalled"
+       
+    logDebug "uninstalled: OUT"
+}
+
+
+//
+// Nor here ...
+//
+def updated () 
+{
+    logDebug "updated: IN"
+
+    logDebug "updated: OUT"
+}
+
+
+// ======================================
+// Device specific methods
+// ======================================
+
+
+//
+// Handles locks requests
+//
+def lock (Map cmds) 
+{
+    logDebug "lock: IN"
+    logDebug "lock: cmds = ${cmds}"
+    
+    if (canExecuteLock (_lockActions [2]))
+    {
+        sendCommandToNuki (_lockActions [2],       // action = "lock"
+                           true)                   // waitCompletition
+    }
+    
+    logDebug "lock: OUT"
+}
+
+
+def lockNGo ()
+{
+    logDebug "lockNGo: IN"
+
+    if (canExecuteLock (_lockActions [4]))
+    {
+        sendCommandToNuki (_lockActions [4],       // action = "lock 'n' go"
+                           false)                  // waitCompletition
+    }
+    
+    logDebug "lockNGo: OUT"
+}
+
+
+//
+// Recover device's current status
+//
+def status ()
+{
+    logDebug "status: IN"
+    logDebug "status: device.data = ${parent.device.data}"
+    
+    def deviceInfo = parent.getDeviceInfo (device.data.nukiInfo, parent.data)
+    logDebug "status: deviceInfo = ${deviceInfo}"
+    
+    def deviceMode = _lockDeviceModes.find { it.key == deviceInfo?.mode }
+    logDebug "status: deviceMode = ${deviceMode.value}"
+    
+    // starting at bridge version 2.6.0 - support for doorSensor
+    def doorSensorMessageText = ""
+    def doorSensorState = [:]
+    
+    def bridgeInfo = parent.getBridgeInfo (parent.data)
+    logDebug "status: bridgeInfo = ${bridgeInfo}"
+
+    if (bridgeInfo.versions.firmwareVersion >= _bridgeFirmwareDoorSensorSupport)
+    {
+        doorSensorState = _doorSensorStates.find { it.stateId == deviceInfo.doorsensorState }
+        doorSensorMessageText = " Door sensor state = ${deviceInfo.doorsensorStateName.toUpperCase ()} //\n"
+    }
+    
+    resetRejectionEvent ()
+    
+    logInfo "${device.data.label}: Status changed on this device to ${deviceInfo.stateName.toUpperCase ()}.${doorSensorMessageText} Battery status is ${deviceInfo.batteryCritical ? "CRITICAL" : "NORMAL"}."
+    
+    // end
+
+    def deviceStatus = "Device mode: ${deviceMode.value.toUpperCase ()} //\n" +
+                       "State: ${deviceInfo?.stateName.toUpperCase ()} //\n" +
+                       doorSensorMessageText +
+                       "Battery: ${deviceInfo?.batteryCritical ? "CRITICAL" : "NORMAL"} //\n\n"+
+                       "<b>NOTE</b>: avoid requesting this status frequently since it may drain your lock's batteries too fast"
+    
+    sendLockEvent (deviceInfo?.stateName)
+    parent.sendProgressEvent (device, deviceStatus, deviceInfo)
+    
+    logDebug "status: OUT"
+}
+
+
+def unlatch ()
+{
+    logDebug "unlatch: IN"
+
+    sendCommandToNuki (_lockActions [3],       // action = "unlatch"
+                       true)                   // waitCompletition
+
+    logDebug "unlatch: OUT"
+}
+
+
+def unlock (Map cmds) 
+{
+    logDebug "unlock: IN"
+    logDebug "unlock: cmds = ${cmds}"
+
+    if (unlatchWhenUnlock)
+    {
+        unlatch ()
     }
     else
     {
-        bridgeURL = "http://${bridge.ip}:${bridge.port}"    
+        sendCommandToNuki (_lockActions [1],       // action = "unlock"
+                           true)                   // waitCompletition
     }
     
-    logDebug "buildBridgeURL: bridge URL = ${bridgeURL}"
-    logDebug "buildBridgeURL: OUT"
-    
-    return bridgeURL
+    logDebug "unlock: OUT"
 }
 
 
+//=========================================
+//    Support stuff
+//=========================================
+
+
 //
-// Build a DNI (Device Network Identifier) based on the Nuki device ID
+// Format and send a command to the Nuki device, handling the result
 //
-def buildDeviceDNI (nukiDevice)
+def sendCommandToNuki (Map action, boolean waitCompletition) 
 {
-    logDebug "buildDeviceDNI: IN"
-    logDebug "buildDeviceDNI: building DNI for device = ${nukiDevice}"
-    
-    String deviceDNI = "Nuki ${nukiDevice.nukiId}"
-    logDebug "buildDeviceDNI: deviceDNI = ${deviceDNI}"
-    
-    logDebug "buildDeviceDNI: OUT"
-    
-    return deviceDNI
-}
+    logDebug "sendCommandToNuki: IN"
+    logDebug "sendCommandToNuki: Processing action specs = ${action}"
 
+    def returnData
+        
+    def deviceStatus
+    def actionNameUCase = action.actionName.toUpperCase ()
+    def actionNameLCase = action.actionName.toLowerCase ()
+    def endLoop = false
+    def sendCommand = false
+    def errorMessage = ""
+    
+    parent.sendProgressEvent (device, action.actionInProgress)
 
-//
-// Build a Nuki device label
-//
-def buildNukiDeviceLabel (nukiDevice)
-{
-    logDebug "buildNukiDeviceLabel: IN"
-    
-    def deviceLabel
-    
-    switch (nukiDevice.deviceType)
+    for (i in 1..3) 
     {
-        case "0":
-            deviceLabel = "${nukiDevice.name}"
-            break
-        case "2":
-            deviceLabel = "${nukiDevice.name}"
-            break
-        default:
-            throw new Exception ("Nuki Bride driver: Method 'buildNukiDeviceLabel' - Fatal error = unsupported device type (${nukiDevice.deviceType})")
-            break
-    }
-    
-    logDebug "buildNukiDeviceLabel: OUT"
-
-    return deviceLabel
-}
-
-
-//
-// Get the driver name for a device
-//
-def getNukiDeviceDriver (nukiDevice)
-{
-    logDebug "getNukiDeviceDriver: IN"
-    logDebug "getNukiDeviceDriver: nukiDevice = ${nukiDevice}"
-    
-    def deviceDriver
-    
-    switch (nukiDevice.deviceType)
-    {
-        case "0":
-            deviceDriver = _nukiDriverNameLock
-            break
-        case "2":
-            deviceDriver = _nukiDriverNameOpener
-            break
-        default:
-            throw new Exception ("Nuki Smart Lock Integration: method 'getNukiDeviceDriver' - Fatal error: unsupported device type (${nukiDevice.deviceType})")
-            break
-    }
-    logDebug "getNukiDeviceDriver: deviceDriver = ${deviceDriver}"
-    logDebug "getNukiDeviceDriver: OUT"
-    
-    return deviceDriver
-}
-
-
-//
-// Formatting stuff
-//
-def standardHeader (subheader)
-{
-    def header = "<h3 style='color: white; background-color: #ff8517; text-align: center; vertical-align: bottom; height: 30px;'><b>Nuki<sup>&reg;</sup> Smart Lock 2.0 Integration version ${_nukiIntegrationVersion}</b></h3>"
-    
-    if (subheader != "")
-    {
-        header += "<h4 style='color: #29b5fb; font-size: large;'><b>${subheader}</b></h4>"
-    }
-    
-    section (header) 
-    {
-        if (subheader != "")
+        deviceStatus = parent.getNukiDeviceStatus (device.data.nukiInfo)
+        logDebug "sendCommandToNuki: deviceStatus = ${deviceStatus}"
+        
+        logDebug "sendCommandToNuki: stateName = ${deviceStatus.lastKnownState.stateName.toUpperCase ()}"
+        
+        switch (deviceStatus.lastKnownState.stateName.toUpperCase ())
         {
-            //paragraph "<h4 style='color: #29b5fb; font-size: large;'><b>${subheader}</b></h4>"
+            case "UNCALIBRATED":
+                logDebug "sendCommandToNuki: falling through case 'UNCALIBRATED'"
+                errorMessage = "Nuki device not calibrated - use Nuki smartphone app to calibrate it"
+                sendCommand = false
+                endLoop = true
+                break
+            case "LOCKED":
+                logDebug "sendCommandToNuki: falling through case 'LOCKED'"
+                switch (actionNameUCase)
+                {
+                    case "LOCK":
+                    case "LOCK 'N' GO":
+                    case "LOCK 'N' GO WITH UNLATCH":
+                        logDebug "sendCommandToNuki: falling through case 'LOCKED', subcase 'LOCK'/'LOCK 'N' GO'/'LOCK 'N' GO WITH UNLATCH'"
+                        errorMessage = "Nuki device already locked - ${actionNameUCase} command ignored"
+                        sendCommand = false
+                        endLoop = true
+                        break
+                    case "UNLATCH":
+                    case "UNLOCK":
+                        logDebug "sendCommandToNuki: falling through case 'LOCKED', subcase 'UNLATCH'/'UNLOCK'"
+                        sendCommand = true
+                        endLoop = true
+                        break
+                    default:
+                        logDebug "sendCommandToNuki: falling through case 'LOCKED', subcase 'default'"
+                        break
+                }
+                break
+            case "LOCKING":
+            case "UNLATCHING":
+            case "UNLOCKING":
+                logDebug "sendCommandToNuki: falling through case 'LOCKING'/'UNLATCHING'/'UNLOCKING'"
+                // Let's give some time to the lock to complete the current operation
+                break
+            case "UNLATCHED":
+                logDebug "sendCommandToNuki: falling through case 'UNLATCHED'"
+                switch (actionNameUCase)
+                {
+                    case "LOCK":
+                    case "LOCK 'N' GO":
+                    case "LOCK 'N' GO WITH UNLATCH":
+                        logDebug "sendCommandToNuki: falling through case 'UNLATCHED', subcase 'LOCK'/'LOCK 'N' GO'/'LOCK 'N' GO WITH UNLATCH'"
+                        sendCommand = true
+                        endLoop = true
+                        break
+                    case "UNLATCH":
+                        logDebug "sendCommandToNuki: falling through case 'UNLATCHED', subcase 'UNLATCH'"
+                        errorMessage = "Nuki device already unlatched - ${actionNameUCase} command ignored"
+                        sendCommand = false
+                        endLoop = true
+                        break
+                    case "UNLOCK":
+                        logDebug "sendCommandToNuki: falling through case 'UNLATCHED', subcase 'UNLOCK'"
+                        errorMessage = "Nuki device already unlocked & unlatched - ${actionNameUCase} command ignored"
+                        sendCommand = false
+                        endLoop = true
+                        break
+                    default:
+                        logDebug "sendCommandToNuki: falling through case 'UNLATCHED', subcase 'default'"
+                        break
+                }
+                break
+            case "UNLOCKED":
+            case "UNLOCKED (LOCK 'N' GO)":
+                logDebug "sendCommandToNuki: falling through case 'UNLATCHED'/'UNLOCKED'/'UNLOCKED (LOCK 'N' GO)'"
+                switch (actionNameUCase)
+                {
+                    case "LOCK":
+                    case "LOCK 'N' GO":
+                    case "LOCK 'N' GO WITH UNLATCH":
+                        logDebug "sendCommandToNuki: falling through case 'UNLOCKED'/'UNLOCKED (LOCK 'N' GO)', subcase 'LOCK'/'LOCK 'N' GO'/'LOCK 'N' GO WITH UNLATCH'"
+                        sendCommand = true
+                        endLoop = true
+                        break
+                    case "UNLATCH":
+                        logDebug "sendCommandToNuki: falling through case 'UNLOCKED'/'UNLOCKED (LOCK 'N' GO)', subcase 'UNLATCH'"
+                        sendCommand = true
+                        endLoop = true
+                        break
+                    case "UNLOCK":
+                        logDebug "sendCommandToNuki: falling through case 'UNLOCKED'/'UNLOCKED (LOCK 'N' GO)', subcase 'UNLOCK'"
+                        errorMessage = "Nuki device already unlocked - ${actionNameUCase} command ignored"
+                        sendCommand = false
+                        endLoop = true
+                        break
+                    default:
+                        logDebug "sendCommandToNuki: falling through case 'UNLOCKED'/'UNLOCKED (LOCK 'N' GO)', subcase 'default'"
+                        break
+                }
+                break
+            case "MOTOR BLOCKED":
+                logDebug "sendCommandToNuki: falling through case 'MOTOR BLOCKED'"
+                errorMessage = "Nuki lock motor blocked - calibrate the lock using the Nuki smartphone app; please check system log for more information on how to proceed"
+                logWarn "${device.data.label}: 9. When the calibration is finhised, re-execute the previously failed operation"
+                logWarn "${device.data.label}: 8. Follow the instructions provided by the Nuki app"
+                logWarn "${device.data.label}: 7. Select the 'Calibrate Smart Lock' option"
+                logWarn "${device.data.label}: 6. Select the 'Manage Smart Lock' option"
+                logWarn "${device.data.label}: 5. Choose this smart lock (${device.data.label})"
+                logWarn "${device.data.label}: 4. Select the 'Smart Lock' option"
+                logWarn "${device.data.label}: 3. Select the 'Manage my devices' menu item"
+                logWarn "${device.data.label}: 2. Open the Nuki menu (touch the tree bars icon on the top left part of the screen)"
+                logWarn "${device.data.label}: 1. Access the Nuki app on your smartphone"
+                logWarn "${device.data.label}: To unblock it, follow these instructions:"
+                logWarn "${device.data.label}: The motor in this Nuki smart lock is blocked"
+                sendCommand = false
+                endLoop = true
+                break
+            case "UNDEFINED":
+                logDebug "sendCommandToNuki: falling through case 'UNDEFINED'"
+                errorMessage = "Nuki device has an UNDEFINED status - please try again latter"
+                sendCommand = false
+                endLoop = true
+                break
+        }
+        if (endLoop)
+        {
+            break
+        }
+        logInfo "sendCommandToNuki: pausing for 1.5 seconds"
+        pauseExecution (1500)
+    }
+
+    if (sendCommand)
+    {
+        sendLockEvent (action.transientState)
+        try
+        {
+            def httpRequest = "${parent.buildBridgeURL (parent.data)}/lockAction?${parent.buildNukiActionCommand (device.data.nukiInfo, _nukiDeviceTypeLock, action.actionCode, waitCompletition)}"
+            logDebug "sendCommandToNuki: httpRequest = ${httpRequest})"
+    	    httpGet (httpRequest)
+            {
+                resp -> 
+                    returnData = resp?.data
+            }
+            if (returnData?.success)
+            {
+                //logDebug "sendCommandToNuki: event name = lock - value = ${eventSuccessValue}"
+                //sendLockEvent (eventSuccessValue)
+            }
+            else
+            {
+                logWarn "${_nukiDriverNameLock}: sending of command '${action.actionName}' to Nuki lock unsuccessful"
+            }
+        }
+        catch (err)
+        {
+            logWarn ("sendCommandToNuki: Error on httpPost = ${err}")
+        }
+        
+        // resetting commandRejectionReason attribute
+        resetRejectionEvent ()
+    }
+    
+    if (errorMessage == "")
+    {
+        parent.sendProgressEvent (device, action.actionSuccess)
+    }
+    else
+    {
+        parent.sendProgressEvent (device, "${action.actionFailure} - see device events for more information by clicking on the 'Events' button at the top of this page", errorMessage)
+        logWarn "${_nukiDriverNameLock}: ${errorMessage}"
+        returnData = false
+    }
+    logDebug "sendCommandToNuki: OUT"
+    
+    return returnData
+}
+
+
+//
+// version 0.5.0 - handling the ignoreLockCommandWhenOpened option
+//
+def canExecuteLock (Map action)
+{
+    logDebug "canExecuteLock: IN"
+
+    def executeLock = true
+    
+    def deviceInfo = parent.getDeviceInfo (device.data.nukiInfo, parent.data)
+    logDebug "status: deviceInfo = ${deviceInfo}"
+
+    if (ignoreLockCommandWhenOpened)
+    {
+        switch (deviceInfo.doorsensorState)
+        {
+            case 3: // door opened
+                sendRejectionEvent ("doorOpened")
+                logInfo "${device.data.label}: Locking command (${action.actionName.toUpperCase ()}) ignored because the door is open"
+                executeLock = false
+                break
+            case 0: // unavailabe
+                logInfo "${device.data.label}: Ignore lock command option innefective: door sensor not detected"
+                break
+            default:
+                break
         }
     }
+    
+    logDebug "canExecuteLock: OUT"
+    
+    return executeLock
 }
 
 
 //
-// Logging stuff
 //
-def appDebugLogging () { return debugLogging }
+//
+def resetRejectionEvent ()
+{
+    logDebug "resetRejectionEvent: IN"
 
-def logDebug (message) { if (debugLogging) log.debug (message) }
+    sendRejectionEvent ("noRejection")
+
+    logDebug "resetRejectionEvent: OUT"
+}
+
+
+def xxxbuildNukiLockActionCommand (actionCode, waitCompletition)
+{
+    logDebug "buildNukiLockActionCommand: IN"
+    logDebug "buildNukiLockActionCommand: actionCode = ${actionCode}, waitCompletition = ${waitCompletition}"
+    
+    def httpBody
+    
+    if (actionCode != null)
+    {
+        logDebug "buildNukiLockActionCommand: device.data.nukiInfo = ${device.data.nukiInfo}"
+        httpBody = "nukiId=${device.data.nukiInfo.DeviceId}" +
+                   "&deviceType=${_nukiDeviceTypeLock}" +
+                   "&action=${actionCode}" +
+                   "&token=${parent.data.Token}" +
+                   "&nowait=${waitCompletition ? 0 : 1}"
+    }
+    else
+    {
+        log.debug "buildNukiLockActionCommand: OUT with exception"
+        throw new Exception ("Invalid action description (${actionDescription})")
+    }
+    logDebug "buildNukiLockActionCommand: httpBody = ${httpBody}"
+    logDebug "buildNukiLockActionCommand: OUT"
+
+    return httpBody
+}
+
+
+def xxsendRequestToNuki (String request)
+{
+    logDebug "sendRequestToNuki: IN"
+    logDebug "Processing ${request} request"
+    
+    def returnData
+    
+    try
+    {
+        def requestToSend = parent.buildNukiRequest (request)
+    	httpPost ( requestToSend )
+        {
+            resp ->
+                returnData = resp.data
+        }
+    }
+    catch (err)
+    {
+        handleHttpError (err)
+    }
+
+    logDebug "sendRequestToNuki: OUT"
+    
+    return returnData
+}
+
+
+def xxxbuildNukiLockRequest (request)
+{
+    logDebug "buildNukiLockRequest: IN"
+    def requestToSend = "http://${state.ip}/${request}?token=${state.token}"
+    
+    logDebug "buildNukiLockRequest: requestToSend = ${requestToSend}"
+    logDebug "buildNukiLockRequest: OUT"
+    
+    return requestToSend
+}
+
+
+def handleHttpError (errorCode)
+{
+    logDebug "handleHttpError: IN"
+    logDebug "handleHttpError: errorCode = ${errorCode}"
+    switch (errorCode)
+    {
+        case 401:
+            sendEvent (name: "errorCode", value: "Invalid token")
+            break
+        case 403:
+            sendEvent (name: "errorCode", value: "Authentication disabled")
+            break
+        case 404:
+            sendEvent (name: "errorCode", value: "Nuki device unknown")
+            break
+        case 503:
+            sendEvent (name: "errorCode", value: "Nuki device is offline")
+            break
+        default:
+            sendEvent (name: "errorCode", value: "Unexpected error (${errorCode})")
+            break
+    }
+    
+    logDebug "handleHttpError: OUT"
+}
+
+
+//
+//
+//
+def sendDoorEvent (doorEvent)
+{
+    logDebug "sendDoorEvent: IN"
+    logDebug "sendDoorEvent: doorEvent = ${doorEvent}"
+    
+    def sendIt = false
+    
+    sendEvent (name: "contact", value: doorEvent) 
+
+    logDebug "sendDoorEvent: OUT"
+}
+
+
+//
+//
+//
+def sendLockEvent (lockStatus)
+{
+    logDebug "sendLockEvent: IN"
+    logDebug "sendLockEvent: lockStatus = ${lockStatus}"
+
+    sendEvent (name: "lock", value: lockStatus) 
+
+    logDebug "sendLockEvent: OUT"
+}
+
+
+//
+//
+//
+def sendRejectionEvent (rejectionReason)
+{
+    logDebug "sendRejectionEvent: IN"
+    logDebug "sendRejectionEvent: rejectionReason = ${rejectionReason}"
+
+    sendEvent (name: "commandRejectionReason", value: rejectionReason) 
+
+    logDebug "sendRejectionEvent: OUT"
+}
+
+
+// Logging stuff
+def appDebugLogging () { return parent.appDebugLogging () }
+
+def logDebug (message) { if (appDebugLogging ()) log.debug (message) }
 def logInfo  (message) { log.info (message) }
 def logWarn  (message) { log.warn (message) }
+
+
+// Static Globals
+@Field static Map _lockActions = [1: [actionCode:       1,
+                                      actionName:       "unlock",
+                                      eventName:        "unlock",
+                                      transientState:   "unlocking",
+                                      actionInProgress: "unlocking (waiting for Nuki bridge to finish operation)",
+                                      actionSuccess:    "unlock command successfully sent (waiting for Nuki Bridge confirmation)",
+                                      actionFailure:    "unlocking failed"], 
+                                  
+                                  2: [actionCode:       2,
+                                      actionName:       "lock",
+                                      eventName:        "lock",
+                                      transientState:   "locking",
+                                      actionInProgress: "locking (waiting for Nuki bridge to finish operation)",
+                                      actionSuccess:    "lock command successfully sent (waiting for Nuki Bridge confirmation)",
+                                      actionFailure:    "locking failed"],
+                                  
+                                  3: [actionCode:       3,
+                                      actionName:       "unlatch",
+                                      eventName:        "unlatch",
+                                      transientState:   "unlatching",
+                                      actionInProgress: "unlatching (waiting for Nuki bridge to finish operation)",
+                                      actionSuccess:    "unlatch command successfully sent (waiting for Nuki Bridge confirmation)",
+                                      actionFailure:    "unlatching failed"],
+                                  
+                                  4: [actionCode:       4,
+                                      actionName:       "lock 'n' go",
+                                      eventName:        "lock",
+                                      transientState:   "locking",
+                                      actionInProgress: "pausing 20 seconds before locking (lock 'n' go)",
+                                      actionSuccess:    "'lock 'n' go' command successfully sent (waiting for Nuki Bridge confirmation)",
+                                      actionFailure:    "lock 'n' go failed"],
+                                 
+                                  5: [actionCode:       5,
+                                      actionName:       "lock 'n' go with unlatch",
+                                      eventName:        "lock",
+                                      transientState:   "locking",
+                                      actionInProgress: "locking & unlatching (waiting for Nuki bridge to finish operation)",
+                                      actionSuccess:    "locking & unlatching command successfully sent (waiting for Nuki Bridge confirmation)",
+                                      actionFailure:    "locking & unlatching failed"] \
+                                  ]
+@Field static List _lockStates = [[stateId: 0,
+                                   stateName: "uncalibrated",
+                                   progressText: "lock needs calibration"],
+                                  
+                                  [stateId: 1,
+                                   stateName: "locked",
+                                   progressText: "locking successful"],
+                                 
+                                  [stateId: 2,
+                                   stateName: "unlocking",
+                                   progressText: "unlocking in progress"],
+                                 
+                                  [stateId: 3,
+                                   stateName: "unlocked", 
+                                   progressText: "unlocking successful"],
+                                 
+                                  [stateId: 4,
+                                   stateName: "locking", 
+                                   progressText: "locking in progress"],
+                                 
+                                  [stateId: 5,
+                                   stateName: "unlatched",
+                                   progressText: "unlatch successful"],
+                                 
+                                  [stateId: 6,
+                                   stateName: "unlocked lockngo",
+                                   progressText: "unlocking 'n' go successful"],
+                                 
+                                  [stateId: 7,
+                                   stateName: "unlatching",
+                                   progressText: "unlatching in progress"],
+                                 
+                                  [stateId: 253,
+                                   stateName: "booting",
+                                   progressText: "Nuki bridge booting - please wait"],
+                                 
+                                  [stateId: 254,
+                                   stateName: "motor blocked",
+                                   progressText: "motor blocked - please check your lock"],
+                                 
+                                  [stateId: 255,
+                                   stateName: "undefined",
+                                   progressText: "I don't know what to do ..."]
+                                 ]
+
+
+@Field static List _doorSensorStates = [[stateId: 0,
+                                         stateName: "unavailable",
+                                         sendEvent: false,
+                                         eventText: ""],
+                                  
+                                        [stateId: 1,
+                                         stateName: "deactivated",
+                                         sendEvent: false,
+                                         eventText: ""],
+                                 
+                                        [stateId: 2,
+                                         stateName: "door closed",
+                                         sendEvent: true,
+                                         eventText: "closed"],
+                                 
+                                        [stateId: 3,
+                                         stateName: "door opened",
+                                         sendEvent: true,
+                                         eventText: "open"],
+                                 
+                                        [stateId: 4,
+                                         stateName: "door state unknown",
+                                         sendEvent: false,
+                                         eventText: ""],
+                                 
+                                        [stateId: 5,
+                                         stateName: "calibrating",
+                                         sendEvent: false,
+                                         eventText: ""]
+                                       ]
+
+
+//@Field static Map lockActions2 = [0: "NO_ACTION", 1: "UNLOCK", 2: "LOCK", 3: "UNLATCH", 4: "LOCK_N_GO", 5: "LOCK_N_GO_WITH_UNLATCH"]
+//@Field static Map lockDoorStatus = [0: "UNAVAILABLE", 1: "DEACTIVATED", 2: "DOOR_CLOSED", 3: "DOOR_OPENED", 4: "DOOR_STATE_UNKNOWN", 5: "CALIBRATING"]
+//@Field static Map lockButtonActions = [0: "NO_ACTION", 1: "INTELLIGENT", 2: "UNLOCK", 3: "LOCK", 4: "UNLATCH", 5: "LOCK_N_GO", 6: "SHOW_STATUS"]
+
+
