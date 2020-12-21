@@ -610,7 +610,8 @@ def buildBridgeDNI (bridge)
 def getMacAddress (ip)
 {
     logDebug "getMacAddress: IN"
-  
+    logDebug "getMacAddres: IP = ${ip}"
+	
     def macAddress = getMACFromIP (ip)
     
     logDebug "getMacAddress: macAddress = ${macAddress}"
