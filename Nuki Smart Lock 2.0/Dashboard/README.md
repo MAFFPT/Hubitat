@@ -5,7 +5,7 @@ Here you will find the instructions necessary to create two tiles for the Hubita
 
 ## The tiles
 ### Lock Tile
-This tile will allow control of the Nuki Smart Lock 2.0 itseft - open and close it. That tile will, also, show the current Lock status.
+This tile will allow control of the Nuki Smart Lock 2.0 itseft - lock and unlock it. That tile will, also, show the current Lock status.
 ### Door sensor Tile
 This tile will allow to see the status of the door sensor (contact sensor). It will show if the door is open or closed.
 
