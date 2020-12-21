@@ -1,4 +1,4 @@
-# Hubitat Elevation<sup>&copy;</sup> Dashboard for Nuki Smart Lock 2.0
+# Hubitat Elevation<small><sup>&copy;</sup></small> Dashboard for Nuki<small><sup>&copy;</sup></small> Smart Lock 2.0
 ## Introduction
 
 Here you will find the instructions necessary to create two tiles for the Hubitat Elevation Dashboard
