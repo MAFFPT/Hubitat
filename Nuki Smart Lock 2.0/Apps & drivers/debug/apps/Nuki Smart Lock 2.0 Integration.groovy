@@ -23,7 +23,7 @@ import groovy.transform.Field
 @Field static _nukiDriverNameLock = "Nuki Smart Lock 2.0"    // Nuki Smart Lock 2.0's device driver name
 @Field static _nukiDriverNameOpener = "Nuki Opener"          // Nuki Opener's device driver name
 
-@Field static _nukiIntegrationVersion = "0.5.3"
+@Field static _nukiIntegrationVersion = "0.6.1"
 
 @Field static _nukiDiscoverBridgesURL = "https://api.nuki.io/discover/bridges"
 
@@ -138,21 +138,30 @@ def selectBridgesToAddPage ()
     // create a list of discovered bridges, flaging if it is already installed or not
 	def bridgesList = [:]
     
+    def httpAPINotEnabled = []
+    
     existingBridges.each
     {
         logDebug "selectBridgesToAddPage: processing bridge: ${it}"
         logDebug "selectBridgesToAddPage: bridge (${it.bridgeId}) ${it.alreadyInstalled ? "is already installed" : "has not been installed yet"}"
         
-        bridgesList ["${it.bridgeId}"] = "Nuki bridge (${it.bridgeId}) - ${it.alreadyInstalled ? "already installed (check warnings below)" : "new"}"
+        if (it.IP.toString() != "null")
+        {
+            bridgesList ["${it.bridgeId}"] = "Nuki bridge (${it.bridgeId}) - ${it.alreadyInstalled ? "already installed (check warnings below)" : "new"}"
 //        bridgesList ["${it.bridgeId}#"] = "Nuki bridge (${it.bridgeId}) - ${it.alreadyInstalled ? "already installed (check warnings below)" : "new"}"
-
-        existingBridgesParam << [ (it.bridgeId): it ]
+            existingBridgesParam << [ (it.bridgeId): it ]
+        }
+        else
+        {
+            httpAPINotEnabled << it.bridgeId   
+        }     
 	}
     bridgesList.sort () // let's make it neat ...
     
 	logDebug "selectBridgesToAddPage: bridgesList = ${bridgesList}"
 	logDebug "selectBridgesToAddPage: existingBridgesParam = ${existingBridgesParam}"
 	//logDebug "selectBridgesToAddPage: existingBridges = ${existingBridges}"
+    logDebug "selectBridgesToAddPage: httpAPINotEnabled = ${httpAPINotEnabled}"
     
     def desc
     switch (bridgesList.size())
@@ -172,28 +181,55 @@ def selectBridgesToAddPage ()
                             standardHeader ("<b>Install Nuki<sup>&reg;</sup> Bridges and its Nuki<sup>&reg;</sup> paired device(s) to your Hubitat Elevation<sup>&reg;</sup> hub</b>")
                             section() \
                             {
-                                input (name: "selectedBridgesToAdd", 
-                                       required: true,
-                                       type: "enum",
-                                       multiple: true,
-                                       options: bridgesList,
-                                       title: "Use the following list to select the Bridge(s) to install. Then click on <b>'Install selected Bridge(s)'</b> box below. " +
-                                              "Right after clicking on it, the led on every selected Bridge will lit up, one by one. " +
-                                              "When the Bridge's led lit up, you must press the button on the Bridge to allow it to be recognized by this app.",
-                                       description: desc)
+                                if (bridgesList.size() != 0)
+                                {
+                                    input (name: "selectedBridgesToAdd", 
+                                           required: true,
+                                           type: "enum",
+                                           multiple: true,
+                                           options: bridgesList,
+                                           title: "Use the following list to select the Bridge(s) to install - if any. Then click on <b>'Install selected Bridge(s)'</b> box below. " +
+                                                  "Right after clicking on it, the led on every selected Bridge will lit up, one by one. " +
+                                                  "When the Bridge's led lit up, you must press the button on the Bridge to allow it to be recognized by this app.",
+                                           description: desc)
                                 
-                                href  ("addedBridgesPage",
-                                       title: "Install selected Bridge(s)",
-                                       params: existingBridgesParam,
-                                       description: "\nClick here to install\n\n<b>NOTICE:</b>Don't forget to press the selected Bridge(s) button when its LED lit up",
-                                       state: "")
+                                    href  ("addedBridgesPage",
+                                           title: "Install selected Bridge(s)",
+                                           params: existingBridgesParam,
+                                           description: "\nClick here to install\n\n<b>NOTICE:</b> Don't forget to press the selected Bridge(s) button when its LED lit up",
+                                           state: "")
+                                }
                                 
-                                paragraph "<b>WARNING</b>: Selecting a Bridge already installed will automatically delete it, its paired device(s) and\n" +
-                                          "all references to them in this Hubitat Elevation<sup>&reg;</sup> hub (e.g. Rules in Rule Machine)." 
+                                paragraph "<b>WARNING</b>:"
+                                
+                                if (bridgesList.size() == 0)
+                                {
+                                    paragraph "CANNOT FIND A BRIDGE TO INSTALL!"
+                                }                                
+                                else
+                                {
+                                    paragraph "Selecting a Bridge already installed will automatically delete it, its paired device(s) and\n" +
+                                              "all references to them in this Hubitat Elevation<sup>&reg;</sup> hub (e.g. Rules in Rule Machine)." 
+                                }
+                                
                                 paragraph "Sometimes it gets difficult to get an answer from the Nuki<sup>&reg;</sup> bridges ...\n" +
                                           "If it happens, you must execute the most important debug action in all history of IT: power recicle!\n" +
                                           "So, unplug your Nuki<sup>&reg;</sup> Bridge(s), wait 15 seconds, plug it again and wait for the led stop flashing.\n" +
                                           "Then, restart the installation of the Bridge(s) and paired device(s)."
+                                
+                                if (httpAPINotEnabled.size() != 0)
+                                {
+                                    paragraph "<b>ERROR:</b>"
+                                    paragraph "There ${httpAPINotEnabled.size() == 1 ? "is a bridge" : "are bridges"} not correclty configured.\n" +
+                                              "The <b>HTTP API</b> option at the Nuki smartphone app must be enabled to allow a bridge to be managed by this app.\n" +
+                                              "Check how to correctly configure it at this link:"
+                                    href (name: "configureHttpAPI",
+                                         title: "Configure HTTP API option",
+                                         required: false,
+                                         style: "external",
+                                         url: "https://github.com/MAFFPT/Hubitat/wiki/Nuki-Smart-Lock-2.0-Integration-%23-Supported-devices#enabling-bridge-control-over-your-lan",
+                                         description: "Click here to see how to configure the HTTP API option")
+                                }
                              }
                         }
 }
@@ -287,7 +323,7 @@ def discoverBridges ()
     def discoveredBridges = []
     def success
     
-    for (i=0; i<3; i++) // I would rather use the "3.times" loop construction (elegant, isn't it?), 
+    for (i=1; i<4; i++) // I would rather use the "3.times" loop construction (elegant, isn't it?), 
                         // but with it I can't exit the loop with "break" ... so sad 
     {
         success = false
@@ -347,8 +383,17 @@ def getBridgesData (response)
     
     response?.data?.bridges.each 
     {
-        bridgeDNI = buildBridgeDNI (it)
-        alreadyInstalled = getChildDevice (bridgeDNI) ? true : false
+        logDebug "getBridgesData: ip = ${it.ip} / ip.toString() = ${it.ip.toString()}"
+        if (it.ip.toString() != "null")
+        {
+            bridgeDNI = buildBridgeDNI (it)
+            alreadyInstalled = getChildDevice (bridgeDNI) ? true : false
+        }
+        else
+        {
+            bridgeDNI = null
+            alreadyInstalled = false
+        }
         
         bridgeData = ["bridgeId": it.bridgeId.toString(),            // took me hours and hours to figure it out ... need to convert int to string!
                       "dni": bridgeDNI, 
@@ -772,3 +817,4 @@ def appDebugLogging () { return debugLogging }
 def logDebug (message) { if (debugLogging) log.debug (message) }
 def logInfo  (message) { log.info (message) }
 def logWarn  (message) { log.warn (message) }
+
