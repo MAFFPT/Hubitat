@@ -19,7 +19,7 @@
 import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt.nuki"               // All apps and drivers must be at the same namespace
-@Field static _nukiBridgeDriverVersion = "0.6.0"           // Current version of this driver
+@Field static _nukiBridgeDriverVersion = "0.6.1"           // Current version of this driver
 
 @Field static _nukiDriverNameBridge = "Nuki Bridge"        // name of the device type = driver name
 
@@ -667,3 +667,4 @@ def appDebugLogging () { return parent.appDebugLogging () }
 def logDebug (message) { if (appDebugLogging ()) log.debug (message) }
 def logInfo  (message) { log.info (message) }
 def logWarn  (message) { log.warn (message) }
+
