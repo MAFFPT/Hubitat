@@ -23,7 +23,7 @@ import groovy.transform.Field
 @Field static _nukiDriverNameLock = "Nuki Smart Lock 2.0"    // Nuki Smart Lock 2.0's device driver name
 @Field static _nukiDriverNameOpener = "Nuki Opener"          // Nuki Opener's device driver name
 
-@Field static _nukiIntegrationVersion = "0.6.2"
+@Field static _nukiIntegrationVersion = "0.6.1"
 
 @Field static _nukiDiscoverBridgesURL = "https://api.nuki.io/discover/bridges"
 
@@ -72,8 +72,6 @@ def updated ()
 def initialize () 
 {
 	logDebug "initialize: IN"
-    //def ip = "192.168.0.20"
-    //logDebug "ip = ${ip} / mac = ${getMACFromIP (ip)}"
 
     //unschedule ()
     
@@ -147,7 +145,7 @@ def selectBridgesToAddPage ()
         logDebug "selectBridgesToAddPage: processing bridge: ${it}"
         logDebug "selectBridgesToAddPage: bridge (${it.bridgeId}) ${it.alreadyInstalled ? "is already installed" : "has not been installed yet"}"
         
-        if (it.ip.toString() != "null")
+        if (it.IP.toString() != "null")
         {
             bridgesList ["${it.bridgeId}"] = "Nuki bridge (${it.bridgeId}) - ${it.alreadyInstalled ? "already installed (check warnings below)" : "new"}"
 //        bridgesList ["${it.bridgeId}#"] = "Nuki bridge (${it.bridgeId}) - ${it.alreadyInstalled ? "already installed (check warnings below)" : "new"}"
