@@ -23,7 +23,7 @@ import groovy.transform.Field
 @Field static _nukiDriverNameLock = "Nuki Smart Lock 2.0"    // Nuki Smart Lock 2.0's device driver name
 @Field static _nukiDriverNameOpener = "Nuki Opener"          // Nuki Opener's device driver name
 
-@Field static _nukiIntegrationVersion = "0.6.2"
+@Field static _nukiIntegrationVersion = "0.6.3"
 
 @Field static _nukiDiscoverBridgesURL = "https://api.nuki.io/discover/bridges"
 
