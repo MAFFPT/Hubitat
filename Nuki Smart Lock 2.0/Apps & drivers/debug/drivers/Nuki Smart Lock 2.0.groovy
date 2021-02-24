@@ -19,7 +19,7 @@
 import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt.nuki"             // All apps and drivers must be at the same namespace
-@Field static _nukiLockDriverVersion = "0.6.2"           // Current version of this driver
+@Field static _nukiLockDriverVersion = "0.6.3"           // Current version of this driver
 
 @Field static Map _lockDeviceModes = [2: "Door mode"]
 
@@ -172,6 +172,9 @@ def addGrandchildDevice ()
 
 def parse (Map jsonMap)
 {
+    def errorOnHttpGet = false
+    def bridgeInfo = [:]
+    
     logDebug "parse: IN"
     logDebug "parse: received jsonMap = ${jsonMap}"
     logDebug "parse: device.capabilities = ${device.capabilities}"
@@ -179,39 +182,56 @@ def parse (Map jsonMap)
     // Let's first be sure that the NukiIds of this device and the parsed one are the same
     if (jsonMap.nukiId.toString () != device.data.nukiInfo.DeviceId.toString ())
     {
-        trow new Exception ("${device.data.label}: Inconsistent data - events from device with Nuki ID '${jsonMap.nukiId.toString ()}' cannot be handled by device hander for device '${device.data.nukiInfo.DeviceId.toString ()}'")
+        trow new Exception ("${device.data.label}: Inconsistent data - events from device with Nuki ID '${jsonMap.nukiId.toString ()}' cannot be handled by device handler for device '${device.data.nukiInfo.DeviceId.toString ()}'")
     }
     
     // starting at bridge version 2.6.0 - support for doorSensor
     def doorSensorMessageText = ""
     def doorSensorState = [:]
     
-    def bridgeInfo = parent.getBridgeInfo (parent.data)
-
-    if (bridgeInfo.versions.firmwareVersion >= _bridgeFirmwareDoorSensorSupport)
+    try
     {
-        doorSensorState = _doorSensorStates.find { it.stateId == jsonMap.doorsensorState }
-        doorSensorMessageText = " Door sensor state = ${jsonMap.doorsensorStateName.toUpperCase ()}."
+        bridgeInfo = parent.getBridgeInfo (parent.data)
+    }
+    catch (e)
+    {
+        errorOnHttpGet = true
     }
     
-    logInfo "${device.data.label}: Status changed on this device to ${jsonMap.stateName.toUpperCase ()}.${doorSensorMessageText} Battery status is ${jsonMap.batteryCritical ? "CRITICAL" : "NORMAL"}."
-    
-    // end
-    
-    sendLockEvent (jsonMap.stateName)
-    parent.sendBatteryEvent (device, jsonMap.batteryCritical)
-
-    def lockState = _lockStates.find { it.stateName.toUpperCase () == jsonMap.stateName.toUpperCase ()}
-    logDebug "parse: lockState = ${lockState}"
-    
-    parent.sendProgressEvent (device, lockState?.progressText)
-    
-    // starting at bridge version 2.6.0 - support for doorSensor
-    if (doorSensorState?.sendEvent)
+    if (! errorOnHttpGet)
     {
-        sendDoorEvent (doorSensorState.eventText)
+        if (bridgeInfo.versions.firmwareVersion >= _bridgeFirmwareDoorSensorSupport)
+        {
+            doorSensorState = _doorSensorStates.find { it.stateId == jsonMap.doorsensorState }
+            doorSensorMessageText = " Door sensor state = ${jsonMap.doorsensorStateName.toUpperCase ()}."
+        }
+    
+        //logInfo "${device.data.label}: Status changed on this device to ${jsonMap.stateName.toUpperCase ()}.${doorSensorMessageText} Battery status is ${jsonMap.batteryCritical ? "CRITICAL" : "NORMAL"}."
+        logInfo "${device.data.label}: Status changed on this device to ${jsonMap.stateName.toUpperCase ()}. ${doorSensorMessageText} Battery level is ${jsonMap.batteryChargeState}%."
+        
+        // end
+    
+        sendLockEvent (jsonMap.stateName)
+        //parent.sendBatteryEvent (device, jsonMap.batteryCritical)
+        parent.sendBatteryEvent (device, jsonMap.batteryChargeState)
+
+        def lockState = _lockStates.find { it.stateName.toUpperCase () == jsonMap.stateName.toUpperCase ()}
+        logDebug "parse: lockState = ${lockState}"
+    
+        parent.sendProgressEvent (device, lockState?.progressText)
+    
+        // starting at bridge version 2.6.0 - support for doorSensor
+        if (doorSensorState?.sendEvent)
+        {
+            sendDoorEvent (doorSensorState.eventText)
+        }
+        // end
     }
-    // end
+    else
+    {
+        logInfo "Bridge information request failed. Contact developer."
+        parent.sendProgressEvent "Bridge information request failed. Contact developer."
+    }
     
     logDebug "parse: OUT"
 }
@@ -317,20 +337,20 @@ def status ()
     if (bridgeInfo.versions.firmwareVersion >= _bridgeFirmwareDoorSensorSupport)
     {
         doorSensorState = _doorSensorStates.find { it.stateId == deviceInfo.doorsensorState }
-        doorSensorMessageText = " Door sensor state = ${deviceInfo.doorsensorStateName.toUpperCase ()} //\n"
+        doorSensorMessageText = "Door sensor state = ${deviceInfo.doorsensorStateName.toUpperCase ()}"
     }
     
     resetRejectionEvent ()
     
-    logInfo "${device.data.label}: Status changed on this device to ${deviceInfo.stateName.toUpperCase ()}.${doorSensorMessageText} Battery status is ${deviceInfo.batteryCritical ? "CRITICAL" : "NORMAL"}."
-    
+    logInfo "${device.data.label}: Status changed on this device to ${deviceInfo.stateName.toUpperCase ()}. ${doorSensorMessageText}. Battery level is ${deviceInfo.batteryChargeState} %."
+
     // end
 
-    def deviceStatus = "Device mode: ${deviceMode.value.toUpperCase ()} //\n" +
-                       "State: ${deviceInfo?.stateName.toUpperCase ()} //\n" +
-                       doorSensorMessageText +
-                       "Battery: ${deviceInfo?.batteryCritical ? "CRITICAL" : "NORMAL"} //\n\n"+
-                       "<b>NOTE</b>: avoid requesting this status frequently since it may drain your lock's batteries too fast"
+    def deviceStatus = "<br/>Device mode: ${deviceMode.value.toUpperCase ()}" +
+                       "<br/>State: ${deviceInfo?.stateName.toUpperCase ()}" +
+                       "<br/>" + doorSensorMessageText +
+                       "<br/>Battery: ${deviceInfo?.batteryChargeState} %"+
+                       "<br/>NOTE: avoid requesting this status frequently since it may drain your lock's batteries too fast"
     
     sendLockEvent (deviceInfo?.stateName)
     parent.sendProgressEvent (device, deviceStatus, deviceInfo)
@@ -761,9 +781,9 @@ def sendRejectionEvent (rejectionReason)
 // Logging stuff
 def appDebugLogging () { return parent.appDebugLogging () }
 
-def logDebug (message) { if (appDebugLogging ()) log.debug (message) }
-def logInfo  (message) { log.info (message) }
-def logWarn  (message) { log.warn (message) }
+def logDebug (message) { if (appDebugLogging ()) log.debug (parent.stripToken (message)) }
+def logInfo  (message) { log.info (parent.stripToken (message)) }
+def logWarn  (message) { log.warn (parent.stripToken (message)) }
 
 
 // Static Globals
@@ -888,7 +908,3 @@ def logWarn  (message) { log.warn (message) }
 //@Field static Map lockActions2 = [0: "NO_ACTION", 1: "UNLOCK", 2: "LOCK", 3: "UNLATCH", 4: "LOCK_N_GO", 5: "LOCK_N_GO_WITH_UNLATCH"]
 //@Field static Map lockDoorStatus = [0: "UNAVAILABLE", 1: "DEACTIVATED", 2: "DOOR_CLOSED", 3: "DOOR_OPENED", 4: "DOOR_STATE_UNKNOWN", 5: "CALIBRATING"]
 //@Field static Map lockButtonActions = [0: "NO_ACTION", 1: "INTELLIGENT", 2: "UNLOCK", 3: "LOCK", 4: "UNLATCH", 5: "LOCK_N_GO", 6: "SHOW_STATUS"]
-
-
-
-
