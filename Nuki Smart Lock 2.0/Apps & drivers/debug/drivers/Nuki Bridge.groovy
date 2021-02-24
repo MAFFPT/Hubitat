@@ -16,6 +16,7 @@
     limitations under the License.
 */
 
+import groovy.json.JsonSlurper
 import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt.nuki"               // All apps and drivers must be at the same namespace
@@ -331,7 +332,8 @@ def getBridgeInfo (deviceData)
     logDebug "getBridgeInfo: IN"
     logDebug "getBridgeInfo: deviceData = ${deviceData}"
     
-    def httpRequest = "${parent.buildBridgeURL (deviceData)}/info?token=${deviceData.Token}"
+    //def httpRequest = "${parent.buildBridgeURL (deviceData)}/info?token=${deviceData.Token}"
+    Map httpRequest = [uri: "${parent.buildBridgeURL (deviceData)}/info?token=${deviceData.Token}", contentType: "application/json", requestContentType: "application/json", timeout: 5]
     logDebug "getBridgeInfo: httpRequest = ${httpRequest}"
 
     def bridgeInfo
@@ -341,15 +343,17 @@ def getBridgeInfo (deviceData)
 	    httpGet (httpRequest)
 		{
             resp ->           
-                logDebug "refresh: resp data: ${resp.data}"
+                logDebug "getBridgeInfo: resp.data: ${resp.data}"
+                //def jsonSlurper = new JsonSlurper ()
+                //bridgeInfo = jsonSlurper.parseText (resp.data)
                 bridgeInfo = resp.data
+                logDebug "getBridgeInfo: bridgeInfo.bridgeType: ${bridgeInfo.bridgeType}"
         }
     }
     catch (e)
     {
-        throw new Exception ("${deviceData.Label}: method 'getBridgeInfo' - Fatal error = ${error}")
+        throw new Exception ("${deviceData.Label}: method 'getBridgeInfo' - Fatal error = ${e}")
     }     
-
     logDebug "getBridgeInfo: OUT"
     
     return bridgeInfo
@@ -620,12 +624,14 @@ def buildNukiRequest (request)
 //
 // Record a battery event
 //
-def sendBatteryEvent (forDevice, batteryCritical)  
+//def sendBatteryEvent (forDevice, batteryCritical)  
+def sendBatteryEvent (forDevice, batteryLevel)  
 {
     logDebug "sendBatteryEvent: IN"
 
-    forDevice.sendEvent (name: "battery", value: (batteryCritital ? 20 : 100), unit: "%")          
-
+    //forDevice.sendEvent (name: "battery", value: (batteryCritital ? 20 : 100), unit: "%")          
+    forDevice.sendEvent (name: "battery", value: (batteryLevel), unit: "%")          
+    
     logDebug "sendBatteryEvent: OUT"
 }
 
@@ -661,10 +667,13 @@ def xxsendErrorEvent (forDevice, errorMessage, errorDescription = "")
 // Logging stuff
 //
 def appDebugLogging () { return parent.appDebugLogging () }
-//def appDebugLogging () { return true }
 
 
-def logDebug (message) { if (appDebugLogging ()) log.debug (message) }
-def logInfo  (message) { log.info (message) }
-def logWarn  (message) { log.warn (message) }
+def logDebug (message) { if (appDebugLogging ()) log.debug (stripToken(message)) }
+def logInfo  (message) { log.info (stripToken(message)) }
+def logWarn  (message) { log.warn (stripToken(message)) }
 
+def stripToken (message)
+{
+    return message.replaceAll (device.data.Token, "**supressed**")
+}
