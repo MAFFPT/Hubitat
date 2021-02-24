@@ -816,6 +816,6 @@ def standardHeader (subheader)
 //
 def appDebugLogging () { return debugLogging }
 
-def logDebug (message) { if (debugLogging) log.debug (message) }
+def logDebug (message) { if ( appDebugLogging() ) log.debug (message) }
 def logInfo  (message) { log.info (message) }
 def logWarn  (message) { log.warn (message) }
