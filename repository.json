@@ -8,7 +8,7 @@
 			 "description": "App & drivers for integration of Nuki Smart Lock 2.0 to Hubitat Elevation"},
                      	{"name":        "Sonoff switch DIY mode driver",
 			 "category":    "Control",
-			 "location":    "https://raw.githubusercontent.com/MAFFPT/hubitat-Sonoff-switch-DIY-mode/main/packageManifest.json",
+			 "location":    "https://https://raw.githubusercontent.com/MAFFPT/hubitat-Sonoff-Wi-Fi-Switch-DIY-mode/main/packageManifest.json",
 			 "description": "Driver for using a Sonoff switch in DIY mode"}
 	            ]
 }
