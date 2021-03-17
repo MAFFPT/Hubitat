@@ -9,6 +9,6 @@
                      	{"name":        "Sonoff switch DIY mode driver",
 			 "category":    "Control",
 			 "location":    "https://https://raw.githubusercontent.com/MAFFPT/hubitat-Sonoff-Wi-Fi-Switch-DIY-mode/main/packageManifest.json",
-			 "description": "Driver for using a Sonoff switch in DIY mode"}
+			 "description": "Driver for using a Sonoff Wi-Fi switch in DIY mode"}
 	            ]
 }
