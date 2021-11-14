@@ -7,7 +7,7 @@
   "documentationLink": "https://github.com/MAFFPT/Hubitat/wiki",
   "communityLink": "https://community.hubitat.com/t/beta-nuki-smart-lock-2-0/40654",
   "licenseFile": "https://github.com/MAFFPT/Hubitat/blob/master/Nuki%20Smart%20Lock%202.0/LICENSE.md",
-  "releaseNotes": "Correct detection of Bridge firmware support for the door sensor - Thanks @alexdelprete!",
+  "releaseNotes": "Correct detection of Bridge firmware support for the door sensor - Thanks @j.apostolakis!",
   "apps":    [{"id":         "d8453be8-b65a-4d79-ac30-307cf8951b67",
       	       "name":       "Nuki Smart Lock 2.0 Integration",
       	       "namespace":  "maffpt",
