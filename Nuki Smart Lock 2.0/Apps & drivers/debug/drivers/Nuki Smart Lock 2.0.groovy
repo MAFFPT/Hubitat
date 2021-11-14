@@ -19,7 +19,7 @@
 import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt.nuki"             // All apps and drivers must be at the same namespace
-@Field static _nukiLockDriverVersion = "0.6.3"           // Current version of this driver
+@Field static _nukiLockDriverVersion = "0.6.4"           // Current version of this driver
 
 @Field static Map _lockDeviceModes = [2: "Door mode"]
 
@@ -200,10 +200,16 @@ def parse (Map jsonMap)
     
     if (! errorOnHttpGet)
     {
-        if (bridgeInfo.versions.firmwareVersion >= _bridgeFirmwareDoorSensorSupport)
+//        if (bridgeInfo.versions.firmwareVersion >= _bridgeFirmwareDoorSensorSupport)
+        if (doCurrentBridgeFirmwareSupportsDoorSensor(bridgeInfo.versions.firmwareVersion))
         {
+            logDebug ("parse: Door sensor status IS recognizable by this firmware version (${bridgeInfo.versions.firmwareVersion})")
             doorSensorState = _doorSensorStates.find { it.stateId == jsonMap.doorsensorState }
             doorSensorMessageText = " Door sensor state = ${jsonMap.doorsensorStateName.toUpperCase ()}."
+        }
+        else
+        {
+            logDebug ("parse: Door sensor status IS NOT recognizable by this firmware version (${bridgeInfo.versions.firmwareVersion})")
         }
     
         //logInfo "${device.data.label}: Status changed on this device to ${jsonMap.stateName.toUpperCase ()}.${doorSensorMessageText} Battery status is ${jsonMap.batteryCritical ? "CRITICAL" : "NORMAL"}."
@@ -334,11 +340,18 @@ def status ()
     def bridgeInfo = parent.getBridgeInfo (parent.data)
     logDebug "status: bridgeInfo = ${bridgeInfo}"
 
-    if (bridgeInfo.versions.firmwareVersion >= _bridgeFirmwareDoorSensorSupport)
+//    if (bridgeInfo.versions.firmwareVersion >= _bridgeFirmwareDoorSensorSupport)
+    if (doCurrentBridgeFirmwareSupportsDoorSensor(bridgeInfo.versions.firmwareVersion))
     {
+        logDebug ("status: Door sensor status is recognizable by this firmware version (${bridgeInfo.versions.firmwareVersion})")
         doorSensorState = _doorSensorStates.find { it.stateId == deviceInfo.doorsensorState }
         doorSensorMessageText = "Door sensor state = ${deviceInfo.doorsensorStateName.toUpperCase ()}"
     }
+    else
+    {
+        logDebug ("status: Door sensor status IS NOT recognizable by this firmware version (${bridgeInfo.versions.firmwareVersion})")
+    }
+    
     
     resetRejectionEvent ()
     
@@ -778,6 +791,44 @@ def sendRejectionEvent (rejectionReason)
 }
 
 
+//
+// Compare the current Bridge Firmware version with the Firmware version that supports door sensor 
+//
+def doCurrentBridgeFirmwareSupportsDoorSensor (currentFirmwareVersion)
+{
+    logDebug ("doCurrentBridgeFirmwareSupportsDoorSensor: IN")
+  
+    def retn = (comparableFWVersion (currentFirmwareVersion) >= comparableFWVersion (_bridgeFirmwareDoorSensorSupport))
+
+    logDebug ("doCurrentBridgeFirmwareSupportsDoorSensor: retn = ${retn}")
+    logDebug ("doCurrentBridgeFirmwareSupportsDoorSensor: OUT")
+    
+    return retn
+}
+
+
+//
+//  Changes version string x.y.z into something that can be comparabl
+//        
+def comparableFWVersion (fwVersion)
+{
+  logDebug ("comparableFWVersion: IN")
+  
+  def splitted = fwVersion.split("\\.")
+  def comparable = ""
+  
+  for (part in splitted)
+  {
+    comparable += part.padLeft (3, "0") + "."
+  }
+  
+  logDebug ("comparableFWVersion: comparable = ${comparable}")
+  logDebug ("comparableFWVersion: OUT")
+
+  return comparable
+}
+
+
 // Logging stuff
 def appDebugLogging () { return parent.appDebugLogging () }
 
@@ -908,3 +959,4 @@ def logWarn  (message) { log.warn (parent.stripToken (message)) }
 //@Field static Map lockActions2 = [0: "NO_ACTION", 1: "UNLOCK", 2: "LOCK", 3: "UNLATCH", 4: "LOCK_N_GO", 5: "LOCK_N_GO_WITH_UNLATCH"]
 //@Field static Map lockDoorStatus = [0: "UNAVAILABLE", 1: "DEACTIVATED", 2: "DOOR_CLOSED", 3: "DOOR_OPENED", 4: "DOOR_STATE_UNKNOWN", 5: "CALIBRATING"]
 //@Field static Map lockButtonActions = [0: "NO_ACTION", 1: "INTELLIGENT", 2: "UNLOCK", 3: "LOCK", 4: "UNLATCH", 5: "LOCK_N_GO", 6: "SHOW_STATUS"]
+
