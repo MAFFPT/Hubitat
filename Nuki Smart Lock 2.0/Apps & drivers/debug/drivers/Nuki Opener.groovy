@@ -19,7 +19,7 @@
 import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt.nuki"             // All apps and drivers must be at the same namespace
-@Field static _nukiOpenerDriverVersion = "0.6.3"         // Current version of this driver
+@Field static _nukiOpenerDriverVersion = "0.6.4"         // Current version of this driver
 
 @Field static Map _openerDeviceModes = [2: "Door mode", 3: "Continuous mode"]
 
@@ -548,3 +548,4 @@ def logWarn  (message) { log.warn (message) }
 //@Field static Map lockActions2 = [0: "NO_ACTION", 1: "UNLOCK", 2: "LOCK", 3: "UNLATCH", 4: "LOCK_N_GO", 5: "LOCK_N_GO_WITH_UNLATCH"]
 //@Field static Map lockDoorStatus = [0: "UNAVAILABLE", 1: "DEACTIVATED", 2: "DOOR_CLOSED", 3: "DOOR_OPENED", 4: "DOOR_STATE_UNKNOWN", 5: "CALIBRATING"]
 //@Field static Map lockButtonActions = [0: "NO_ACTION", 1: "INTELLIGENT", 2: "UNLOCK", 3: "LOCK", 4: "UNLATCH", 5: "LOCK_N_GO", 6: "SHOW_STATUS"]
+
