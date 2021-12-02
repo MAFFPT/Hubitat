@@ -28,6 +28,11 @@ import groovy.transform.Field
 
 @Field static String _bridgeFirmwareDoorSensorSupport = "2.6.0"
 
+//@Field static String _previousBatteryState = "100"
+//@Field static String _previousDoorsensorStateName = "CLOSED"
+//@Field static String _previousLockState = "LOCKED"
+
+
 metadata 
 {
     definition (name: "Nuki Smart Lock 2.0", namespace: "maffpt.nuki", author: "Marco Felicio") 
@@ -45,6 +50,10 @@ metadata
         command "status"
         
         attribute "commandRejectionReason", "string"
+
+        attribute "previousBatteryState", "string"
+        attribute "previousContactStateName", "string"
+        attribute "previousLockStateName", "string"
     }
 
     preferences 
@@ -175,6 +184,8 @@ def parse (Map jsonMap)
     def errorOnHttpGet = false
     def bridgeInfo = [:]
     
+    def wrkDoorEvent
+    
     logDebug "parse: IN"
     logDebug "parse: received jsonMap = ${jsonMap}"
     logDebug "parse: device.capabilities = ${device.capabilities}"
@@ -206,6 +217,25 @@ def parse (Map jsonMap)
             logDebug ("parse: Door sensor status IS recognizable by this firmware version (${bridgeInfo.versions.firmwareVersion})")
             doorSensorState = _doorSensorStates.find { it.stateId == jsonMap.doorsensorState }
             doorSensorMessageText = " Door sensor state = ${jsonMap.doorsensorStateName.toUpperCase ()}."
+            
+            if (jsonMap.doorsensorStateName != previousContactStateName)
+            {
+                switch (jsonMap.doorsensorStateName)
+                {
+                    case "door opened":
+                        wrkDoorEvent = "open"
+                        break
+                    case "door closed":
+                        wrkDoorEvent = "closed"
+                        break
+                    default:
+                        wrkDoorEvent = jsonMap.doorsensorStateName
+                        break
+                 }
+                logDebug "parse: wrkDoorEvent = ${wrkDoorEvent}"
+                sendContactEvent (wrkDoorEvent)
+            }
+            previousContactStateName = jsonMap.doorsensorStateName
         }
         else
         {
@@ -216,22 +246,34 @@ def parse (Map jsonMap)
         logInfo "${device.data.label}: Status changed on this device to ${jsonMap.stateName.toUpperCase ()}. ${doorSensorMessageText} Battery level is ${jsonMap.batteryChargeState}%."
         
         // end
+        
     
-        sendLockEvent (jsonMap.stateName)
+        if (jsonMap.stateName != previousLockStateName)
+        {
+            sendLockEvent (jsonMap.stateName)
+        }
+        previousLockStateName = jsonMap.stateName
+        
+        
         //parent.sendBatteryEvent (device, jsonMap.batteryCritical)
-        parent.sendBatteryEvent (device, jsonMap.batteryChargeState)
-
+        if (jsonMap.batteryChargeState != previousBatteryState)
+        {
+            parent.sendBatteryEvent (device, jsonMap.batteryChargeState)
+        }
+        previousBatteryState = jsonMap.batteryChargeState
+        
+        
         def lockState = _lockStates.find { it.stateName.toUpperCase () == jsonMap.stateName.toUpperCase ()}
         logDebug "parse: lockState = ${lockState}"
     
         parent.sendProgressEvent (device, lockState?.progressText)
     
-        // starting at bridge version 2.6.0 - support for doorSensor
-        if (doorSensorState?.sendEvent)
-        {
-            sendDoorEvent (doorSensorState.eventText)
-        }
-        // end
+        //// starting at bridge version 2.6.0 - support for doorSensor
+        //if (doorSensorState?.sendEvent)
+        //{
+        //    sendDoorEvent (doorSensorState.eventText)
+        //}
+        //// end
     }
     else
     {
@@ -750,16 +792,16 @@ def handleHttpError (errorCode)
 //
 //
 //
-def sendDoorEvent (doorEvent)
+def sendContactEvent (contactEvent)
 {
-    logDebug "sendDoorEvent: IN"
-    logDebug "sendDoorEvent: doorEvent = ${doorEvent}"
+    logDebug "sendContactEvent: IN"
+    logDebug "sendContactEvent: contactEvent = ${contactEvent}"
     
     def sendIt = false
     
-    sendEvent (name: "contact", value: doorEvent) 
+    sendEvent (name: "contact", value: contactEvent) 
 
-    logDebug "sendDoorEvent: OUT"
+    logDebug "sendContactEvent: OUT"
 }
 
 
@@ -959,4 +1001,3 @@ def logWarn  (message) { log.warn (parent.stripToken (message)) }
 //@Field static Map lockActions2 = [0: "NO_ACTION", 1: "UNLOCK", 2: "LOCK", 3: "UNLATCH", 4: "LOCK_N_GO", 5: "LOCK_N_GO_WITH_UNLATCH"]
 //@Field static Map lockDoorStatus = [0: "UNAVAILABLE", 1: "DEACTIVATED", 2: "DOOR_CLOSED", 3: "DOOR_OPENED", 4: "DOOR_STATE_UNKNOWN", 5: "CALIBRATING"]
 //@Field static Map lockButtonActions = [0: "NO_ACTION", 1: "INTELLIGENT", 2: "UNLOCK", 3: "LOCK", 4: "UNLATCH", 5: "LOCK_N_GO", 6: "SHOW_STATUS"]
-
