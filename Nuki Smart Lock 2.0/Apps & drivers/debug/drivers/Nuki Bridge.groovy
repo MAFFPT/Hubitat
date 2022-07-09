@@ -20,11 +20,13 @@ import groovy.json.JsonSlurper
 import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt.nuki"               // All apps and drivers must be at the same namespace
-@Field static _nukiBridgeDriverVersion = "0.7.1"           // Current version of this driver
+@Field static _nukiBridgeDriverVersion = "0.8.0"           // Current version of this driver
 
 @Field static _nukiDriverNameBridge = "Nuki Bridge"        // name of the device type = driver name
 
-@Field static _nukiDeviceTypes = [0: "Nuki Smart Lock", 2: "Nuki Opener"]
+@Field static _nukiDeviceTypes = [0: "Nuki Smart Lock 2.0", 2: "Nuki Opener", 4: "Nuki Smart Lock 3.0"]
+
+@Field static _nukiHttpRequestTimeout = 10
 
 metadata 
 {
@@ -43,7 +45,7 @@ metadata
     tiles 
     {
         // When clicked, retrieves the last 20 log entries of this Nuki bridge
-        standardTile ("getLog", "getLog", inactiveLabel: false, decoration: "flat", width: 3, height: 2) 
+        standardTile ("getLog", "getLog", inactiveLabel: true, decoration: "flat", width: 3, height: 2) 
         {
         	state "default", action:"getLog", icon: "st.locks.lock.locked"
     	}
@@ -226,7 +228,8 @@ def setupCallbacks (deviceData)
     // Now, let's register a callback to this HE hub
     def bridgeURL = buildBridgeURL (deviceData)
     def encodedCallbackURL = buildEncodedCallbackURL ()
-    def httpRequest = "${bridgeURL}/callback/add?url=${encodedCallbackURL}&token=${deviceData.Token}"
+    def uriString = "${bridgeURL}/callback/add?url=${encodedCallbackURL}&token=${deviceData.Token}"
+    Map httpRequest = [uri: uriString, contentType: "application/json", requestContentType: "application/json", timeout: _nukiHttpRequestTimeout]
     logDebug "setupCallbacks: httpRequest = ${httpRequest}"
     
     try
@@ -253,7 +256,8 @@ def clearCallbacks (deviceData)
 {
     logDebug "clearCallbacks: IN"
 
-    def httpRequest = "${buildBridgeURL (deviceData)}/callback/list?token=${deviceData.Token}"
+    def uriString = "${buildBridgeURL (deviceData)}/callback/list?token=${deviceData.Token}"
+    Map httpRequest = [uri: uriString, contentType: "application/json", requestContentType: "application/json", timeout: _nukiHttpRequestTimeout]
     logDebug "clearCallbacks: httpRequest = ${httpRequest}"
 
     try
@@ -285,7 +289,8 @@ def clearCallback (deviceData, callback)
 {
     logDebug "clearCallback: IN"
      
-    def httpRequest = "${buildBridgeURL (deviceData)}/callback/remove?id=${callback.id}&token=${deviceData.Token}"
+    def uriString = "${buildBridgeURL (deviceData)}/callback/remove?id=${callback.id}&token=${deviceData.Token}"
+    Map httpRequest = [uri: uriString, contentType: "application/json", requestContentType: "application/json", timeout: _nukiHttpRequestTimeout]
     logDebug "clearCallback: httpRequest = ${httpRequest}"
 
     try
@@ -332,12 +337,14 @@ def getBridgeInfo (deviceData)
     logDebug "getBridgeInfo: IN"
     logDebug "getBridgeInfo: deviceData = ${deviceData}"
     
-    //def httpRequest = "${parent.buildBridgeURL (deviceData)}/info?token=${deviceData.Token}"
-    Map httpRequest = [uri: "${parent.buildBridgeURL (deviceData)}/info?token=${deviceData.Token}", contentType: "application/json", requestContentType: "application/json", timeout: 5]
+    def uriString = "${parent.buildBridgeURL (deviceData)}/info?token=${deviceData.Token}"
+    Map httpRequest = [uri: uriString, contentType: "application/json", requestContentType: "application/json", timeout: _nukiHttpRequestTimeout]
     logDebug "getBridgeInfo: httpRequest = ${httpRequest}"
 
     def bridgeInfo
 
+    pauseExecution (2000) // let's find out what's going on with MarcusD bridge!!!
+    
     try
     {
 	    httpGet (httpRequest)
@@ -514,7 +521,9 @@ def getNukiDeviceStatus (targetDeviceData)
     
     def deviceStatus
     
-    def httpRequest = "${buildBridgeURL (device.data)}/list?token=${device.data.Token}"
+    def uriString = "${buildBridgeURL (device.data)}/list?token=${device.data.Token}"
+    Map httpRequest = [uri: uriString, contentType: "application/json", requestContentType: "application/json", timeout: _nukiHttpRequestTimeout]
+
     logDebug "getNukiDeviceStatus: httpRequest = ${httpRequest}"
 
     httpGet (httpRequest) 
@@ -544,7 +553,8 @@ def getDeviceInfo (bridgeData, parentData)
     logDebug "getDeviceInfo: bridgeData = ${bridgeData}"
     logDebug "getDeviceInfo: parentData = ${parentData}"
 
-    def httpRequest = "${parent.buildBridgeURL (parentData)}/lockState?nukiId=${bridgeData.DeviceId}&deviceType=${bridgeData.DeviceType}&token=${parentData.Token}"
+    def uriString = "${parent.buildBridgeURL (parentData)}/lockState?nukiId=${bridgeData.DeviceId}&deviceType=${bridgeData.DeviceType}&token=${parentData.Token}"
+    Map httpRequest = [uri: uriString, contentType: "application/json", requestContentType: "application/json", timeout: _nukiHttpRequestTimeout]
     logDebug "getDeviceInfo: httpRequest = ${httpRequest}"
 
     def deviceInfo
@@ -668,12 +678,11 @@ def xxsendErrorEvent (forDevice, errorMessage, errorDescription = "")
 //
 def appDebugLogging () { return parent.appDebugLogging () }
 
-
 def logDebug (message) { if (appDebugLogging ()) log.debug (stripToken(message)) }
 def logInfo  (message) { log.info (stripToken(message)) }
 def logWarn  (message) { log.warn (stripToken(message)) }
 
 def stripToken (message)
 {
-    return message.replaceAll (device.data.Token, "**supressed**")
+    return message.replaceAll (device.data.Token, "**suppressed**")
 }
