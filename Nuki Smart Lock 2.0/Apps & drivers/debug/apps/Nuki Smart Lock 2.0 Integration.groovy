@@ -19,18 +19,19 @@
 import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt.nuki"
-@Field static _nukiDriverNameBridge = "Nuki Bridge"          // name of the device type = driver name
-@Field static _nukiDriverNameLock = "Nuki Smart Lock 2.0"    // Nuki Smart Lock 2.0's device driver name
-@Field static _nukiDriverNameOpener = "Nuki Opener"          // Nuki Opener's device driver name
+@Field static _nukiDriverNameBridge = "Nuki Bridge for Lock 2.0"     // name of the device type = driver name
+@Field static _nukiDriverNameLock = "Nuki Smart Lock 2.0"            // Nuki Smart Lock 2.0/3.0's device driver name
+@Field static _nukiDriverNameOpener = "Nuki Opener"                  // Nuki Opener's device driver name
+@Field static _nukiAppName = "Nuki Smart Lock 2.0 Integration"       // This app
 
-@Field static _nukiIntegrationVersion = "0.7.2"
+@Field static _nukiIntegrationVersion = "0.8.0"
 
 @Field static _nukiDiscoverBridgesURL = "https://api.nuki.io/discover/bridges"
 
 definition (name:              "Nuki Smart Lock 2.0 Integration",
             namespace:         "maffpt.nuki",
             author:            "Marco Felicio (MAFFPT)",
-            description:       "Integration app for Nuki<sup>&reg;</sup> Smart Lock 2.0 - version ${_nukiIntegrationVersion}",
+            description:       "Integration app for Nuki<sup>&reg;</sup> Smart Lock 2.0 & 3.0 - version ${_nukiIntegrationVersion}",
             category:          "Convenience",
             singleInstance:    true,
             iconUrl:           "https://raw.githubusercontent.com/MAFFPT/Hubitat/Nuki Smart Lock 2.0/icons/nuki-logo-white.svg",
@@ -63,7 +64,7 @@ def updated ()
     
     initialize () 
     
-    logInfo "Nuki Smart Lock 2.0 Integration finished"
+    logInfo "${_nukiAppName} finished"
 
     logDebug "updated: OUT"
 }
@@ -96,7 +97,7 @@ def mainPage ()
     
 	initialize ()
     
-    logInfo "Nuki Smart Lock 2.0 Integration started"
+    logInfo "${_nukiAppName} started"
 
     return dynamicPage (name: "mainPage",
                         uninstall: true,
@@ -111,7 +112,7 @@ def mainPage ()
                                 
                                 input (name: "debugLogging",
                                        type: "bool",
-                                       defaultValue: false,
+                                       defaultValue: true,
                                        required: true,
                                        submitOnChange: true,
                                        title: "Enable <u>app</u> and <u>drivers</u> debug logging\n<b>CAUTION:</b> a lot of log entries will be recorded!")
@@ -150,7 +151,7 @@ def selectBridgesToAddPage ()
         if (it.ip.toString() != "null")
         {
             bridgesList ["${it.bridgeId}"] = "Nuki bridge (${it.bridgeId}) - ${it.alreadyInstalled ? "already installed (check warnings below)" : "new"}"
-//        bridgesList ["${it.bridgeId}#"] = "Nuki bridge (${it.bridgeId}) - ${it.alreadyInstalled ? "already installed (check warnings below)" : "new"}"
+//          bridgesList ["${it.bridgeId}#"] = "Nuki bridge (${it.bridgeId}) - ${it.alreadyInstalled ? "already installed (check warnings below)" : "new"}"
             existingBridgesParam << [ (it.bridgeId): it ]
         }
         else
@@ -194,15 +195,25 @@ def selectBridgesToAddPage ()
                                                   "Right after clicking on it, the led on every selected Bridge will lit up, one by one. " +
                                                   "When the Bridge's led lit up, you must press the button on the Bridge to allow it to be recognized by this app.",
                                            description: desc)
-                                
+
+                                    input (name: "optionReinstallBridges",
+                                           required: true,
+                                           type: "bool",
+                                           defaultValue: false,
+                                           submitOnChange: true,
+                                           title: "Reinstall any currently installed Bridge (see warning below)",
+                                           description: "<b>WARNING!<b> If you select this option, the selected installed Bridge(s) will be deleted, \n" +
+                                                        "its paired device(s) and all references to them in this \n" +
+                                                        "Hubitat Elevation<sup>&reg;</sup> hub (e.g. Rules in Rule Machine and WebCore.)")
+                                           
                                     href  ("addedBridgesPage",
                                            title: "Install selected Bridge(s)",
                                            params: existingBridgesParam,
-                                           description: "\nClick here to install\n\n<b>NOTICE:</b> Don't forget to press the selected Bridge(s) button when its LED lit up",
+                                           description: "\nClick here to install\n\n<b>NOTICE:</b> Don't forget to press the selected Bridge(s) button when its LED lit up!",
                                            state: "")
                                 }
                                 
-                                paragraph "<b>WARNING</b>:"
+                                paragraph "<b>WARNINGS</b>:"
                                 
                                 if (bridgesList.size() == 0)
                                 {
@@ -210,11 +221,11 @@ def selectBridgesToAddPage ()
                                 }                                
                                 else
                                 {
-                                    paragraph "Selecting a Bridge already installed will automatically delete it, its paired device(s) and\n" +
+                                    paragraph "- Selecting a Bridge already installed will automatically delete it, its paired device(s) and\n" +
                                               "all references to them in this Hubitat Elevation<sup>&reg;</sup> hub (e.g. Rules in Rule Machine)." 
                                 }
                                 
-                                paragraph "Sometimes it gets difficult to get an answer from the Nuki<sup>&reg;</sup> bridges ...\n" +
+                                paragraph "- Sometimes it gets difficult to get an answer from the Nuki<sup>&reg;</sup> bridges ...\n" +
                                           "If it happens, you must execute the most important debug action in all history of IT: power recicle!\n" +
                                           "So, unplug your Nuki<sup>&reg;</sup> Bridge(s), wait 15 seconds, plug it again and wait for the led stop flashing.\n" +
                                           "Then, restart the installation of the Bridge(s) and paired device(s)."
@@ -455,7 +466,7 @@ def getBridgeToken (bridge)
     }
     catch (java.net.SocketTimeoutException e)
     {
-        logWarn "Nuki Smart Lock 2.0 Integration failed"
+        logWarn "${_nukiAppName} failed"
         throw new Exception ("Button at Bridge with ID = ${bridge.bridgeId} not pressed. Installation failed.")
     }
 
@@ -749,6 +760,9 @@ def buildNukiDeviceLabel (nukiDevice)
         case "2":
             deviceLabel = "${nukiDevice.name}"
             break
+        case "4":
+            deviceLabel = "${nukiDevice.name}"
+            break
         default:
             throw new Exception ("Nuki Bride driver: Method 'buildNukiDeviceLabel' - Fatal error = unsupported device type (${nukiDevice.deviceType})")
             break
@@ -778,6 +792,9 @@ def getNukiDeviceDriver (nukiDevice)
         case "2":
             deviceDriver = _nukiDriverNameOpener
             break
+        case "4":
+            deviceDriver = _nukiDriverNameLock
+            break
         default:
             throw new Exception ("Nuki Smart Lock Integration: method 'getNukiDeviceDriver' - Fatal error: unsupported device type (${nukiDevice.deviceType})")
             break
@@ -794,7 +811,7 @@ def getNukiDeviceDriver (nukiDevice)
 //
 def standardHeader (subheader)
 {
-    def header = "<h3 style='color: white; background-color: #ff8517; text-align: center; vertical-align: bottom; height: 30px;'><b>Nuki<sup>&reg;</sup> Smart Lock 2.0 Integration version ${_nukiIntegrationVersion}</b></h3>"
+    def header = "<h3 style='color: white; background-color: #ff8517; text-align: center; vertical-align: bottom; height: 30px;'><b>Nuki<sup>&reg;</sup> ${_nukiAppName} version ${_nukiIntegrationVersion}</b></h3>"
     
     if (subheader != "")
     {
@@ -816,6 +833,15 @@ def standardHeader (subheader)
 //
 def appDebugLogging () { return debugLogging }
 
-def logDebug (message) { if ( appDebugLogging() ) log.debug (message) }
+def logDebug (message) { if (appDebugLogging ()) log.debug (message) }
 def logInfo  (message) { log.info (message) }
 def logWarn  (message) { log.warn (message) }
+
+//def logDebug (message) { if (appDebugLogging ()) log.debug (stripToken(message)) }
+//def logInfo  (message) { log.info (stripToken(message)) }
+//def logWarn  (message) { log.warn (stripToken(message)) }
+
+def stripToken (message)
+{
+    return message.replaceAll (device.data.Token, "**suppressed**")
+}
