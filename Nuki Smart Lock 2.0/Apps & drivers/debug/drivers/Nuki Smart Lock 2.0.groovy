@@ -19,12 +19,12 @@
 import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt.nuki"             // All apps and drivers must be at the same namespace
-@Field static _nukiLockDriverVersion = "0.8.1"           // Current version of this driver
+@Field static _nukiLockDriverVersion = "0.8.2"           // Current version of this driver
 
 @Field static Map _lockDeviceModes = [2: "Door mode"]
 
 @Field static String _nukiDeviceTypeLock = "0"
-@Field static String _nukiDriverNameLock = "Nuki Smart Lock"    // Nuki Smart Lock 2.0's device driver name
+@Field static String _nukiDriverNameLock = "Nuki Smart Lock 2.0/3.0"    // Nuki Smart Lock 2.0's device driver name
 
 @Field static String _bridgeFirmwareDoorSensorSupport = "2.6.0"
 
