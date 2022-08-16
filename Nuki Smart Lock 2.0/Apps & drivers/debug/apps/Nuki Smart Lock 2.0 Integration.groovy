@@ -209,7 +209,7 @@ def selectBridgesToAddPage ()
                                     href  ("addedBridgesPage",
                                            title: "Install selected Bridge(s)",
                                            params: existingBridgesParam,
-                                           description: "\nClick here to install\n\n<b>NOTICE:</b> Don't forget to press the selected Bridge(s) button when its LED lit up!",
+                                           description: "\nClick here to install\n\n<b>NOTICE:</b> Don't forget to press the selected Bridge(s) button when its LED lights up!",
                                            state: "")
                                 }
                                 
