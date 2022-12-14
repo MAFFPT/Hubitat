@@ -542,7 +542,7 @@ def addBridge (bridge)
     deviceData.Token = bridge.token
     deviceData.BridgeId = bridge.bridgeId
     deviceData.IP = bridge.ip
-    deviceData.Mac = getDottedMacAddress (bridge.ip)
+    //deviceData.Mac = getDottedMacAddress (bridge.ip)
     deviceData.Port = bridge.port
     deviceData.Label = buildBridgeLabel (bridge)
     deviceData.PairedDevices = pairedDevices
