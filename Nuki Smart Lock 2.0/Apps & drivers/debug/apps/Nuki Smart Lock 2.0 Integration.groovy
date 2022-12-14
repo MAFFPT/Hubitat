@@ -24,7 +24,7 @@ import groovy.transform.Field
 @Field static _nukiDriverNameOpener = "Nuki Opener"                  // Nuki Opener's device driver name
 @Field static _nukiAppName = "Nuki Smart Lock 2.0 Integration"       // This app
 
-@Field static _nukiIntegrationVersion = "0.8.1"
+@Field static _nukiIntegrationVersion = "0.8.3"
 
 @Field static _nukiDiscoverBridgesURL = "https://api.nuki.io/discover/bridges"
 
@@ -120,6 +120,7 @@ def mainPage ()
                                 paragraph "<br/><b>Please note:</b><br />"
                                 paragraph "&bull; Set up your bridge(s) and lock(s) correctly using the Nuki<sup>&reg;</sup> smartphone App before using this app."
                                 paragraph "&bull; It is <b>mandatory</b> the use of static IP address(es) for your bridge(s). See your router documentation on how to set static IP on DHCP settings."
+                                paragraph "<br/><b>NOTE:</b> Since version 0.8.3, the bridge's IP address is used for it's internal ID. If the IP address changes, this integration will not work. So, use static IP!"
 		                    }
                         }
 }
@@ -209,7 +210,7 @@ def selectBridgesToAddPage ()
                                     href  ("addedBridgesPage",
                                            title: "Install selected Bridge(s)",
                                            params: existingBridgesParam,
-                                           description: "\nClick here to install\n\n<b>NOTICE:</b> Don't forget to press the selected Bridge(s) button when its LED lights up!",
+                                           description: "\nClick here to install\n\n<b>NOTICE:</b> Don't forget to press the selected Bridge(s) button when its LED lit up!",
                                            state: "")
                                 }
                                 
@@ -654,13 +655,38 @@ def buildBridgeDNI (bridge)
 {
     logDebug "buildBridgeDNI: IN"
     
-    def dni = getMacAddress (bridge.ip)
+    //def dni = getMacAddress (bridge.ip)
+    
+    // 2022-12-14
+    // Apparently getMACFromIP is not working properly
+    // Since it'd used for creating the DNI and the IP address
+    // in hex can be used as DNI too, let's forget the getMACFromIP 
+    // and simply convert the IP into hex
+    
+    def dni = getIPHex (bridge.ip)
 
     logDebug "buildBridgeDNI: DNI = ${dni}"
     logDebug "buildBridgeDNI: OUT"
     
     return dni
 }
+
+
+//
+// Convert the IP address in it's hex form - whithout the points
+//
+def getIPHex(ip) 
+{
+    logDebug "getIPHex: IN"
+    def retn =  ip.tokenize( '.' ).collect { String.format( '%02x', it.toInteger() ) }.join().toUpperCase()
+
+    logDebug "getIPHex: dni = ${dni}"
+    
+    return retn
+
+    logDebug "getIPHex: IN"
+}
+
 
 //
 // Get mac address from ip address
@@ -671,7 +697,6 @@ def getMacAddress (ip)
     logDebug "getMacAddres: IP = ${ip}"
 	
     def macAddress = getMACFromIP (ip)
-    
     logDebug "getMacAddress: macAddress = ${macAddress}"
     logDebug "getMacAddress: OUT"
     
