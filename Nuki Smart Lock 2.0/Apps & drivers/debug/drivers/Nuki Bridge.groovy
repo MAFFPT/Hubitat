@@ -20,7 +20,7 @@ import groovy.json.JsonSlurper
 import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt.nuki"               // All apps and drivers must be at the same namespace
-@Field static _nukiBridgeDriverVersion = "0.8.2"           // Current version of this driver
+@Field static _nukiBridgeDriverVersion = "0.8.3"           // Current version of this driver
 
 @Field static _nukiDriverNameBridge = "Nuki Bridge"        // name of the device type = driver name
 
@@ -673,6 +673,7 @@ def xxsendErrorEvent (forDevice, errorMessage, errorDescription = "")
 }
 
 
+
 //
 // Logging stuff
 //
@@ -686,3 +687,46 @@ def stripToken (message)
 {
     return message.replaceAll (device.data.Token, "**suppressed**")
 }
+
+
+// Static Globals
+@Field static Map _bridgeActions = [1: [actionCode:       1,
+                                      actionName:       "unlock",
+                                      eventName:        "unlock",
+                                      transientState:   "unlocking",
+                                      actionInProgress: "unlocking (waiting for Nuki bridge to finish operation)",
+                                      actionSuccess:    "unlock command successfully sent (waiting for Nuki Bridge confirmation)",
+                                      actionFailure:    "unlocking failed"], 
+                                  
+                                  2: [actionCode:       2,
+                                      actionName:       "lock",
+                                      eventName:        "lock",
+                                      transientState:   "locking",
+                                      actionInProgress: "locking (waiting for Nuki bridge to finish operation)",
+                                      actionSuccess:    "lock command successfully sent (waiting for Nuki Bridge confirmation)",
+                                      actionFailure:    "locking failed"],
+                                  
+                                  3: [actionCode:       3,
+                                      actionName:       "unlatch",
+                                      eventName:        "unlatch",
+                                      transientState:   "unlatching",
+                                      actionInProgress: "unlatching (waiting for Nuki bridge to finish operation)",
+                                      actionSuccess:    "unlatch command successfully sent (waiting for Nuki Bridge confirmation)",
+                                      actionFailure:    "unlatching failed"],
+                                  
+                                  4: [actionCode:       4,
+                                      actionName:       "lock 'n' go",
+                                      eventName:        "lock",
+                                      transientState:   "locking",
+                                      actionInProgress: "pausing 20 seconds before locking (lock 'n' go)",
+                                      actionSuccess:    "'lock 'n' go' command successfully sent (waiting for Nuki Bridge confirmation)",
+                                      actionFailure:    "lock 'n' go failed"],
+                                 
+                                  5: [actionCode:       5,
+                                      actionName:       "lock 'n' go with unlatch",
+                                      eventName:        "lock",
+                                      transientState:   "locking",
+                                      actionInProgress: "locking & unlatching (waiting for Nuki bridge to finish operation)",
+                                      actionSuccess:    "locking & unlatching command successfully sent (waiting for Nuki Bridge confirmation)",
+                                      actionFailure:    "locking & unlatching failed"] \
+                                  ]
