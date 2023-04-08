@@ -19,7 +19,7 @@
 import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt.nuki"             // All apps and drivers must be at the same namespace
-@Field static _nukiLockDriverVersion = "0.8.3"           // Current version of this driver
+@Field static _nukiLockDriverVersion = "0.8.4"           // Current version of this driver
 
 @Field static Map _lockDeviceModes = [2: "Door mode"]
 
@@ -216,31 +216,37 @@ def parse (Map jsonMap)
     
     if (! errorOnHttpGet)
     {
-//        if (bridgeInfo.versions.firmwareVersion >= _bridgeFirmwareDoorSensorSupport)
         if (doCurrentBridgeFirmwareSupportsDoorSensor(bridgeInfo.versions.firmwareVersion))
         {
             logDebug ("parse: Door sensor status IS recognizable by this firmware version (${bridgeInfo.versions.firmwareVersion})")
             doorSensorState = _doorSensorStates.find { it.stateId == jsonMap.doorsensorState }
-            doorSensorMessageText = " Door sensor state = ${jsonMap.doorsensorStateName.toUpperCase ()}."
-            
-            if (jsonMap.doorsensorStateName != previousContactStateName)
+            if (doorSensorState != null) // Meaning ... is there any door sensor installed?
             {
-                switch (jsonMap.doorsensorStateName)
+                doorSensorMessageText = " Door sensor state = ${jsonMap.doorsensorStateName?.toUpperCase ()}."
+ 
+                if (jsonMap.doorsensorStateName != previousContactStateName)
                 {
-                    case "door opened":
-                        wrkDoorEvent = "open"
-                        break
-                    case "door closed":
-                        wrkDoorEvent = "closed"
-                        break
-                    default:
-                        wrkDoorEvent = jsonMap.doorsensorStateName
-                        break
-                 }
-                logDebug "parse: wrkDoorEvent = ${wrkDoorEvent}"
-                sendContactEvent (wrkDoorEvent)
+                    switch (jsonMap.doorsensorStateName)
+                    {
+                        case "door opened":
+                            wrkDoorEvent = "open"
+                            break
+                        case "door closed":
+                            wrkDoorEvent = "closed"
+                            break
+                        default:
+                            wrkDoorEvent = jsonMap.doorsensorStateName
+                            break
+                     }
+                    logDebug "parse: wrkDoorEvent = ${wrkDoorEvent}"
+                    sendContactEvent (wrkDoorEvent)
+                }
+                previousContactStateName = jsonMap.doorsensorStateName
             }
-            previousContactStateName = jsonMap.doorsensorStateName
+            else
+            {
+                doorSensorMessageText = " Door sensor is not installed/detected/properly configured."
+            }
         }
         else
         {
@@ -256,16 +262,15 @@ def parse (Map jsonMap)
         if (jsonMap.stateName != previousLockStateName)
         {
             sendLockEvent (jsonMap.stateName)
-        }
-        previousLockStateName = jsonMap.stateName
-        
+            previousLockStateName = jsonMap.stateName
+        }    
         
         //parent.sendBatteryEvent (device, jsonMap.batteryCritical)
         if (jsonMap.batteryChargeState != previousBatteryState)
         {
             parent.sendBatteryEvent (device, jsonMap.batteryChargeState)
+            previousBatteryState = jsonMap.batteryChargeState
         }
-        previousBatteryState = jsonMap.batteryChargeState
         
         
         def lockState = _lockStates.find { it.stateName.toUpperCase () == jsonMap.stateName.toUpperCase ()}
