@@ -726,6 +726,30 @@ def getDottedMacAddress (ip)
 }
 
 
+//
+// Get Nuki bridge url
+//
+def buildBridgeURL (bridge)
+{
+    logDebug "buildBridgeURL: IN"
+    
+    def bridgeURL
+    
+    if (bridge?.IP)
+    {
+        bridgeURL = "http://${bridge.IP}:${bridge.Port}"
+    }
+    else
+    {
+        bridgeURL = "http://${bridge.ip}:${bridge.port}"    
+    }
+    
+    logDebug "buildBridgeURL: bridge URL = ${bridgeURL}"
+    logDebug "buildBridgeURL: OUT"
+    
+    return bridgeURL
+}
+
 
 //
 // Build a DNI (Device Network Identifier) based on the Nuki device ID
