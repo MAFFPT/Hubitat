@@ -24,7 +24,7 @@ import groovy.transform.Field
 @Field static _nukiDriverNameOpener = "Nuki Opener"                  // Nuki Opener's device driver name
 @Field static _nukiAppName = "Nuki Smart Lock 2.0 Integration"       // This app
 
-@Field static _nukiIntegrationVersion = "0.8.4"
+@Field static _nukiIntegrationVersion = "0.8.5"
 
 @Field static _nukiDiscoverBridgesURL = "https://api.nuki.io/discover/bridges"
 
@@ -725,30 +725,6 @@ def getDottedMacAddress (ip)
     return standardMacAddress
 }
 
-
-//
-// Get Nuki bridge url
-//
-def buildBridgeURL (bridge)
-{
-    logDebug "buildBridgeURL: IN"
-    
-    def bridgeURL
-    
-    if (bridge?.IP)
-    {
-        bridgeURL = "http://${bridge.IP}:${bridge.Port}"
-    }
-    else
-    {
-        bridgeURL = "http://${bridge.ip}:${bridge.port}"    
-    }
-    
-    logDebug "buildBridgeURL: bridge URL = ${bridgeURL}"
-    logDebug "buildBridgeURL: OUT"
-    
-    return bridgeURL
-}
 
 
 //
