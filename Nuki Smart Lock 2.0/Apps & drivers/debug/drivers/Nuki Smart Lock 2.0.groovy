@@ -19,7 +19,7 @@
 import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt.nuki"             // All apps and drivers must be at the same namespace
-@Field static _nukiLockDriverVersion = "0.8.4"           // Current version of this driver
+@Field static _nukiLockDriverVersion = "0.8.5"           // Current version of this driver
 
 @Field static Map _lockDeviceModes = [2: "Door mode"]
 
