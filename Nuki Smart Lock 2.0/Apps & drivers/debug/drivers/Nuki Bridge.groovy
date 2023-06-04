@@ -20,7 +20,7 @@ import groovy.json.JsonSlurper
 import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt.nuki"               // All apps and drivers must be at the same namespace
-@Field static _nukiBridgeDriverVersion = "0.8.4"           // Current version of this driver
+@Field static _nukiBridgeDriverVersion = "0.8.5"           // Current version of this driver
 
 @Field static _nukiDriverNameBridge = "Nuki Bridge"        // name of the device type = driver name
 
@@ -38,6 +38,7 @@ metadata
         capability "Refresh"
         command "refresh"
         
+        command "reboot"
         command "getLog"
         command "status"
     }
@@ -132,6 +133,18 @@ def ping ()
     logDebug "ping: OUT"
 }
 
+
+//
+// Reboot the bridge
+//
+def reboot ()
+{
+    logDebug "reboot: IN"
+    
+    sendCommandToBridge (_bridgeCommands[1])
+    
+    logDebug "reboot: OUT"
+}
 
 //
 // Collect information about the device and display it at the 'Current status' area of the device interface
@@ -434,6 +447,54 @@ def addPairedDevice (bridge, nukiDevice)
 }
 
 
+//
+// Send the command to the Bridge
+//
+def sendCommandToBridge (Map cmd)
+{
+    logDebug "sendCommandToBridge: IN"
+    logDebug "sendCommandToBridge: Processing command ${cmd}"
+    
+    def returnData
+    String command = cmd.cmdName
+    
+    logDebug "sendCommandToBridge: command = ${command}"
+        
+    sendProgressEvent (device, cmd.cmdInProgress)
+    
+    def uriString = "${buildNukiRequest (command)}"
+    Map httpRequest = [uri: uriString, contentType: "application/json", requestContentType: "application/json", timeout: _nukiHttpRequestTimeout]
+    logDebug "sendCommandToBridge: httpRequest = ${httpRequest}"
+    
+    try
+    {
+    	httpGet ( httpRequest )
+        {
+            resp ->
+                returnData = resp.data
+        }
+        logDebug "sendCommandToBridge: returnData = ${returnData}"
+        
+        if (returnData.success == true)
+        {
+            sendProgressEvent (device, cmd.cmdSuccess)
+        }
+        else
+        {
+            sendProgressEvent (device, cmd.cmdFailure)
+        }
+    }
+    catch (err)
+    {
+        handleHttpError (err)
+    }
+
+    logDebug "sendCommandToBridge: OUT"
+    
+    return returnData
+}
+
+
 def handleHttpError (errorCode)
 {
     logDebug "handleHttpError: IN"
@@ -486,6 +547,7 @@ def logAndPropagateEvent (Map deviceData, Map jsonMap)
     
     logDebug "logEvent: OUT"
 }
+
 
 //=========================================
 // Shared code
@@ -615,12 +677,14 @@ def buildNukiActionCommand (nukiInfo, deviceType, actionCode, waitCompletition)
 //
 // Builds a request to be sent to the bridge (NOTE: shared method between device drivers)
 //
-def buildNukiRequest (request)
+def buildNukiRequest (String request)
 {
     logDebug "buildNukiRequest: IN"
-    def requestToSend = "http://${state.ip}/${request}?token=${state.token}"
+    
+    def requestToSend = "${buildBridgeURL (device.data)}/${request}?token=${device.data.Token}"
     
     logDebug "buildNukiRequest: requestToSend = ${requestToSend}"
+    
     logDebug "buildNukiRequest: OUT"
     
     return requestToSend
@@ -690,43 +754,19 @@ def stripToken (message)
 
 
 // Static Globals
-@Field static Map _bridgeActions = [1: [actionCode:       1,
-                                      actionName:       "unlock",
-                                      eventName:        "unlock",
-                                      transientState:   "unlocking",
-                                      actionInProgress: "unlocking (waiting for Nuki bridge to finish operation)",
-                                      actionSuccess:    "unlock command successfully sent (waiting for Nuki Bridge confirmation)",
-                                      actionFailure:    "unlocking failed"], 
+@Field static Map _bridgeCommands = [1: [cmdCode:       1,
+                                      cmdName:       "reboot",
+                                      eventName:        "reboot",
+                                      transientState:   "rebooting",
+                                      cmdInProgress: "rebooting (waiting for Nuki bridge to finish operation)",
+                                      cmdSuccess:    "reboot command successfully sent",
+                                      cmdFailure:    "reboot failed - check hub logs for more details"], 
                                   
-                                  2: [actionCode:       2,
-                                      actionName:       "lock",
-                                      eventName:        "lock",
-                                      transientState:   "locking",
-                                      actionInProgress: "locking (waiting for Nuki bridge to finish operation)",
-                                      actionSuccess:    "lock command successfully sent (waiting for Nuki Bridge confirmation)",
-                                      actionFailure:    "locking failed"],
-                                  
-                                  3: [actionCode:       3,
-                                      actionName:       "unlatch",
-                                      eventName:        "unlatch",
-                                      transientState:   "unlatching",
-                                      actionInProgress: "unlatching (waiting for Nuki bridge to finish operation)",
-                                      actionSuccess:    "unlatch command successfully sent (waiting for Nuki Bridge confirmation)",
-                                      actionFailure:    "unlatching failed"],
-                                  
-                                  4: [actionCode:       4,
-                                      actionName:       "lock 'n' go",
-                                      eventName:        "lock",
-                                      transientState:   "locking",
-                                      actionInProgress: "pausing 20 seconds before locking (lock 'n' go)",
-                                      actionSuccess:    "'lock 'n' go' command successfully sent (waiting for Nuki Bridge confirmation)",
-                                      actionFailure:    "lock 'n' go failed"],
-                                 
-                                  5: [actionCode:       5,
-                                      actionName:       "lock 'n' go with unlatch",
-                                      eventName:        "lock",
-                                      transientState:   "locking",
-                                      actionInProgress: "locking & unlatching (waiting for Nuki bridge to finish operation)",
-                                      actionSuccess:    "locking & unlatching command successfully sent (waiting for Nuki Bridge confirmation)",
-                                      actionFailure:    "locking & unlatching failed"] \
+                                  2: [cmdCode:       2,
+                                      cmdName:       "fwupdate",
+                                      eventName:        "fwupdate",
+                                      transientState:   "fwupdating",
+                                      cmdInProgress: "fwupdating (waiting for Nuki bridge to finish operation)",
+                                      cmdSuccess:    "fwupdate command successfully sent (waiting for Nuki Bridge confirmation)",
+                                      cmdFailure:    "fwupdate failed"] \
                                   ]
