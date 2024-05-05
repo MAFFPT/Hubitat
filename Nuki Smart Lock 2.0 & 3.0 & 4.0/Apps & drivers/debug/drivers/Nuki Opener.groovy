@@ -1,5 +1,5 @@
 /*
-    Copyright 2022 Marco Felicio (maffpt@gmail.com)
+    Copyright 2020 Marco Felicio (maffpt@gmail.com)
 
     Licensed under the Creative Commons (CC) Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) - the "License";
     you may not use this file except in compliance with the License.
@@ -19,15 +19,62 @@
 import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt.nuki"             // All apps and drivers must be at the same namespace
-@Field static _nukiOpenerDriverVersion = "0.8.5"         // Current version of this driver
-@Field static _nukiDriverNameOpener = "Nuki Keypad"      // Nuki Keypad's device driver name
+@Field static _nukiOpenerDriverVersion = "0.9.0"         // Current version of this driver
+
+@Field static Map _openerDeviceModes = [2: "Door mode", 3: "Continuous mode"]
+
+@Field static _nukiDriverNameOpener = "Nuki Opener"      // Nuki Opener's device driver name
+
+@Field static String _nukiDeviceTypeOpener = "2"
 
 metadata 
 {
-    definition (name: "Nuki Keypad", namespace: "maffpt.nuki", author: "Marco Felicio") 
+    definition (name: "Nuki Opener", namespace: "maffpt.nuki", author: "Marco Felicio") 
     {
         capability "Battery"
+        
+        capability "DoorControl"
+        command "open"
+        command "close"
+        command "activateCM"
+        command "activateRTO"
+        command "deactivateCM"
+        command "deactivateRTO"
+        command "electricStrikeActuation"
+        
+        //capability "Actuator"
+        
+        command "status"
     }
+/*    
+    tiles 
+    {
+        standardTile ("activate continuous mode", "activatecontinuousmode", inactiveLabel: false, decoration: "flat", width: 3, height: 2) 
+        {
+            state "default", label:'activate continuous mode', action:"activateContinuousMode", icon: "st.locks.lock.locked"
+        }
+        
+        standardTile ("activate rto", "activaterto", inactiveLabel: false, decoration: "flat", width: 3, height: 2) 
+        {
+            state "default", label:'activate rto', action:"activateRto", icon: "st.locks.lock.locked"
+        }
+        
+        standardTile ("deactivate continuous mode", "deactivatecontinuousmode", inactiveLabel: false, decoration: "flat", width: 3, height: 2) 
+        {
+            state "default", label:'deactivate continuous mode', action:"deactivateContinuousMode", icon: "st.locks.lock.locked"
+        }
+        
+        standardTile ("deactivate rto", "activaterto", inactiveLabel: false, decoration: "flat", width: 3, height: 2) 
+        {
+            state "default", label:'deactivate rto', action:"deactivateRto", icon: "st.locks.lock.locked"
+        }
+        
+        standardTile ("electric strike actuation", "electricstrikeactuation", inactiveLabel: false, decoration: "flat", width: 3, height: 2) 
+        {
+            state "default", label:'electric strike actuation', action:"electricStrikeActuation", icon: "st.locks.lock.locked"
+        }
+    }
+*/
 }
 
 

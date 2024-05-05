@@ -20,11 +20,11 @@ import groovy.json.JsonSlurper
 import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt.nuki"               // All apps and drivers must be at the same namespace
-@Field static _nukiBridgeDriverVersion = "0.8.5"           // Current version of this driver
+@Field static _nukiBridgeDriverVersion = "0.9.0"           // Current version of this driver
 
 @Field static _nukiDriverNameBridge = "Nuki Bridge"        // name of the device type = driver name
 
-@Field static _nukiDeviceTypes = [0: "Nuki Smart Lock 2.0", 2: "Nuki Opener", 4: "Nuki Smart Lock 3.0"]
+@Field static _nukiDeviceTypes = [0: "Nuki Smart Lock 2.0", 2: "Nuki Opener", 4: "Nuki Smart Lock 3.0/4.0"]
 
 @Field static _nukiHttpRequestTimeout = 10
 

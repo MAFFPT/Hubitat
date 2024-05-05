@@ -20,24 +20,24 @@ import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt.nuki"
 @Field static _nukiDriverNameBridge = "Nuki Bridge"   	             // name of the device type = driver name
-@Field static _nukiDriverNameLock = "Nuki Smart Lock 2.0/3.0"        // Nuki Smart Lock 2.0/3.0's device driver name
+@Field static _nukiDriverNameLock = "Nuki Smart Lock 2.0/3.0/4.0"    // Nuki Smart Lock 2.0/3.0/4.0's device driver name
 @Field static _nukiDriverNameOpener = "Nuki Opener"                  // Nuki Opener's device driver name
-@Field static _nukiAppName = "Nuki Smart Lock 2.0 Integration"       // This app
+@Field static _nukiAppName = "Nuki Smart Lock 2.0 & 3.0 & 4.0 Integration"       // This app
 
-@Field static _nukiIntegrationVersion = "0.8.5"
+@Field static _nukiIntegrationVersion = "0.9.0"
 
 @Field static _nukiDiscoverBridgesURL = "https://api.nuki.io/discover/bridges"
 
-definition (name:              "Nuki Smart Lock 2.0 Integration",
+definition (name:              "Nuki Smart Lock 2.0 & 3.0 & 4.0 Integration",
             namespace:         "maffpt.nuki",
             author:            "Marco Felicio (MAFFPT)",
-            description:       "Integration app for Nuki<sup>&reg;</sup> Smart Lock 2.0 & 3.0 - version ${_nukiIntegrationVersion}",
+            description:       "Integration app for Nuki<sup>&reg;</sup> Smart Lock 2.0 & 3.0 & 4.0 - version ${_nukiIntegrationVersion}",
             category:          "Convenience",
             singleInstance:    true,
-            iconUrl:           "https://raw.githubusercontent.com/MAFFPT/Hubitat/Nuki Smart Lock 2.0/icons/nuki-logo-white.svg",
+            iconUrl:           "https://raw.githubusercontent.com/MAFFPT/Hubitat/Nuki Smart Lock 2.0 & 3.0 & 4.0/icons/nuki-logo-white.svg",
             iconX2Url:         "https://raw.githubusercontent.com/erocm123/SmartThingsPublic/master/smartapps/erocm123/sonoff-connect.src/sonoff-connect-icon-2x.png",
             iconX3Url:         "https://raw.githubusercontent.com/erocm123/SmartThingsPublic/master/smartapps/erocm123/sonoff-connect.src/sonoff-connect-icon-3x.png",
-	        documentationLink: "https://github.com/MAFFPT/Hubitat/blob/master/Nuki%20Smart%20Lock%202.0/README.md")
+	        documentationLink: "https://github.com/MAFFPT/Hubitat/blob/master/Nuki%20Smart%20Lock%202.0%20&%203.0%20&%204.0/README.md")
 
 
 preferences 
@@ -73,10 +73,6 @@ def updated ()
 def initialize () 
 {
 	logDebug "initialize: IN"
-    //def ip = "192.168.0.20"
-    //logDebug "ip = ${ip} / mac = ${getMACFromIP (ip)}"
-
-    //unschedule ()
     
 	logDebug "initialize: OUT"
 }
@@ -241,7 +237,7 @@ def selectBridgesToAddPage ()
                                          title: "Configure HTTP API option",
                                          required: false,
                                          style: "external",
-                                         url: "https://github.com/MAFFPT/Hubitat/wiki/Nuki-Smart-Lock-2.0-Integration-%23-Supported-devices#enabling-bridge-control-over-your-lan",
+                                         url: "https://github.com/MAFFPT/Hubitat/wiki/Nuki-Smart-Lock-2.0-3.0-4.0-Integration-%23-Supported-devices#enabling-bridge-control-over-your-lan",
                                          description: "Click here to see how to configure the HTTP API option")
                                 }
                              }
