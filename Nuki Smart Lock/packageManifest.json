@@ -7,7 +7,7 @@
   "documentationLink": "https://github.com/MAFFPT/Hubitat/wiki",
   "communityLink": "https://community.hubitat.com/t/beta-nuki-smart-lock-2-0-3-0-4-0/40654",
   "licenseFile": "https://github.com/MAFFPT/Hubitat/blob/master/Nuki%20Smart%20Lock/LICENSE.md",
-  "releaseNotes": "Removal lock versions reference on app & drivers names",
+  "releaseNotes": "Removal of lock versions reference on app & drivers names",
   "apps":    [{"id":         "d8453be8-b65a-4d79-ac30-307cf8951b67",
       	       "name":       "Nuki Smart Lock Integration",
       	       "namespace":  "maffpt",
