@@ -19,10 +19,11 @@
 import groovy.transform.Field
 
 @Field static _nukiNamespace = "maffpt.nuki"
-@Field static _nukiDriverNameBridge = "Nuki Bridge"   	             // name of the device type = driver name
-@Field static _nukiDriverNameLock = "Nuki Smart Lock 2.0/3.0/4.0"    // Nuki Smart Lock 2.0/3.0/4.0's device driver name
-@Field static _nukiDriverNameOpener = "Nuki Opener"                  // Nuki Opener's device driver name
-@Field static _nukiAppName = "Nuki Smart Lock 2.0 & 3.0 & 4.0 Integration"       // This app
+@Field static _nukiDriverNameBridge = "Nuki Bridge"   	        // name of the device type = driver name
+@Field static _nukiDriverNameLock = "Nuki Smart Lock"    	// Nuki Smart Lock 2.0/3.0/4.0's device driver name
+@Field static _nukiDriverNameOpener = "Nuki Opener"             // Nuki Opener's device driver name
+@Field static _nukiAppName = "Nuki Smart Lock 2.0 & 3.0 & 4.0 Integration"
+								// This app
 
 @Field static _nukiIntegrationVersion = "0.9.0"
 
