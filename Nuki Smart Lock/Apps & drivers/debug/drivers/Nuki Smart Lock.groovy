@@ -24,8 +24,8 @@ import groovy.transform.Field
 @Field static Map _lockDeviceModes = [2: "Door mode"]
 
 @Field static String _nukiDeviceTypeLock = "0"
-@Field static String _nukiDriverNameLock = "Nuki Smart Lock 2.0/3.0/4.0"    
-                                                        // Nuki Smart Lock 2.0/3.0/4.0's device driver name
+@Field static String _nukiDriverNameLock = "Nuki Smart Lock"    
+                                                        // Nuki Smart Lock device driver name
 
 @Field static String _bridgeFirmwareDoorSensorSupport = "2.6.0"
 
@@ -36,7 +36,7 @@ import groovy.transform.Field
 
 metadata 
 {
-    definition (name: "Nuki Smart Lock 2.0/3.0/4.0", namespace: "maffpt.nuki", author: "Marco Felicio") 
+    definition (name: "Nuki Smart Lock", namespace: "maffpt.nuki", author: "Marco Felicio") 
     {
         capability "Battery"
         
